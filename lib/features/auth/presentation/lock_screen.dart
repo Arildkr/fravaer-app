@@ -49,7 +49,7 @@ class _LockScreenState extends State<LockScreen> {
       }
 
       final didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Lås opp fraværsappen',
+        localizedReason: 'Lås opp Alle med',
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: false,
@@ -82,7 +82,7 @@ class _LockScreenState extends State<LockScreen> {
               const Icon(Icons.lock, size: 64, color: Colors.grey),
               const SizedBox(height: 24),
               const Text(
-                'Fraværsverktøy',
+                'Alle med',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),

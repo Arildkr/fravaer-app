@@ -23,7 +23,7 @@ class FravaerApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Fraværsverktøy',
+      title: 'Alle med',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.light,
@@ -45,6 +45,7 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
   bool _authenticated = false;
   bool _onboardingDone = false;
   bool _initialized = false;
+  bool _biometricLockEnabled = true;
   DateTime? _lastPause;
 
   static const _onboardingKey = 'onboarding_done';
@@ -55,9 +56,6 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _init();
-    });
   }
 
   @override
@@ -104,9 +102,15 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
 
     ref.read(activeLaererIdProvider.notifier).state = laererId;
 
+    // Les biometrisk lås-innstilling
+    final laerer = await (db.select(db.laerere)
+          ..where((l) => l.id.equals(laererId!)))
+        .getSingle();
+
     if (mounted) {
       setState(() {
         _onboardingDone = onboardingDone;
+        _biometricLockEnabled = laerer.biometriskLaasAktiv;
         _initialized = true;
       });
     }
@@ -115,18 +119,35 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
   Future<void> _completeOnboarding() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_onboardingKey, true);
-    setState(() => _onboardingDone = true);
+    if (mounted) setState(() => _onboardingDone = true);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Vent på krypteringsnøkkel før noe annet
+    final keyAsync = ref.watch(encryptionKeyProvider);
+
+    return keyAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, _) => Scaffold(
+        body: Center(child: Text('Feil ved oppstart: $error')),
+      ),
+      data: (_) => _buildApp(),
+    );
+  }
+
+  Widget _buildApp() {
+    // Start initialisering etter at nøkkelen er klar
     if (!_initialized) {
+      SchedulerBinding.instance.addPostFrameCallback((_) => _init());
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (!_authenticated) {
+    if (!_authenticated && _biometricLockEnabled) {
       return LockScreen(
         onAuthenticated: () => setState(() => _authenticated = true),
       );

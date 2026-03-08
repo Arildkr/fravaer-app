@@ -17,9 +17,9 @@ part 'database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal(super.e);
 
-  factory AppDatabase({String? encryptionKey}) {
+  factory AppDatabase({required String encryptionKey}) {
     return AppDatabase._internal(
-      impl.openConnection(encryptionKey ?? 'default_dev_key'),
+      impl.openConnection(encryptionKey),
     );
   }
 
@@ -33,7 +33,13 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Fremtidige migrasjoner legges her
+        // Stegvis migrering — legg til nye versjoner her:
+        // if (from < 2) { await m.addColumn(...); }
+        // if (from < 3) { await m.createTable(...); }
+      },
+      beforeOpen: (details) async {
+        // Kjør alltid — verifiser integritet ved oppstart
+        await customStatement('PRAGMA foreign_keys = ON');
       },
     );
   }

@@ -89,6 +89,18 @@ class GroupRepository {
         .write(const GrupperCompanion(arkivert: Value(false)));
   }
 
+  /// Gi nytt navn til en gruppe.
+  Future<void> renameGroup(String gruppeId, String nyttNavn) async {
+    await (_db.update(_db.grupper)..where((g) => g.id.equals(gruppeId)))
+        .write(GrupperCompanion(navn: Value(nyttNavn)));
+  }
+
+  /// Gi nytt navn til en elev.
+  Future<void> renameStudent(String elevId, String nyttNavn) async {
+    await (_db.update(_db.elever)..where((e) => e.id.equals(elevId)))
+        .write(EleverCompanion(navn: Value(nyttNavn)));
+  }
+
   /// Hent alle elever i en gruppe via medlemskap.
   Stream<List<EleverData>> watchGroupMembers(String gruppeId) {
     final query = _db.select(_db.elever).join([
@@ -119,18 +131,22 @@ class GroupRepository {
     return rows.map((row) => row.readTable(_db.elever)).toList();
   }
 
-  /// Legg til en elev i en gruppe. Oppretter alltid ny elev (unngår navnekollisjoner).
+  /// Sjekk om en elev med dette navnet allerede finnes i gruppen.
+  Future<bool> hasStudentWithName(String elevNavn, String gruppeId) async {
+    final members = await getGroupMembers(gruppeId);
+    return members.any((e) => e.navn == elevNavn);
+  }
+
+  /// Legg til en elev i en gruppe. Blokkerer duplikatnavn.
   Future<void> addStudentToGroup({
     required String elevNavn,
     required String gruppeId,
     String? elevId,
   }) async {
-    // Sjekk om denne eleven allerede er medlem av denne gruppen (basert på navn i gruppen)
+    // Blokker duplikatnavn i samme gruppe
     final existingMembers = await getGroupMembers(gruppeId);
-    final alreadyInGroup = existingMembers.any((e) => e.navn == elevNavn);
-    if (alreadyInGroup) return;
+    if (existingMembers.any((e) => e.navn == elevNavn)) return;
 
-    // Opprett alltid ny elev — to elever kan hete det samme
     final studentId = _uuid.v4();
     await _db.into(_db.elever).insert(EleverCompanion.insert(
       id: studentId,

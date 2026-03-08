@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/database/database.dart';
 import '../../../core/database/tables.dart';
 
 import '../../../core/providers/app_providers.dart';
 import '../data/group_repository.dart';
+import '../../attendance/data/attendance_repository.dart';
 import '../../attendance/presentation/classroom_screen.dart';
 import '../../attendance/presentation/trip_screen.dart';
+import '../../reports/presentation/report_screen.dart';
 import 'import_students_dialog.dart';
 
 class GroupDetailScreen extends ConsumerWidget {
@@ -29,6 +32,11 @@ class GroupDetailScreen extends ConsumerWidget {
           appBar: AppBar(
             title: Text(group.navn),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.history),
+                tooltip: 'Økthistorikk',
+                onPressed: () => _showSessionHistory(context, ref),
+              ),
               IconButton(
                 icon: const Icon(Icons.person_add),
                 tooltip: 'Legg til elev',
@@ -100,6 +108,8 @@ class GroupDetailScreen extends ConsumerWidget {
                             subtitle: elev.elevId != null
                                 ? Text('ID: ${elev.elevId}')
                                 : null,
+                            onTap: () =>
+                                _showRenameStudentDialog(context, ref, elev),
                             trailing: IconButton(
                               icon: const Icon(Icons.remove_circle_outline,
                                   color: Colors.red),
@@ -155,6 +165,14 @@ class GroupDetailScreen extends ConsumerWidget {
     );
   }
 
+  void _showSessionHistory(BuildContext context, WidgetRef ref) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _SessionHistoryScreen(group: group),
+      ),
+    );
+  }
+
   void _showAddStudentDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -169,6 +187,43 @@ class GroupDetailScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => ImportStudentsDialog(gruppeId: group.id),
+    );
+  }
+
+  void _showRenameStudentDialog(
+      BuildContext context, WidgetRef ref, EleverData elev) {
+    final controller = TextEditingController(text: elev.navn);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Endre elevnavn'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Nytt navn',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Avbryt'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final navn = controller.text.trim();
+              if (navn.isEmpty) return;
+              await ref
+                  .read(groupRepositoryProvider)
+                  .renameStudent(elev.id, navn);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: const Text('Lagre'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -251,6 +306,7 @@ class _AddStudentsDialogState extends State<_AddStudentsDialog> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   int _addedCount = 0;
+  String? _error;
 
   @override
   void dispose() {
@@ -263,12 +319,25 @@ class _AddStudentsDialogState extends State<_AddStudentsDialog> {
     final navn = _controller.text.trim();
     if (navn.isEmpty) return;
 
+    // Blokker duplikatnavn i samme gruppe
+    final duplicate =
+        await widget.groupRepo.hasStudentWithName(navn, widget.gruppeId);
+    if (duplicate) {
+      setState(() {
+        _error = '«$navn» finnes allerede i gruppen.';
+      });
+      return;
+    }
+
     await widget.groupRepo.addStudentToGroup(
       elevNavn: navn,
       gruppeId: widget.gruppeId,
     );
 
-    setState(() => _addedCount++);
+    setState(() {
+      _addedCount++;
+      _error = null;
+    });
     _controller.clear();
     _focusNode.requestFocus();
   }
@@ -283,14 +352,18 @@ class _AddStudentsDialogState extends State<_AddStudentsDialog> {
           TextField(
             controller: _controller,
             focusNode: _focusNode,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Elevnavn',
               hintText: 'Skriv navn og trykk Legg til',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
+              errorText: _error,
             ),
             autofocus: true,
             textCapitalization: TextCapitalization.words,
             onSubmitted: (_) => _addStudent(),
+            onChanged: (_) {
+              if (_error != null) setState(() => _error = null);
+            },
           ),
           if (_addedCount > 0)
             Padding(
@@ -315,6 +388,120 @@ class _AddStudentsDialogState extends State<_AddStudentsDialog> {
           child: const Text('Legg til'),
         ),
       ],
+    );
+  }
+}
+
+/// Skjerm som viser historikk over avsluttede økter for en gruppe.
+class _SessionHistoryScreen extends ConsumerWidget {
+  final GrupperData group;
+
+  const _SessionHistoryScreen({required this.group});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final attendanceRepo = ref.watch(attendanceRepositoryProvider);
+    final dateFormat = DateFormat('dd.MM.yyyy HH:mm', 'nb');
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Historikk — ${group.navn}'),
+      ),
+      body: StreamBuilder<List<FravaersOkterData>>(
+        stream: attendanceRepo.watchSessionHistory(group.id),
+        builder: (context, snapshot) {
+          final sessions = snapshot.data ?? [];
+
+          if (sessions.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.history, size: 64, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Ingen avsluttede økter',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Avsluttede økter vises her slik at du kan se rapport eller redigere fravær i ettertid.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            itemCount: sessions.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final session = sessions[index];
+              final isClassroom =
+                  session.type == SessionType.klasseromsOkt;
+
+              return ListTile(
+                leading: Icon(
+                  isClassroom ? Icons.school : Icons.hiking,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: Text(
+                  isClassroom ? 'Klasserom' : 'Tur',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(dateFormat.format(session.dato)),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.description),
+                      tooltip: 'Rapport',
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ReportScreen(oktId: session.id),
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      tooltip: 'Rediger fravær',
+                      onPressed: () =>
+                          _reopenSession(context, ref, session),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _reopenSession(
+    BuildContext context,
+    WidgetRef ref,
+    FravaersOkterData session,
+  ) async {
+    final repo = ref.read(attendanceRepositoryProvider);
+    await repo.reopenSession(session.id);
+
+    if (!context.mounted) return;
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => session.type == SessionType.klasseromsOkt
+            ? ClassroomScreen(session: session, group: group)
+            : TripScreen(session: session, group: group),
+      ),
     );
   }
 }

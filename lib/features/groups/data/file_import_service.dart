@@ -37,7 +37,11 @@ class FileImportService {
   }
 
   static ImportPreview _parseCsv(Uint8List bytes, String fileName) {
-    final content = utf8.decode(bytes, allowMalformed: true);
+    // Prøv UTF-8 først. Hvis det feiler (replacement characters), bruk Latin-1.
+    String content = utf8.decode(bytes, allowMalformed: true);
+    if (content.contains('\uFFFD')) {
+      content = latin1.decode(bytes);
+    }
     final rows = const CsvToListConverter(
       shouldParseNumbers: false,
       allowInvalid: true,

@@ -94,6 +94,27 @@ class AttendanceRepository {
         .watch();
   }
 
+  /// Hent avsluttede økter for en gruppe, nyeste først.
+  Stream<List<FravaersOkterData>> watchSessionHistory(String gruppeId) {
+    return (_db.select(_db.fravaersOkter)
+          ..where((s) =>
+              s.gruppeId.equals(gruppeId) & s.avsluttet.equals(true))
+          ..orderBy([(s) => OrderingTerm.desc(s.dato)]))
+        .watch();
+  }
+
+  /// Hent en enkelt økt.
+  Future<FravaersOkterData> getSession(String oktId) {
+    return (_db.select(_db.fravaersOkter)..where((s) => s.id.equals(oktId)))
+        .getSingle();
+  }
+
+  /// Gjenåpne en avsluttet økt for redigering.
+  Future<void> reopenSession(String oktId) async {
+    await (_db.update(_db.fravaersOkter)..where((s) => s.id.equals(oktId)))
+        .write(const FravaersOkterCompanion(avsluttet: Value(false)));
+  }
+
   /// Angre siste registrering (sett tilbake til ukjent).
   Future<void> undoLastRegistration(String oktId) async {
     final posts = await (_db.select(_db.fravaersPoster)

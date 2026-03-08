@@ -21,7 +21,8 @@ QueryExecutor openConnection(String encryptionKey) {
         open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
       },
       setup: (database) {
-        database.execute("PRAGMA key = '$encryptionKey'");
+        // Hex-nøkkel: bruk x'...' format som er trygt og unngår SQL injection
+        database.execute("PRAGMA key = \"x'$encryptionKey'\"");
         database.execute('PRAGMA foreign_keys = ON');
       },
     );

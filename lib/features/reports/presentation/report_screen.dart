@@ -5,17 +5,29 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../core/providers/app_providers.dart';
 
-/// Rapportskjerm — genererer Visma-formatert tekstrapport med ett trykk.
-/// Deling via utklippstavle, e-post, SMS etc.
-class ReportScreen extends ConsumerWidget {
+/// Rapportskjerm — genererer tekstrapport med ett trykk.
+/// Cacher rapporten slik at den kun genereres én gang.
+class ReportScreen extends ConsumerStatefulWidget {
   final String oktId;
 
   const ReportScreen({super.key, required this.oktId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final reportRepo = ref.watch(reportRepositoryProvider);
+  ConsumerState<ReportScreen> createState() => _ReportScreenState();
+}
 
+class _ReportScreenState extends ConsumerState<ReportScreen> {
+  late Future<String> _reportFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _reportFuture =
+        ref.read(reportRepositoryProvider).generateReport(widget.oktId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rapport'),
@@ -24,7 +36,7 @@ class ReportScreen extends ConsumerWidget {
             icon: const Icon(Icons.copy),
             tooltip: 'Kopier til utklippstavle',
             onPressed: () async {
-              final text = await reportRepo.generateReport(oktId);
+              final text = await _reportFuture;
               await Clipboard.setData(ClipboardData(text: text));
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -37,14 +49,14 @@ class ReportScreen extends ConsumerWidget {
             icon: const Icon(Icons.share),
             tooltip: 'Del rapport',
             onPressed: () async {
-              final text = await reportRepo.generateReport(oktId);
+              final text = await _reportFuture;
               await Share.share(text);
             },
           ),
         ],
       ),
       body: FutureBuilder<String>(
-        future: reportRepo.generateReport(oktId),
+        future: _reportFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -85,7 +97,7 @@ class ReportScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () async {
-                      final text = await reportRepo.generateReport(oktId);
+                      final text = await _reportFuture;
                       await Clipboard.setData(ClipboardData(text: text));
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,7 +119,7 @@ class ReportScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () async {
-                      final text = await reportRepo.generateReport(oktId);
+                      final text = await _reportFuture;
                       await Share.share(text);
                     },
                     icon: const Icon(Icons.share),

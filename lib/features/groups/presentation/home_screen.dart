@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/database.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../settings/presentation/settings_screen.dart';
 import 'create_group_dialog.dart';
 import 'group_detail_screen.dart';
 import 'split_group_dialog.dart';
@@ -25,6 +26,19 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mine grupper'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Innstillinger',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<List<GrupperData>>(
         stream: groupRepo.watchActiveGroups(laererId),
@@ -140,6 +154,14 @@ class _GroupCard extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Endre navn'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showRenameGroupDialog(context, ref);
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.copy),
               title: const Text('Kopier gruppe'),
               subtitle: const Text('Ny gruppe med samme elever'),
@@ -179,6 +201,42 @@ class _GroupCard extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showRenameGroupDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController(text: group.navn);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Endre gruppenavn'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Nytt navn',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Avbryt'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final navn = controller.text.trim();
+              if (navn.isEmpty) return;
+              await ref
+                  .read(groupRepositoryProvider)
+                  .renameGroup(group.id, navn);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: const Text('Lagre'),
+          ),
+        ],
       ),
     );
   }
