@@ -81,6 +81,17 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
             return Column(
               children: [
                 CountBanner(records: records),
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  color: Colors.grey[100],
+                  child: const Text(
+                    'Trykk = endre status · Hold inne = flere valg',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 Expanded(
                   child: ListView.separated(
                     itemCount: records.length,

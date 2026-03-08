@@ -26,40 +26,41 @@ class AttendanceTile extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       child: Container(
-        constraints: const BoxConstraints(minHeight: 72),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        constraints: const BoxConstraints(minHeight: 52),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           border: Border(
-            left: BorderSide(color: status.color, width: 5),
+            left: BorderSide(color: status.color, width: 4),
           ),
-          color: status.color.withValues(alpha: 0.08),
+          color: status.color.withValues(alpha: 0.06),
         ),
         child: Row(
           children: [
-            // Status-indikator — stor og tydelig
+            // Status-indikator
             Container(
-              width: 56,
-              height: 56,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: status.color.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
               child: Text(
                 status.symbol,
-                style: const TextStyle(fontSize: 28),
+                style: const TextStyle(fontSize: 22),
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 10),
             // Elevnavn og info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     record.elev.navn,
                     style: const TextStyle(
-                      fontSize: 20,
+                      fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF111111),
                     ),
@@ -69,7 +70,7 @@ class AttendanceTile extends StatelessWidget {
                     Text(
                       '${record.post.forsinkelsesMinutter} min forsinket',
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: status.color,
                       ),
@@ -79,16 +80,16 @@ class AttendanceTile extends StatelessWidget {
                     Text(
                       record.post.merknad!,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 13,
                         color: Color(0xFF555555),
                       ),
                     ),
                 ],
               ),
             ),
-            // Status-label — stor og tydelig
+            // Status-label
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: status.color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
@@ -96,7 +97,7 @@ class AttendanceTile extends StatelessWidget {
               child: Text(
                 status.label,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   color: status.color,
                   fontWeight: FontWeight.bold,
                 ),

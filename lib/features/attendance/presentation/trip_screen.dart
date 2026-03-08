@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,17 +29,11 @@ class TripScreen extends ConsumerStatefulWidget {
 class _TripScreenState extends ConsumerState<TripScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _showList = false;
   bool _allRegisteredNotified = false;
-
-  // Undo-mekanisme
-  Timer? _undoTimer;
-  bool _showUndo = false;
 
   @override
   void dispose() {
     _searchController.dispose();
-    _undoTimer?.cancel();
     super.dispose();
   }
 
@@ -58,11 +50,6 @@ class _TripScreenState extends ConsumerState<TripScreen> {
         appBar: AppBar(
           title: Text('${widget.group.navn} — Tur'),
           actions: [
-            IconButton(
-              icon: Icon(_showList ? Icons.search : Icons.list),
-              tooltip: _showList ? 'Søk' : 'Liste',
-              onPressed: () => setState(() => _showList = !_showList),
-            ),
             IconButton(
               icon: const Icon(Icons.description),
               tooltip: 'Rapport',
@@ -99,7 +86,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               _allRegisteredNotified = false;
             }
 
-            final filtered = _searchQuery.length >= 3
+            final filtered = _searchQuery.isNotEmpty
                 ? records
                     .where((r) => r.elev.navn
                         .toLowerCase()
@@ -110,12 +97,23 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             return Column(
               children: [
                 CountBanner(records: records),
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  color: Colors.grey[100],
+                  child: const Text(
+                    'Trykk = endre status · Hold inne = flere valg',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Skriv elevnavn (3 bokstaver)...',
+                      hintText: 'Søk etter elev...',
                       prefixIcon: const Icon(Icons.search, size: 28),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
@@ -142,62 +140,21 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     textInputAction: TextInputAction.search,
                   ),
                 ),
-                if (_showUndo)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _undo,
-                        icon: const Icon(Icons.undo),
-                        label: const Text('Angre siste registrering'),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 48),
-                        ),
-                      ),
-                    ),
-                  ),
                 Expanded(
-                  child: _showList || _searchQuery.length >= 3
-                      ? ListView.separated(
-                          itemCount: filtered.length,
-                          separatorBuilder: (_, __) =>
-                              const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final record = filtered[index];
-                            return AttendanceTile(
-                              record: record,
-                              onTap: () => _quickRegister(record),
-                              onLongPress: () =>
-                                  _showStatusPicker(context, record),
-                            );
-                          },
-                        )
-                      : Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(32),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.search,
-                                    size: 64, color: Colors.grey[300]),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'Skriv minst 3 bokstaver for å finne en elev',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey),
-                                ),
-                                const SizedBox(height: 8),
-                                TextButton(
-                                  onPressed: () =>
-                                      setState(() => _showList = true),
-                                  child: const Text('Vis alle som liste'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                  child: ListView.separated(
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, __) =>
+                        const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final record = filtered[index];
+                      return AttendanceTile(
+                        record: record,
+                        onTap: () => _quickRegister(record),
+                        onLongPress: () =>
+                            _showStatusPicker(context, record),
+                      );
+                    },
+                  ),
                 ),
               ],
             );
@@ -224,27 +181,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           postId: record.post.id, status: AttendanceStatus.ukjent);
     }
 
-    _showUndoButton();
-
     if (_searchQuery.isNotEmpty) {
       _searchController.clear();
       setState(() => _searchQuery = '');
     }
-  }
-
-  void _showUndoButton() {
-    _undoTimer?.cancel();
-    setState(() => _showUndo = true);
-    _undoTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted) setState(() => _showUndo = false);
-    });
-  }
-
-  Future<void> _undo() async {
-    await ref
-        .read(attendanceRepositoryProvider)
-        .undoLastRegistration(widget.session.id);
-    if (mounted) setState(() => _showUndo = false);
   }
 
   Future<void> _showStatusPicker(
@@ -262,7 +202,6 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             status: result.status,
             forsinkelsesMinutter: result.forsinkelsesMinutter,
           );
-      _showUndoButton();
     }
   }
 

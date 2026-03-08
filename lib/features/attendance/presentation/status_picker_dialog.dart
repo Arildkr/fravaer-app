@@ -42,10 +42,12 @@ class StatusPickerDialog extends StatelessWidget {
                     color: Color(0xFF333333))),
           ),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 6,
+            runSpacing: 6,
             children: [
-              for (final min in [5, 10, 15, 20])
+              for (final min in [5, 10, 15, 20, 30, 45, 60])
                 _DelayChip(
                   minutes: min,
                   onTap: () => Navigator.pop(
