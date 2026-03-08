@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/database.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../settings/presentation/settings_screen.dart';
+import 'archived_groups_screen.dart';
 import 'create_group_dialog.dart';
 import 'group_detail_screen.dart';
 import 'split_group_dialog.dart';
@@ -27,6 +28,17 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Mine grupper'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.archive),
+            tooltip: 'Arkiverte grupper',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ArchivedGroupsScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: 'Innstillinger',

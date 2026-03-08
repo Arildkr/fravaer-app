@@ -18,6 +18,14 @@ class GroupRepository {
         .watch();
   }
 
+  /// Hent alle arkiverte grupper for en lærer.
+  Stream<List<GrupperData>> watchArchivedGroups(String laererId) {
+    return (_db.select(_db.grupper)
+          ..where((g) => g.laererId.equals(laererId) & g.arkivert.equals(true))
+          ..orderBy([(g) => OrderingTerm.asc(g.navn)]))
+        .watch();
+  }
+
   /// Opprett en ny gruppe.
   Future<GrupperData> createGroup({
     required String navn,
