@@ -47,10 +47,15 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
     try {
       await widget.subscriptionService.restore();
-      // Vent litt på at purchaseStream oppdaterer status
-      await Future.delayed(const Duration(seconds: 2));
-      if (widget.subscriptionService.status.value ==
-          SubscriptionStatus.active) {
+
+      // Lytt på statusendringer i opptil 15 sekunder
+      final result = await widget.subscriptionService.status
+          .waitForValue(
+            SubscriptionStatus.active,
+            timeout: const Duration(seconds: 15),
+          );
+
+      if (result) {
         widget.onSubscribed();
       } else {
         setState(

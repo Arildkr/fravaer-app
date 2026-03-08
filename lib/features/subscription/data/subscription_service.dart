@@ -130,3 +130,31 @@ enum SubscriptionStatus {
   active,
   expired,
 }
+
+/// Extension for å vente på en bestemt verdi fra ValueNotifier.
+extension ValueNotifierWait<T> on ValueNotifier<T> {
+  /// Venter til notifieren har [target]-verdien, eller timeout.
+  /// Returnerer true hvis verdien ble funnet, false ved timeout.
+  Future<bool> waitForValue(T target, {Duration timeout = const Duration(seconds: 15)}) {
+    if (value == target) return Future.value(true);
+
+    final completer = Completer<bool>();
+    late final VoidCallback listener;
+
+    final timer = Timer(timeout, () {
+      removeListener(listener);
+      if (!completer.isCompleted) completer.complete(false);
+    });
+
+    listener = () {
+      if (value == target) {
+        timer.cancel();
+        removeListener(listener);
+        if (!completer.isCompleted) completer.complete(true);
+      }
+    };
+
+    addListener(listener);
+    return completer.future;
+  }
+}
