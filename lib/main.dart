@@ -11,6 +11,8 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/lock_screen.dart';
 import 'features/groups/presentation/home_screen.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
+import 'features/subscription/data/subscription_service.dart';
+import 'features/subscription/presentation/paywall_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +35,7 @@ class FravaerApp extends ConsumerWidget {
   }
 }
 
-/// AppShell håndterer biometrisk lås, onboarding og opprettelse av lærer.
+/// AppShell håndterer abonnement, biometrisk lås, onboarding og opprettelse av lærer.
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
@@ -48,6 +50,9 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
   bool _biometricLockEnabled = true;
   DateTime? _lastPause;
 
+  late final SubscriptionService _subscriptionService;
+  SubscriptionStatus _subscriptionStatus = SubscriptionStatus.loading;
+
   static const _onboardingKey = 'onboarding_done';
   static const _laererIdKey = 'laerer_id';
   static const _inactivityTimeout = Duration(minutes: 5);
@@ -56,11 +61,24 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _subscriptionService = SubscriptionService();
+    _subscriptionService.status.addListener(_onSubscriptionChange);
+    _subscriptionService.initialize();
+  }
+
+  void _onSubscriptionChange() {
+    if (mounted) {
+      setState(() {
+        _subscriptionStatus = _subscriptionService.status.value;
+      });
+    }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _subscriptionService.status.removeListener(_onSubscriptionChange);
+    _subscriptionService.dispose();
     super.dispose();
   }
 
@@ -101,6 +119,7 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     }
 
     ref.read(activeLaererIdProvider.notifier).state = laererId;
+    ref.read(subscriptionServiceProvider.notifier).state = _subscriptionService;
 
     // Les biometrisk lås-innstilling
     final laerer = await (db.select(db.laerere)
@@ -144,6 +163,21 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
       SchedulerBinding.instance.addPostFrameCallback((_) => _init());
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Sjekk abonnementsstatus
+    if (_subscriptionStatus == SubscriptionStatus.loading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_subscriptionStatus == SubscriptionStatus.expired) {
+      return PaywallScreen(
+        subscriptionService: _subscriptionService,
+        onSubscribed: () =>
+            setState(() => _subscriptionStatus = SubscriptionStatus.active),
       );
     }
 

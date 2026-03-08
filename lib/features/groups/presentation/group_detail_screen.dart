@@ -11,6 +11,7 @@ import '../../attendance/data/attendance_repository.dart';
 import '../../attendance/presentation/classroom_screen.dart';
 import '../../attendance/presentation/trip_screen.dart';
 import '../../reports/presentation/report_screen.dart';
+import '../../reports/presentation/semester_export_screen.dart';
 import 'import_students_dialog.dart';
 
 class GroupDetailScreen extends ConsumerWidget {
@@ -32,6 +33,17 @@ class GroupDetailScreen extends ConsumerWidget {
           appBar: AppBar(
             title: Text(group.navn),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.file_download),
+                tooltip: 'Eksporter semester',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SemesterExportScreen(group: group),
+                    ),
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.history),
                 tooltip: 'Økthistorikk',

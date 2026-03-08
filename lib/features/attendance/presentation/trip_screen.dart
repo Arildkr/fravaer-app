@@ -5,6 +5,7 @@ import '../../../core/database/database.dart';
 import '../../../core/database/tables.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/utils/haptic_feedback.dart';
+import '../../../core/utils/widget_updater.dart';
 import '../data/attendance_repository.dart';
 import '../../reports/presentation/report_screen.dart';
 import 'count_banner.dart';
@@ -73,6 +74,18 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           stream: attendanceRepo.watchSessionRecords(widget.session.id),
           builder: (context, snapshot) {
             final records = snapshot.data ?? [];
+
+            // Oppdater home screen widget
+            if (records.isNotEmpty) {
+              final tilStede = records
+                  .where((r) => r.post.status == AttendanceStatus.tilStede)
+                  .length;
+              WidgetUpdater.updateActiveSession(
+                gruppeNavn: widget.group.navn,
+                tilStede: tilStede,
+                totalt: records.length,
+              );
+            }
 
             // Haptisk feedback kun én gang
             if (records.isNotEmpty &&
@@ -229,6 +242,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       await ref
           .read(attendanceRepositoryProvider)
           .endSession(widget.session.id);
+      await WidgetUpdater.clearSession();
       if (context.mounted) Navigator.pop(context);
     }
   }

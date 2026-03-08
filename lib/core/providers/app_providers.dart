@@ -4,6 +4,7 @@ import '../database/database_provider.dart';
 import '../../features/groups/data/group_repository.dart';
 import '../../features/attendance/data/attendance_repository.dart';
 import '../../features/reports/data/report_repository.dart';
+import '../../features/subscription/data/subscription_service.dart';
 
 /// Repository providers
 
@@ -25,3 +26,6 @@ final activeLaererIdProvider = StateProvider<String?>((ref) => null);
 
 /// Aktiv økt-ID for registrering.
 final activeSessionIdProvider = StateProvider<String?>((ref) => null);
+
+/// Subscription service — settes av AppShell etter initialisering.
+final subscriptionServiceProvider = StateProvider<SubscriptionService?>((ref) => null);

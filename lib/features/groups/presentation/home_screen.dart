@@ -31,9 +31,12 @@ class HomeScreen extends ConsumerWidget {
             icon: const Icon(Icons.settings),
             tooltip: 'Innstillinger',
             onPressed: () {
+              final subService = ref.read(subscriptionServiceProvider);
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => const SettingsScreen(),
+                  builder: (_) => SettingsScreen(
+                    subscriptionService: subService,
+                  ),
                 ),
               );
             },

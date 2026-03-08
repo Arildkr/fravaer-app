@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/providers/app_providers.dart';
@@ -32,6 +33,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       appBar: AppBar(
         title: const Text('Rapport'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: 'Eksporter PDF',
+            onPressed: _exportPdf,
+          ),
           IconButton(
             icon: const Icon(Icons.copy),
             tooltip: 'Kopier til utklippstavle',
@@ -96,6 +102,18 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
+                    onPressed: _exportPdf,
+                    icon: const Icon(Icons.picture_as_pdf),
+                    label: const Text('Eksporter PDF'),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 56),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
                     onPressed: () async {
                       final text = await _reportFuture;
                       await Clipboard.setData(ClipboardData(text: text));
@@ -109,7 +127,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                     },
                     icon: const Icon(Icons.copy),
                     label: const Text('Kopier rapport'),
-                    style: FilledButton.styleFrom(
+                    style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 56),
                     ),
                   ),
@@ -135,5 +153,24 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _exportPdf() async {
+    try {
+      final pdfBytes = await ref
+          .read(reportRepositoryProvider)
+          .generatePdfReport(widget.oktId);
+
+      await Printing.sharePdf(
+        bytes: pdfBytes,
+        filename: 'fravaersrapport.pdf',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Feil ved PDF-eksport: $e')),
+        );
+      }
+    }
   }
 }
