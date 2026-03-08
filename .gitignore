@@ -58,3 +58,4 @@ web/sql-wasm.wasm
 *.env
 *.jks
 *.keystore
+android/key.properties

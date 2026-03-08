@@ -2,6 +2,8 @@ name: fravaer_app
 description: "Alle med — fraværsverktøy for lærere"
 publish_to: 'none'
 version: 1.0.0+1
+# version format: major.minor.patch+buildNumber
+# Increment buildNumber for each Play Store upload
 
 environment:
   sdk: ^3.6.2
