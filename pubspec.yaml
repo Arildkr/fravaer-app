@@ -31,6 +31,10 @@ dependencies:
   csv: ^6.0.0
   shared_preferences: ^2.3.4
 
+  # Filimport
+  file_picker: ^8.1.6
+  spreadsheet_decoder: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

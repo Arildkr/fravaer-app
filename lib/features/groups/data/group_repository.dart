@@ -119,38 +119,30 @@ class GroupRepository {
     return rows.map((row) => row.readTable(_db.elever)).toList();
   }
 
-  /// Legg til en elev i en gruppe. Oppretter eleven hvis den ikke finnes.
+  /// Legg til en elev i en gruppe. Oppretter alltid ny elev (unngår navnekollisjoner).
   Future<void> addStudentToGroup({
     required String elevNavn,
     required String gruppeId,
     String? elevId,
   }) async {
-    final existing = await (_db.select(_db.elever)
-          ..where((e) => e.navn.equals(elevNavn)))
-        .getSingleOrNull();
+    // Sjekk om denne eleven allerede er medlem av denne gruppen (basert på navn i gruppen)
+    final existingMembers = await getGroupMembers(gruppeId);
+    final alreadyInGroup = existingMembers.any((e) => e.navn == elevNavn);
+    if (alreadyInGroup) return;
 
-    final studentId = existing?.id ?? _uuid.v4();
+    // Opprett alltid ny elev — to elever kan hete det samme
+    final studentId = _uuid.v4();
+    await _db.into(_db.elever).insert(EleverCompanion.insert(
+      id: studentId,
+      navn: elevNavn,
+      elevId: Value(elevId),
+    ));
 
-    if (existing == null) {
-      await _db.into(_db.elever).insert(EleverCompanion.insert(
-        id: studentId,
-        navn: elevNavn,
-        elevId: Value(elevId),
-      ));
-    }
-
-    final existingMembership = await (_db.select(_db.medlemskap)
-          ..where((m) =>
-              m.elevId.equals(studentId) & m.gruppeId.equals(gruppeId)))
-        .getSingleOrNull();
-
-    if (existingMembership == null) {
-      await _db.into(_db.medlemskap).insert(MedlemskapCompanion.insert(
-        id: _uuid.v4(),
-        elevId: studentId,
-        gruppeId: gruppeId,
-      ));
-    }
+    await _db.into(_db.medlemskap).insert(MedlemskapCompanion.insert(
+      id: _uuid.v4(),
+      elevId: studentId,
+      gruppeId: gruppeId,
+    ));
   }
 
   /// Fjern elev fra gruppe (sletter kun medlemskap, ikke eleven).

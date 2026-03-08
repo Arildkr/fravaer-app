@@ -4,7 +4,7 @@ import '../../../core/database/tables.dart';
 import '../../../core/theme/app_theme.dart';
 import '../data/attendance_repository.dart';
 
-/// Teljepanel: «21 / 28 registrert» med tydelig indikator på gjenstående ukjente.
+/// Teljepanel: tydelig oversikt med store tall, lesbare i sollys.
 class CountBanner extends StatelessWidget {
   final List<AttendanceRecord> records;
 
@@ -13,56 +13,83 @@ class CountBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = records.length;
-    final ukjente = records.where((r) => r.post.status == AttendanceStatus.ukjent).length;
+    final ukjente =
+        records.where((r) => r.post.status == AttendanceStatus.ukjent).length;
     final registrert = total - ukjente;
-    final tilStede = records.where((r) => r.post.status == AttendanceStatus.tilStede).length;
-    final fravaer = records.where((r) => r.post.status == AttendanceStatus.fravaer).length;
-    final forsinket = records.where((r) => r.post.status == AttendanceStatus.forseinka).length;
+    final tilStede = records
+        .where((r) => r.post.status == AttendanceStatus.tilStede)
+        .length;
+    final fravaer =
+        records.where((r) => r.post.status == AttendanceStatus.fravaer).length;
+    final forsinket = records
+        .where((r) => r.post.status == AttendanceStatus.forseinka)
+        .length;
 
-    final alleDone = ukjente == 0;
+    final alleDone = ukjente == 0 && total > 0;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       color: alleDone
-          ? AppTheme.statusTilStede.withValues(alpha: 0.1)
-          : AppTheme.statusUkjent.withValues(alpha: 0.1),
+          ? AppTheme.statusTilStede.withValues(alpha: 0.12)
+          : AppTheme.statusUkjent.withValues(alpha: 0.08),
       child: Column(
         children: [
-          // Hovedteller
+          // Hovedteller — stor og tydelig
           Text(
             '$registrert / $total registrert',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
-              color: alleDone ? AppTheme.statusTilStede : Colors.black87,
+              color: alleDone
+                  ? AppTheme.statusTilStede
+                  : const Color(0xFF111111),
             ),
           ),
-          const SizedBox(height: 4),
-          // Detaljer
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          const SizedBox(height: 8),
+          // Detaljerte tall — Wrap for å unngå overflow på smale skjermer
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 6,
             children: [
-              _CountChip(label: 'Til stede', count: tilStede, color: AppTheme.statusTilStede),
-              const SizedBox(width: 8),
-              _CountChip(label: 'Fravær', count: fravaer, color: AppTheme.statusFravaer),
-              const SizedBox(width: 8),
-              _CountChip(label: 'Forsinket', count: forsinket, color: AppTheme.statusForseinka),
-              if (ukjente > 0) ...[
-                const SizedBox(width: 8),
-                _CountChip(label: 'Ukjent', count: ukjente, color: AppTheme.statusUkjent),
-              ],
+              _CountChip(
+                  label: 'Til stede',
+                  count: tilStede,
+                  color: AppTheme.statusTilStede),
+              _CountChip(
+                  label: 'Fravær',
+                  count: fravaer,
+                  color: AppTheme.statusFravaer),
+              _CountChip(
+                  label: 'Forsinket',
+                  count: forsinket,
+                  color: AppTheme.statusForseinka),
+              if (ukjente > 0)
+                _CountChip(
+                    label: 'Ukjent',
+                    count: ukjente,
+                    color: AppTheme.statusUkjent),
             ],
           ),
-          // Advarsel
+          // Advarsel — tydeligere
           if (ukjente > 0)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                '$ukjente ikke registrert',
-                style: const TextStyle(
-                  color: Colors.orange,
-                  fontWeight: FontWeight.w600,
+              padding: const EdgeInsets.only(top: 6),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '$ukjente ikke registrert',
+                  style: const TextStyle(
+                    color: Color(0xFFE65100),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
               ),
             ),
@@ -86,9 +113,9 @@ class _CountChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -96,7 +123,7 @@ class _CountChip extends StatelessWidget {
         style: TextStyle(
           color: color,
           fontWeight: FontWeight.bold,
-          fontSize: 14,
+          fontSize: 16,
         ),
       ),
     );

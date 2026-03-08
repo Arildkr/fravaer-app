@@ -12,8 +12,7 @@ import 'count_banner.dart';
 import 'status_picker_dialog.dart';
 
 /// Klasseromsmodus — standard for timer i klasserom.
-/// Stor, trykkvennlig elevliste med teljepanel øverst.
-class ClassroomScreen extends ConsumerWidget {
+class ClassroomScreen extends ConsumerStatefulWidget {
   final FravaersOkterData session;
   final GrupperData group;
 
@@ -24,68 +23,89 @@ class ClassroomScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ClassroomScreen> createState() => _ClassroomScreenState();
+}
+
+class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
+  bool _allRegisteredNotified = false;
+
+  @override
+  Widget build(BuildContext context) {
     final attendanceRepo = ref.watch(attendanceRepositoryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('${group.navn} — Klasserom'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.description),
-            tooltip: 'Rapport',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ReportScreen(oktId: session.id),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.check_circle),
-            tooltip: 'Avslutt økt',
-            onPressed: () => _endSession(context, ref),
-          ),
-        ],
-      ),
-      body: StreamBuilder<List<AttendanceRecord>>(
-        stream: attendanceRepo.watchSessionRecords(session.id),
-        builder: (context, snapshot) {
-          final records = snapshot.data ?? [];
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _endSession(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('${widget.group.navn} — Klasserom'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.description),
+              tooltip: 'Rapport',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ReportScreen(oktId: widget.session.id),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.check_circle),
+              tooltip: 'Avslutt økt',
+              onPressed: () => _endSession(context),
+            ),
+          ],
+        ),
+        body: StreamBuilder<List<AttendanceRecord>>(
+          stream: attendanceRepo.watchSessionRecords(widget.session.id),
+          builder: (context, snapshot) {
+            final records = snapshot.data ?? [];
 
-          // Sjekk om alle er registrert for haptisk feedback
-          if (records.isNotEmpty &&
-              records.every((r) => r.post.status != AttendanceStatus.ukjent)) {
-            HapticService.onAllRegistered();
-          }
+            // Haptisk feedback kun én gang når alle er registrert
+            if (records.isNotEmpty &&
+                records.every(
+                    (r) => r.post.status != AttendanceStatus.ukjent)) {
+              if (!_allRegisteredNotified) {
+                _allRegisteredNotified = true;
+                HapticService.onAllRegistered();
+              }
+            } else {
+              _allRegisteredNotified = false;
+            }
 
-          return Column(
-            children: [
-              CountBanner(records: records),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: records.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final record = records[index];
-                    return AttendanceTile(
-                      record: record,
-                      onTap: () => _quickToggle(ref, record),
-                      onLongPress: () => _showStatusPicker(context, ref, record),
-                    );
-                  },
+            return Column(
+              children: [
+                CountBanner(records: records),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: records.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final record = records[index];
+                      return AttendanceTile(
+                        record: record,
+                        onTap: () => _quickToggle(record),
+                        onLongPress: () =>
+                            _showStatusPicker(context, record),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  /// Hurtig-toggle: ukjent → til stede → fravær
-  Future<void> _quickToggle(WidgetRef ref, AttendanceRecord record) async {
+  /// Hurtig-toggle: ukjent → til stede → fravær → ukjent
+  Future<void> _quickToggle(AttendanceRecord record) async {
     final repo = ref.read(attendanceRepositoryProvider);
     final current = record.post.status;
 
@@ -108,7 +128,6 @@ class ClassroomScreen extends ConsumerWidget {
 
   Future<void> _showStatusPicker(
     BuildContext context,
-    WidgetRef ref,
     AttendanceRecord record,
   ) async {
     final result = await showDialog<StatusResult>(
@@ -131,12 +150,13 @@ class ClassroomScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _endSession(BuildContext context, WidgetRef ref) async {
+  Future<void> _endSession(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Avslutt økt?'),
-        content: const Text('Du kan fortsatt se rapporten etter avslutning.'),
+        content:
+            const Text('Du kan fortsatt se rapporten etter avslutning.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -151,7 +171,9 @@ class ClassroomScreen extends ConsumerWidget {
     );
 
     if (confirm == true) {
-      await ref.read(attendanceRepositoryProvider).endSession(session.id);
+      await ref
+          .read(attendanceRepositoryProvider)
+          .endSession(widget.session.id);
       if (context.mounted) Navigator.pop(context);
     }
   }

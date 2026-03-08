@@ -5,6 +5,7 @@ import '../../../core/database/database.dart';
 import '../../../core/database/tables.dart';
 
 import '../../../core/providers/app_providers.dart';
+import '../data/group_repository.dart';
 import '../../attendance/presentation/classroom_screen.dart';
 import '../../attendance/presentation/trip_screen.dart';
 import 'import_students_dialog.dart';
@@ -18,169 +19,148 @@ class GroupDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupRepo = ref.watch(groupRepositoryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(group.navn),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            tooltip: 'Legg til elev',
-            onPressed: () => _showAddStudentDialog(context, ref),
-          ),
-          IconButton(
-            icon: const Icon(Icons.upload_file),
-            tooltip: 'Importer elever',
-            onPressed: () => _showImportDialog(context),
-          ),
-        ],
-      ),
-      body: StreamBuilder<List<EleverData>>(
-        stream: groupRepo.watchGroupMembers(group.id),
-        builder: (context, snapshot) {
-          final members = snapshot.data ?? [];
+    return StreamBuilder<List<EleverData>>(
+      stream: groupRepo.watchGroupMembers(group.id),
+      builder: (context, snapshot) {
+        final members = snapshot.data ?? [];
+        final hasMembers = members.isNotEmpty;
 
-          if (members.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(group.navn),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.person_add),
+                tooltip: 'Legg til elev',
+                onPressed: () => _showAddStudentDialog(context, ref),
+              ),
+              IconButton(
+                icon: const Icon(Icons.upload_file),
+                tooltip: 'Importer elever',
+                onPressed: () => _showImportDialog(context),
+              ),
+            ],
+          ),
+          body: !hasMembers
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.people_outline,
+                            size: 64, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Ingen elever i gruppen',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Legg til elever manuelt eller importer fra fil.',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        FilledButton.icon(
+                          onPressed: () => _showImportDialog(context),
+                          icon: const Icon(Icons.upload_file),
+                          label: const Text('Importer elever'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Column(
                   children: [
-                    Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Ingen elever i gruppen',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.1),
+                      child: Text(
+                        '${members.length} elever',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Legg til elever manuelt eller importer fra CSV.',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: () => _showImportDialog(context),
-                      icon: const Icon(Icons.upload_file),
-                      label: const Text('Importer elever'),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: members.length,
+                        itemBuilder: (context, index) {
+                          final elev = members[index];
+                          return ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
+                            title: Text(elev.navn,
+                                style: const TextStyle(fontSize: 18)),
+                            subtitle: elev.elevId != null
+                                ? Text('ID: ${elev.elevId}')
+                                : null,
+                            trailing: IconButton(
+                              icon: const Icon(Icons.remove_circle_outline,
+                                  color: Colors.red),
+                              onPressed: () =>
+                                  _confirmRemoveStudent(context, ref, elev),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              // Teller-banner
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                child: Text(
-                  '${members.length} elever',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              // Elevliste
-              Expanded(
-                child: ListView.builder(
-                  itemCount: members.length,
-                  itemBuilder: (context, index) {
-                    final elev = members[index];
-                    return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
-                      ),
-                      title: Text(
-                        elev.navn,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      subtitle: elev.elevId != null
-                          ? Text('ID: ${elev.elevId}')
+          bottomNavigationBar: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: hasMembers
+                          ? () => _startSession(
+                              context, ref, SessionType.klasseromsOkt)
                           : null,
-                      trailing: IconButton(
-                        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                        onPressed: () => _confirmRemoveStudent(context, ref, elev),
+                      icon: const Icon(Icons.school),
+                      label: const Text('Klasserom'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 56),
                       ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      // Handlingsknapper for å starte økt
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: () => _startSession(context, ref, SessionType.klasseromsOkt),
-                  icon: const Icon(Icons.school),
-                  label: const Text('Klasserom'),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(0, 56),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: () => _startSession(context, ref, SessionType.turregistrering),
-                  icon: const Icon(Icons.hiking),
-                  label: const Text('Tur'),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(0, 56),
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: hasMembers
+                          ? () => _startSession(
+                              context, ref, SessionType.turregistrering)
+                          : null,
+                      icon: const Icon(Icons.hiking),
+                      label: const Text('Tur'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 56),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   void _showAddStudentDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Legg til elev'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Elevnavn',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Avbryt'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final navn = controller.text.trim();
-              if (navn.isNotEmpty) {
-                await ref.read(groupRepositoryProvider).addStudentToGroup(
-                      elevNavn: navn,
-                      gruppeId: group.id,
-                    );
-                if (ctx.mounted) Navigator.pop(ctx);
-              }
-            },
-            child: const Text('Legg til'),
-          ),
-        ],
+      builder: (_) => _AddStudentsDialog(
+        gruppeId: group.id,
+        groupRepo: ref.read(groupRepositoryProvider),
       ),
     );
   }
@@ -192,7 +172,8 @@ class GroupDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmRemoveStudent(BuildContext context, WidgetRef ref, EleverData elev) {
+  void _confirmRemoveStudent(
+      BuildContext context, WidgetRef ref, EleverData elev) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -230,11 +211,12 @@ class GroupDetailScreen extends ConsumerWidget {
     final laererId = ref.read(activeLaererIdProvider);
     if (laererId == null) return;
 
-    final session = await ref.read(attendanceRepositoryProvider).createSession(
-          gruppeId: group.id,
-          laererId: laererId,
-          type: type,
-        );
+    final session =
+        await ref.read(attendanceRepositoryProvider).createSession(
+              gruppeId: group.id,
+              laererId: laererId,
+              type: type,
+            );
 
     ref.read(activeSessionIdProvider.notifier).state = session.id;
 
@@ -246,6 +228,93 @@ class GroupDetailScreen extends ConsumerWidget {
             ? ClassroomScreen(session: session, group: group)
             : TripScreen(session: session, group: group),
       ),
+    );
+  }
+}
+
+/// Dialog for å legge til flere elever etter hverandre.
+/// Feltet tømmes og forblir åpent etter hver elev.
+class _AddStudentsDialog extends StatefulWidget {
+  final String gruppeId;
+  final GroupRepository groupRepo;
+
+  const _AddStudentsDialog({
+    required this.gruppeId,
+    required this.groupRepo,
+  });
+
+  @override
+  State<_AddStudentsDialog> createState() => _AddStudentsDialogState();
+}
+
+class _AddStudentsDialogState extends State<_AddStudentsDialog> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+  int _addedCount = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addStudent() async {
+    final navn = _controller.text.trim();
+    if (navn.isEmpty) return;
+
+    await widget.groupRepo.addStudentToGroup(
+      elevNavn: navn,
+      gruppeId: widget.gruppeId,
+    );
+
+    setState(() => _addedCount++);
+    _controller.clear();
+    _focusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Legg til elever'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _controller,
+            focusNode: _focusNode,
+            decoration: const InputDecoration(
+              labelText: 'Elevnavn',
+              hintText: 'Skriv navn og trykk Legg til',
+              border: OutlineInputBorder(),
+            ),
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            onSubmitted: (_) => _addStudent(),
+          ),
+          if (_addedCount > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                '$_addedCount elev${_addedCount == 1 ? '' : 'er'} lagt til',
+                style: TextStyle(
+                  color: Colors.green[700],
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(_addedCount > 0 ? 'Ferdig' : 'Avbryt'),
+        ),
+        FilledButton(
+          onPressed: _addStudent,
+          child: const Text('Legg til'),
+        ),
+      ],
     );
   }
 }

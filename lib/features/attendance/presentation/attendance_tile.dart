@@ -5,7 +5,7 @@ import '../../../core/utils/status_helpers.dart';
 import '../data/attendance_repository.dart';
 
 /// Gjenbrukbar tile for visning av én elev med status.
-/// Minst 60px trykksone per kravspesifikasjon.
+/// Stor trykksone for utendørs bruk med hansker/en hånd.
 class AttendanceTile extends StatelessWidget {
   final AttendanceRecord record;
   final VoidCallback onTap;
@@ -26,31 +26,31 @@ class AttendanceTile extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       child: Container(
-        constraints: const BoxConstraints(minHeight: 60),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        constraints: const BoxConstraints(minHeight: 72),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           border: Border(
-            left: BorderSide(color: status.color, width: 4),
+            left: BorderSide(color: status.color, width: 5),
           ),
-          color: status.color.withValues(alpha: 0.05),
+          color: status.color.withValues(alpha: 0.08),
         ),
         child: Row(
           children: [
-            // Status-indikator
+            // Status-indikator — stor og tydelig
             Container(
-              width: 48,
-              height: 48,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: status.color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
+                color: status.color.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
               ),
               alignment: Alignment.center,
               child: Text(
                 status.symbol,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 28),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             // Elevnavn og info
             Expanded(
               child: Column(
@@ -59,8 +59,9 @@ class AttendanceTile extends StatelessWidget {
                   Text(
                     record.elev.navn,
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF111111),
                     ),
                   ),
                   if (status == AttendanceStatus.forseinka &&
@@ -68,7 +69,8 @@ class AttendanceTile extends StatelessWidget {
                     Text(
                       '${record.post.forsinkelsesMinutter} min forsinket',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
                         color: status.color,
                       ),
                     ),
@@ -76,18 +78,28 @@ class AttendanceTile extends StatelessWidget {
                       record.post.merknad!.isNotEmpty)
                     Text(
                       record.post.merknad!,
-                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Color(0xFF555555),
+                      ),
                     ),
                 ],
               ),
             ),
-            // Status-label
-            Text(
-              status.label,
-              style: TextStyle(
-                fontSize: 14,
-                color: status.color,
-                fontWeight: FontWeight.w600,
+            // Status-label — stor og tydelig
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: status.color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                status.label,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: status.color,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

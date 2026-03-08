@@ -83,13 +83,21 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     final onboardingDone = prefs.getBool(_onboardingKey) ?? false;
 
     var laererId = prefs.getString(_laererIdKey);
+    final db = ref.read(databaseProvider);
+
     if (laererId == null) {
       laererId = const Uuid().v4();
       await prefs.setString(_laererIdKey, laererId);
+    }
 
-      final db = ref.read(databaseProvider);
+    // Sørg for at læreren finnes i databasen
+    final existing = await (db.select(db.laerere)
+          ..where((l) => l.id.equals(laererId!)))
+        .getSingleOrNull();
+
+    if (existing == null) {
       await db.into(db.laerere).insert(LaerereCompanion.insert(
-            id: laererId,
+            id: laererId!,
             navn: 'Min bruker',
           ));
     }

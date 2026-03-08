@@ -38,10 +38,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _OnboardingPage(
       icon: Icons.description,
-      title: 'Visma-rapport',
+      title: 'Rapport',
       description:
           'Generer rapport med ett trykk.\n'
-          'Kopier tekst rett inn i Visma InSchool — ingen dobbeltarbeid.',
+          'Kopier eller del via e-post, SMS etc.',
     ),
     _OnboardingPage(
       icon: Icons.lock,

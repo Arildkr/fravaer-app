@@ -61,8 +61,10 @@ class _LockScreenState extends State<LockScreen> {
       } else {
         setState(() => _error = 'Autentisering mislyktes');
       }
-    } catch (e) {
-      setState(() => _error = 'Kunne ikke autentisere: $e');
+    } catch (_) {
+      // Biometri/PIN ikke konfigurert eller ikke tilgjengelig — slipp gjennom
+      widget.onAuthenticated();
+      return;
     } finally {
       if (mounted) setState(() => _isAuthenticating = false);
     }

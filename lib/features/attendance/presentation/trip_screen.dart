@@ -14,7 +14,6 @@ import 'attendance_tile.dart';
 import 'status_picker_dialog.dart';
 
 /// Turmodus — designet for en-hånds bruk i bevegelse.
-/// Søk-først-grensesnitt: stort søkefelt øverst, 3 bokstaver filtrerer.
 class TripScreen extends ConsumerStatefulWidget {
   final FravaersOkterData session;
   final GrupperData group;
@@ -32,7 +31,8 @@ class TripScreen extends ConsumerStatefulWidget {
 class _TripScreenState extends ConsumerState<TripScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
-  bool _showList = false; // Toggle mellom søk og liste
+  bool _showList = false;
+  bool _allRegisteredNotified = false;
 
   // Undo-mekanisme
   Timer? _undoTimer;
@@ -49,182 +49,183 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   Widget build(BuildContext context) {
     final attendanceRepo = ref.watch(attendanceRepositoryProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.group.navn} — Tur'),
-        actions: [
-          // Toggle søk/liste
-          IconButton(
-            icon: Icon(_showList ? Icons.search : Icons.list),
-            tooltip: _showList ? 'Søk' : 'Liste',
-            onPressed: () => setState(() => _showList = !_showList),
-          ),
-          IconButton(
-            icon: const Icon(Icons.description),
-            tooltip: 'Rapport',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ReportScreen(oktId: widget.session.id),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.check_circle),
-            tooltip: 'Avslutt økt',
-            onPressed: () => _endSession(context),
-          ),
-        ],
-      ),
-      body: StreamBuilder<List<AttendanceRecord>>(
-        stream: attendanceRepo.watchSessionRecords(widget.session.id),
-        builder: (context, snapshot) {
-          final records = snapshot.data ?? [];
-
-          // Haptisk feedback når alle er registrert
-          if (records.isNotEmpty &&
-              records.every((r) => r.post.status != AttendanceStatus.ukjent)) {
-            HapticService.onAllRegistered();
-          }
-
-          // Filtrer basert på søk
-          final filtered = _searchQuery.length >= 3
-              ? records
-                  .where((r) => r.elev.navn
-                      .toLowerCase()
-                      .contains(_searchQuery.toLowerCase()))
-                  .toList()
-              : records;
-
-          return Column(
-            children: [
-              CountBanner(records: records),
-              // Søkefelt — stort og tydelig for en-hånds bruk
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Skriv elevnavn (3 bokstaver)...',
-                    prefixIcon: const Icon(Icons.search, size: 28),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() => _searchQuery = '');
-                            },
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 16,
-                    ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _endSession(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('${widget.group.navn} — Tur'),
+          actions: [
+            IconButton(
+              icon: Icon(_showList ? Icons.search : Icons.list),
+              tooltip: _showList ? 'Søk' : 'Liste',
+              onPressed: () => setState(() => _showList = !_showList),
+            ),
+            IconButton(
+              icon: const Icon(Icons.description),
+              tooltip: 'Rapport',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ReportScreen(oktId: widget.session.id),
                   ),
-                  style: const TextStyle(fontSize: 20),
-                  onChanged: (value) => setState(() => _searchQuery = value),
-                  textInputAction: TextInputAction.search,
-                ),
-              ),
-              // Undo-knapp
-              if (_showUndo)
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.check_circle),
+              tooltip: 'Avslutt økt',
+              onPressed: () => _endSession(context),
+            ),
+          ],
+        ),
+        body: StreamBuilder<List<AttendanceRecord>>(
+          stream: attendanceRepo.watchSessionRecords(widget.session.id),
+          builder: (context, snapshot) {
+            final records = snapshot.data ?? [];
+
+            // Haptisk feedback kun én gang
+            if (records.isNotEmpty &&
+                records.every(
+                    (r) => r.post.status != AttendanceStatus.ukjent)) {
+              if (!_allRegisteredNotified) {
+                _allRegisteredNotified = true;
+                HapticService.onAllRegistered();
+              }
+            } else {
+              _allRegisteredNotified = false;
+            }
+
+            final filtered = _searchQuery.length >= 3
+                ? records
+                    .where((r) => r.elev.navn
+                        .toLowerCase()
+                        .contains(_searchQuery.toLowerCase()))
+                    .toList()
+                : records;
+
+            return Column(
+              children: [
+                CountBanner(records: records),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _undo,
-                      icon: const Icon(Icons.undo),
-                      label: const Text('Angre siste registrering'),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 48),
+                  padding: const EdgeInsets.all(12),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Skriv elevnavn (3 bokstaver)...',
+                      prefixIcon: const Icon(Icons.search, size: 28),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 16,
                       ),
                     ),
+                    style: const TextStyle(fontSize: 20),
+                    onChanged: (value) =>
+                        setState(() => _searchQuery = value),
+                    textInputAction: TextInputAction.search,
                   ),
                 ),
-              // Elevliste
-              Expanded(
-                child: _showList || _searchQuery.length >= 3
-                    ? ListView.separated(
-                        itemCount: filtered.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final record = filtered[index];
-                          return AttendanceTile(
-                            record: record,
-                            onTap: () => _quickRegister(record),
-                            onLongPress: () =>
-                                _showStatusPicker(context, record),
-                          );
-                        },
-                      )
-                    : Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.search, size: 64, color: Colors.grey[300]),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'Skriv minst 3 bokstaver for å finne en elev',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              TextButton(
-                                onPressed: () => setState(() => _showList = true),
-                                child: const Text('Vis alle som liste'),
-                              ),
-                            ],
-                          ),
+                if (_showUndo)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _undo,
+                        icon: const Icon(Icons.undo),
+                        label: const Text('Angre siste registrering'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 48),
                         ),
                       ),
-              ),
-            ],
-          );
-        },
+                    ),
+                  ),
+                Expanded(
+                  child: _showList || _searchQuery.length >= 3
+                      ? ListView.separated(
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, __) =>
+                              const Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            final record = filtered[index];
+                            return AttendanceTile(
+                              record: record,
+                              onTap: () => _quickRegister(record),
+                              onLongPress: () =>
+                                  _showStatusPicker(context, record),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.search,
+                                    size: 64, color: Colors.grey[300]),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Skriv minst 3 bokstaver for å finne en elev',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey),
+                                ),
+                                const SizedBox(height: 8),
+                                TextButton(
+                                  onPressed: () =>
+                                      setState(() => _showList = true),
+                                  child: const Text('Vis alle som liste'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  /// Hurtigregistrering i turmodus: ett trykk = til stede.
   Future<void> _quickRegister(AttendanceRecord record) async {
     final repo = ref.read(attendanceRepositoryProvider);
     final current = record.post.status;
 
     if (current == AttendanceStatus.ukjent) {
       await repo.updateStatus(
-        postId: record.post.id,
-        status: AttendanceStatus.tilStede,
-      );
+          postId: record.post.id, status: AttendanceStatus.tilStede);
       await HapticService.onPresent();
     } else if (current == AttendanceStatus.tilStede) {
       await repo.updateStatus(
-        postId: record.post.id,
-        status: AttendanceStatus.fravaer,
-      );
+          postId: record.post.id, status: AttendanceStatus.fravaer);
       await HapticService.onAbsent();
     } else {
       await repo.updateStatus(
-        postId: record.post.id,
-        status: AttendanceStatus.ukjent,
-      );
+          postId: record.post.id, status: AttendanceStatus.ukjent);
     }
 
-    // Vis undo-knapp i 5 sekunder
     _showUndoButton();
 
-    // Tøm søkefeltet etter registrering for rask ny søk
     if (_searchQuery.isNotEmpty) {
       _searchController.clear();
       setState(() => _searchQuery = '');
@@ -240,8 +241,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   }
 
   Future<void> _undo() async {
-    await ref.read(attendanceRepositoryProvider).undoLastRegistration(widget.session.id);
-    setState(() => _showUndo = false);
+    await ref
+        .read(attendanceRepositoryProvider)
+        .undoLastRegistration(widget.session.id);
+    if (mounted) setState(() => _showUndo = false);
   }
 
   Future<void> _showStatusPicker(
@@ -268,7 +271,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Avslutt turregistrering?'),
-        content: const Text('Du kan fortsatt se rapporten etter avslutning.'),
+        content:
+            const Text('Du kan fortsatt se rapporten etter avslutning.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -283,7 +287,9 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     );
 
     if (confirm == true) {
-      await ref.read(attendanceRepositoryProvider).endSession(widget.session.id);
+      await ref
+          .read(attendanceRepositoryProvider)
+          .endSession(widget.session.id);
       if (context.mounted) Navigator.pop(context);
     }
   }
