@@ -109,24 +109,40 @@ class GroupDetailScreen extends ConsumerWidget {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: members.length,
+                        itemCount: members.length + 1,
                         itemBuilder: (context, index) {
-                          final elev = members[index];
-                          return ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
-                            title: Text(elev.navn,
-                                style: const TextStyle(fontSize: 18)),
-                            subtitle: elev.elevId != null
-                                ? Text('ID: ${elev.elevId}')
-                                : null,
-                            onTap: () =>
-                                _showRenameStudentDialog(context, ref, elev),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.remove_circle_outline,
-                                  color: Colors.red),
+                          if (index < members.length) {
+                            final elev = members[index];
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              title: Text(elev.navn,
+                                  style: const TextStyle(fontSize: 18)),
+                              subtitle: elev.elevId != null
+                                  ? Text('ID: ${elev.elevId}')
+                                  : null,
+                              onTap: () =>
+                                  _showRenameStudentDialog(context, ref, elev),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.remove_circle_outline,
+                                    color: Colors.red),
+                                onPressed: () =>
+                                    _confirmRemoveStudent(context, ref, elev),
+                              ),
+                            );
+                          }
+                          // Historikk-knapp nederst i listen
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 16),
+                            child: OutlinedButton.icon(
                               onPressed: () =>
-                                  _confirmRemoveStudent(context, ref, elev),
+                                  _showSessionHistory(context, ref),
+                              icon: const Icon(Icons.history),
+                              label: const Text('Vis avsluttede økter'),
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 48),
+                              ),
                             ),
                           );
                         },
@@ -422,6 +438,10 @@ class _SessionHistoryScreen extends ConsumerWidget {
       body: StreamBuilder<List<FravaersOkterData>>(
         stream: attendanceRepo.watchSessionHistory(group.id),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           final sessions = snapshot.data ?? [];
 
           if (sessions.isEmpty) {

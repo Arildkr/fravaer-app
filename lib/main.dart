@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -11,11 +12,13 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/lock_screen.dart';
 import 'features/groups/presentation/home_screen.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
+import 'features/splash/presentation/splash_screen.dart';
 import 'features/subscription/data/subscription_service.dart';
 import 'features/subscription/presentation/paywall_screen.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const ProviderScope(child: FravaerApp()));
 }
 
@@ -147,9 +150,7 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     final keyAsync = ref.watch(encryptionKeyProvider);
 
     return keyAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () => const SplashScreen(),
       error: (error, _) => Scaffold(
         body: Center(child: Text('Feil ved oppstart: $error')),
       ),
@@ -161,17 +162,16 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     // Start initialisering etter at nøkkelen er klar
     if (!_initialized) {
       SchedulerBinding.instance.addPostFrameCallback((_) => _init());
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const SplashScreen();
     }
 
     // Sjekk abonnementsstatus
     if (_subscriptionStatus == SubscriptionStatus.loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const SplashScreen();
     }
+
+    // Appen er klar — fjern native splash
+    FlutterNativeSplash.remove();
 
     if (_subscriptionStatus == SubscriptionStatus.expired) {
       return PaywallScreen(
