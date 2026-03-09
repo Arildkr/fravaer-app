@@ -1,5 +1,15 @@
 # Versjonslogg — Alle med
 
+## 1.0.2+3 (2026-03-09)
+
+### Nytt
+- Splash-skjerm med app-ikon og navn ved oppstart
+- Enklere tilgang til avsluttede økter (knapp i gruppeoversikten)
+
+### Fikser
+- Android 12+ splash-skjerm viser nå riktig ikon uten hvit ramme
+- Historikk-siden viser nå lasteindikator i stedet for tom side
+
 ## 1.0.1+2 (2026-03-08)
 
 ### Fikser
