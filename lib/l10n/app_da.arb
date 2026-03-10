@@ -603,5 +603,11 @@
   "@noNamesFound": {},
 
   "startupError": "Fejl ved opstart:",
-  "@startupError": {}
+  "@startupError": {},
+
+  "language": "Sprog",
+  "@language": {},
+
+  "languageSystem": "Systemstandard",
+  "@languageSystem": {}
 }

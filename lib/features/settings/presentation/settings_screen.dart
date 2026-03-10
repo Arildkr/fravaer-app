@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/database/database.dart';
 import '../../../core/database/database_provider.dart';
@@ -68,6 +69,7 @@ class SettingsScreen extends ConsumerWidget {
                 );
               },
             ),
+          _LanguageTile(),
           ListTile(
             leading: const Icon(Icons.cloud_upload),
             title: Text(l10n.backup),
@@ -107,6 +109,79 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+class _LanguageTile extends ConsumerWidget {
+  static const _localeKey = 'locale_override';
+
+  static const _languages = [
+    (code: null, label: null, flag: '🌐'),
+    (code: 'en', label: 'English', flag: '🇬🇧'),
+    (code: 'nb', label: 'Norsk (bokmål)', flag: '🇳🇴'),
+    (code: 'sv', label: 'Svenska', flag: '🇸🇪'),
+    (code: 'da', label: 'Dansk', flag: '🇩🇰'),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentLocale = ref.watch(localeProvider);
+
+    final currentEntry = _languages.firstWhere(
+      (e) => e.code == currentLocale?.languageCode,
+      orElse: () => _languages.first,
+    );
+    final subtitle = currentEntry.code == null
+        ? l10n.languageSystem
+        : currentEntry.label!;
+
+    return ListTile(
+      leading: Text(
+        currentEntry.flag,
+        style: const TextStyle(fontSize: 24),
+      ),
+      title: Text(l10n.language),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _showPicker(context, ref, l10n, currentLocale),
+    );
+  }
+
+  Future<void> _showPicker(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Locale? currentLocale,
+  ) async {
+    final selected = await showDialog<String?>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.language),
+        children: _languages.map((e) {
+          final isSelected = e.code == currentLocale?.languageCode;
+          final label = e.code == null ? l10n.languageSystem : e.label!;
+          return RadioListTile<String?>(
+            value: e.code,
+            groupValue: currentLocale?.languageCode,
+            title: Text('${e.flag}  $label'),
+            selected: isSelected,
+            onChanged: (v) => Navigator.of(ctx).pop(v ?? '__system__'),
+          );
+        }).toList(),
+      ),
+    );
+
+    if (selected == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    if (selected == '__system__') {
+      await prefs.remove(_localeKey);
+      ref.read(localeProvider.notifier).state = null;
+    } else {
+      await prefs.setString(_localeKey, selected);
+      ref.read(localeProvider.notifier).state = Locale(selected);
+    }
   }
 }
 

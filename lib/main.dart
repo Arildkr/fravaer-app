@@ -43,7 +43,9 @@ class FravaerApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      locale: ref.watch(localeProvider),
       supportedLocales: const [
+        Locale('en'),
         Locale('nb'),
         Locale('sv'),
         Locale('da'),
@@ -118,9 +120,17 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     }
   }
 
+  static const _localeKey = 'locale_override';
+
   Future<void> _init() async {
     final prefs = await SharedPreferences.getInstance();
     final onboardingDone = prefs.getBool(_onboardingKey) ?? false;
+
+    // Last lagret språkvalg
+    final savedLocale = prefs.getString(_localeKey);
+    if (savedLocale != null) {
+      ref.read(localeProvider.notifier).state = Locale(savedLocale);
+    }
 
     var laererId = prefs.getString(_laererIdKey);
     final db = ref.read(databaseProvider);

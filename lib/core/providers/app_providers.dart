@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../database/database_provider.dart';
@@ -29,3 +30,6 @@ final activeSessionIdProvider = StateProvider<String?>((ref) => null);
 
 /// Subscription service — settes av AppShell etter initialisering.
 final subscriptionServiceProvider = StateProvider<SubscriptionService?>((ref) => null);
+
+/// Valgt app-språk. Null = følg systemspråket.
+final localeProvider = StateProvider<Locale?>((ref) => null);

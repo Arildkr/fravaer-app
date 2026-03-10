@@ -1,0 +1,613 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "All Present",
+  "@appTitle": {},
+
+  "cancel": "Cancel",
+  "@cancel": {},
+
+  "save": "Save",
+  "@save": {},
+
+  "next": "Next",
+  "@next": {},
+
+  "skip": "Skip",
+  "@skip": {},
+
+  "getStarted": "Get started",
+  "@getStarted": {},
+
+  "create": "Create",
+  "@create": {},
+
+  "importAction": "Import",
+  "@importAction": {},
+
+  "back": "Back",
+  "@back": {},
+
+  "restore": "Restore",
+  "@restore": {},
+
+  "remove": "Remove",
+  "@remove": {},
+
+  "report": "Report",
+  "@report": {},
+
+  "end": "End",
+  "@end": {},
+
+  "copy": "Copy",
+  "@copy": {},
+
+  "statusUnknown": "Unknown",
+  "@statusUnknown": {},
+
+  "statusPresent": "Present",
+  "@statusPresent": {},
+
+  "statusAbsent": "Absent",
+  "@statusAbsent": {},
+
+  "statusLate": "Late",
+  "@statusLate": {},
+
+  "statusPlannedAbsent": "Planned absence",
+  "@statusPlannedAbsent": {},
+
+  "myGroups": "My groups",
+  "@myGroups": {},
+
+  "archivedGroups": "Archived groups",
+  "@archivedGroups": {},
+
+  "settings": "Settings",
+  "@settings": {},
+
+  "noGroupsYet": "No groups yet",
+  "@noGroupsYet": {},
+
+  "noGroupsDescription": "Create your first group to get started.",
+  "@noGroupsDescription": {},
+
+  "newGroup": "New group",
+  "@newGroup": {},
+
+  "studentCount": "{count} students",
+  "@studentCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "exportSemester": "Export semester",
+  "@exportSemester": {},
+
+  "sessionHistory": "Session history",
+  "@sessionHistory": {},
+
+  "addStudent": "Add student",
+  "@addStudent": {},
+
+  "importStudents": "Import students",
+  "@importStudents": {},
+
+  "noStudentsInGroup": "No students in group",
+  "@noStudentsInGroup": {},
+
+  "addStudentsManuallyOrImport": "Add students manually or import from file.",
+  "@addStudentsManuallyOrImport": {},
+
+  "classroom": "Classroom",
+  "@classroom": {},
+
+  "trip": "Trip",
+  "@trip": {},
+
+  "viewFinishedSessions": "View finished sessions",
+  "@viewFinishedSessions": {},
+
+  "activeSessionExistsTitle": "Active session exists",
+  "@activeSessionExistsTitle": {},
+
+  "activeSessionExistsContent": "There is already an active session for this group. Do you want to continue it?",
+  "@activeSessionExistsContent": {},
+
+  "continueSession": "Continue",
+  "@continueSession": {},
+
+  "renameStudentTitle": "Rename student",
+  "@renameStudentTitle": {},
+
+  "newNameHint": "New name",
+  "@newNameHint": {},
+
+  "removeStudentTitle": "Remove student from group?",
+  "@removeStudentTitle": {},
+
+  "removeStudentContent": "{name} will be removed from this group. The student's data and history will be kept.",
+  "@removeStudentContent": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "historyTitle": "History — {groupName}",
+  "@historyTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "noFinishedSessions": "No finished sessions",
+  "@noFinishedSessions": {},
+
+  "finishedSessionsDescription": "Finished sessions appear here so you can view reports or edit attendance afterwards.",
+  "@finishedSessionsDescription": {},
+
+  "editAbsence": "Edit attendance",
+  "@editAbsence": {},
+
+  "classroomTitle": "{groupName} — Classroom",
+  "@classroomTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "tripTitle": "{groupName} — Trip",
+  "@tripTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Tap = change status · Hold = more options",
+  "@tapChangeStatusHint": {},
+
+  "endSession": "End session",
+  "@endSession": {},
+
+  "endSessionTitle": "End session?",
+  "@endSessionTitle": {},
+
+  "endTripTitle": "End trip registration?",
+  "@endTripTitle": {},
+
+  "reportStillAvailable": "You can still view the report after ending.",
+  "@reportStillAvailable": {},
+
+  "searchStudent": "Search for student...",
+  "@searchStudent": {},
+
+  "registeredCount": "{registered} / {total} registered",
+  "@registeredCount": {
+    "placeholders": {
+      "registered": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "notRegisteredCount": "{count} not registered",
+  "@notRegisteredCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "minutesLate": "{minutes} min late",
+  "@minutesLate": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+
+  "lateLabel": "Late:",
+  "@lateLabel": {},
+
+  "exportPdf": "Export PDF",
+  "@exportPdf": {},
+
+  "copyToClipboard": "Copy to clipboard",
+  "@copyToClipboard": {},
+
+  "shareReport": "Share report",
+  "@shareReport": {},
+
+  "reportCopied": "Report copied",
+  "@reportCopied": {},
+
+  "copyReport": "Copy report",
+  "@copyReport": {},
+
+  "reportCopiedFull": "Report copied to clipboard",
+  "@reportCopiedFull": {},
+
+  "shareVia": "Share via...",
+  "@shareVia": {},
+
+  "pdfExportError": "Error exporting PDF:",
+  "@pdfExportError": {},
+
+  "exportScreenTitle": "Export — {groupName}",
+  "@exportScreenTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "choosePeriod": "Choose period",
+  "@choosePeriod": {},
+
+  "exportCsvDescription": "Exports CSV with all sessions in the period. One row per student, one column per session.",
+  "@exportCsvDescription": {},
+
+  "from": "From",
+  "@from": {},
+
+  "to": "To",
+  "@to": {},
+
+  "csvLegend": "Legend:\nP = Present · A = Absent · L15 = Late 15 min\nPL = Planned absence · ? = Not registered",
+  "@csvLegend": {},
+
+  "exportCsv": "Export CSV",
+  "@exportCsv": {},
+
+  "noSessionsInPeriod": "No sessions in selected period.",
+  "@noSessionsInPeriod": {},
+
+  "exportError": "Export error:",
+  "@exportError": {},
+
+  "biometricLock": "Biometric lock",
+  "@biometricLock": {},
+
+  "biometricLockSubtitle": "Require fingerprint or face on startup",
+  "@biometricLockSubtitle": {},
+
+  "backup": "Backup",
+  "@backup": {},
+
+  "backupSubtitle": "Back up to Google Drive",
+  "@backupSubtitle": {},
+
+  "aboutApp": "About All Present",
+  "@aboutApp": {},
+
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+
+  "loadingVersion": "Loading version...",
+  "@loadingVersion": {},
+
+  "privacyTitle": "Privacy",
+  "@privacyTitle": {},
+
+  "privacySubtitle": "All data is stored encrypted locally on your device. No data is sent to any server.",
+  "@privacySubtitle": {},
+
+  "subscriptionActive": "Subscription active",
+  "@subscriptionActive": {},
+
+  "subscriptionActiveSubtitle": "Annual subscription — 29 kr/year",
+  "@subscriptionActiveSubtitle": {},
+
+  "trialStatus": "Trial period",
+  "@trialStatus": {},
+
+  "trialFree": "Free for 30 days",
+  "@trialFree": {},
+
+  "trialDaysLeft": "{days} days left of trial period",
+  "@trialDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "subscriptionExpired": "Subscription expired",
+  "@subscriptionExpired": {},
+
+  "subscriptionExpiredSubtitle": "Subscribe to continue using the app",
+  "@subscriptionExpiredSubtitle": {},
+
+  "loadingStatus": "Loading...",
+  "@loadingStatus": {},
+
+  "googleDriveBackup": "Google Drive Backup",
+  "@googleDriveBackup": {},
+
+  "backupDescription": "Save an encrypted copy of your database to Google Drive. Only you have access to the backup.",
+  "@backupDescription": {},
+
+  "lastBackup": "Last backup: {date}",
+  "@lastBackup": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {},
+
+  "takeBackupNow": "Back up now",
+  "@takeBackupNow": {},
+
+  "restoreFromBackup": "Restore from backup",
+  "@restoreFromBackup": {},
+
+  "restoreConfirmTitle": "Restore from backup?",
+  "@restoreConfirmTitle": {},
+
+  "restoreConfirmContent": "All current data will be replaced with data from the backup. The app will restart.",
+  "@restoreConfirmContent": {},
+
+  "noBackupFound": "No backup found on Google Drive",
+  "@noBackupFound": {},
+
+  "restoreSuccess": "Restored. Restart the app to apply.",
+  "@restoreSuccess": {},
+
+  "signedIn": "Signed in",
+  "@signedIn": {},
+
+  "signInCancelled": "Sign-in cancelled",
+  "@signInCancelled": {},
+
+  "signInError": "Sign-in error:",
+  "@signInError": {},
+
+  "backupError": "Backup error:",
+  "@backupError": {},
+
+  "restoreError": "Restore error:",
+  "@restoreError": {},
+
+  "backupDone": "Backup complete",
+  "@backupDone": {},
+
+  "onboarding1Title": "Create groups",
+  "@onboarding1Title": {},
+
+  "onboarding1Desc": "Start by creating a group and adding students.\nImport from CSV or add manually.",
+  "@onboarding1Desc": {},
+
+  "onboarding2Title": "Classroom mode",
+  "@onboarding2Title": {},
+
+  "onboarding2Desc": "Tap a student to register as present.\nTap again for absent. Hold for more options.",
+  "@onboarding2Desc": {},
+
+  "onboarding3Title": "Trip mode",
+  "@onboarding3Title": {},
+
+  "onboarding3Desc": "Designed for one-handed use outdoors.\nSearch for students with three letters — one tap registers.",
+  "@onboarding3Desc": {},
+
+  "onboarding4Title": "Report",
+  "@onboarding4Title": {},
+
+  "onboarding4Desc": "Generate a report with one tap.\nCopy or share via email, SMS etc.",
+  "@onboarding4Desc": {},
+
+  "onboarding5Title": "Safe and private",
+  "@onboarding5Title": {},
+
+  "onboarding5Desc": "All data is stored encrypted on your device.\nBiometric lock protects student data.\nWorks completely offline.",
+  "@onboarding5Desc": {},
+
+  "trialExpired": "Trial period has expired",
+  "@trialExpired": {},
+
+  "yearlySubscription": "Annual subscription",
+  "@yearlySubscription": {},
+
+  "yearlyPrice": "29 kr / year",
+  "@yearlyPrice": {},
+
+  "featureUnlimitedGroups": "Unlimited groups and students",
+  "@featureUnlimitedGroups": {},
+
+  "featureClassroomTrip": "Classroom and trip mode",
+  "@featureClassroomTrip": {},
+
+  "featureReports": "Reports and export",
+  "@featureReports": {},
+
+  "featureEncrypted": "Encrypted local storage",
+  "@featureEncrypted": {},
+
+  "featureBiometric": "Biometric lock",
+  "@featureBiometric": {},
+
+  "subscribeCta": "Subscribe — 29 kr/year",
+  "@subscribeCta": {},
+
+  "restorePurchase": "Restore previous purchase",
+  "@restorePurchase": {},
+
+  "purchaseError": "Could not start purchase. Please try again later.",
+  "@purchaseError": {},
+
+  "purchaseGenericError": "Something went wrong:",
+  "@purchaseGenericError": {},
+
+  "noSubscriptionFound": "No previous subscription found.",
+  "@noSubscriptionFound": {},
+
+  "restoreFailedError": "Could not restore:",
+  "@restoreFailedError": {},
+
+  "authenticateToOpen": "Authenticate to open the app",
+  "@authenticateToOpen": {},
+
+  "unlockApp": "Unlock",
+  "@unlockApp": {},
+
+  "biometricReason": "Unlock All Present",
+  "@biometricReason": {},
+
+  "authFailed": "Authentication failed",
+  "@authFailed": {},
+
+  "noArchivedGroups": "No archived groups",
+  "@noArchivedGroups": {},
+
+  "groupRestored": "{name} restored",
+  "@groupRestored": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "groupNameLabel": "Group name",
+  "@groupNameLabel": {},
+
+  "groupNameHint": "e.g. Class 10A, Mountain Trip",
+  "@groupNameHint": {},
+
+  "renameGroup": "Rename",
+  "@renameGroup": {},
+
+  "copyGroup": "Copy group",
+  "@copyGroup": {},
+
+  "copyGroupSubtitle": "New group with same students",
+  "@copyGroupSubtitle": {},
+
+  "splitGroupAction": "Split group",
+  "@splitGroupAction": {},
+
+  "splitGroupSubtitle": "Choose students for new subgroup",
+  "@splitGroupSubtitle": {},
+
+  "archiveGroup": "Archive group",
+  "@archiveGroup": {},
+
+  "groupArchived": "{name} archived",
+  "@groupArchived": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "undoAction": "Undo",
+  "@undoAction": {},
+
+  "renameGroupTitle": "Rename group",
+  "@renameGroupTitle": {},
+
+  "copyGroupTitle": "Copy group",
+  "@copyGroupTitle": {},
+
+  "newGroupNameLabel": "Name of new group",
+  "@newGroupNameLabel": {},
+
+  "groupCopied": "{name} created",
+  "@groupCopied": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "splitGroupTitle": "Split group",
+  "@splitGroupTitle": {},
+
+  "splitGroupNewGroupHint": "e.g. Trip group 1",
+  "@splitGroupNewGroupHint": {},
+
+  "selectStudentsForNewGroup": "Select students for the new group:",
+  "@selectStudentsForNewGroup": {},
+
+  "selectAll": "Select all",
+  "@selectAll": {},
+
+  "clearAll": "Clear all",
+  "@clearAll": {},
+
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "createGroup": "Create group",
+  "@createGroup": {},
+
+  "groupCreatedWithStudents": "{name} created with {count} students",
+  "@groupCreatedWithStudents": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+
+  "readingFile": "Reading file...",
+  "@readingFile": {},
+
+  "chooseFile": "Choose file (.xlsx, .csv)",
+  "@chooseFile": {},
+
+  "orSeparator": "or",
+  "@orSeparator": {},
+
+  "pasteStudentList": "Paste student list (one name per line)",
+  "@pasteStudentList": {},
+
+  "importHint": "Write names in column A. Last names can go in column B. The first row can be a header — the app will figure it out automatically.",
+  "@importHint": {},
+
+  "previewTitle": "Preview",
+  "@previewTitle": {},
+
+  "foundStudentsCount": "Found {count} students",
+  "@foundStudentsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "headerSkipped": " (header row skipped)",
+  "@headerSkipped": {},
+
+  "doesThisLookRight": "Does this look right?",
+  "@doesThisLookRight": {},
+
+  "importCountStudents": "Import {count} students",
+  "@importCountStudents": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "studentsImported": "{count} students imported",
+  "@studentsImported": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "couldNotReadFile": "Could not read the file",
+  "@couldNotReadFile": {},
+
+  "noNamesFound": "No names found in the file",
+  "@noNamesFound": {},
+
+  "startupError": "Startup error:",
+  "@startupError": {},
+
+  "language": "Language",
+  "@language": {},
+
+  "languageSystem": "System default",
+  "@languageSystem": {}
+}

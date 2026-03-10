@@ -603,5 +603,11 @@
   "@noNamesFound": {},
 
   "startupError": "Fel vid uppstart:",
-  "@startupError": {}
+  "@startupError": {},
+
+  "language": "Språk",
+  "@language": {},
+
+  "languageSystem": "Systemstandard",
+  "@languageSystem": {}
 }
