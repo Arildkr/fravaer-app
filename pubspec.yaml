@@ -53,6 +53,9 @@ dependencies:
   # Home screen widget
   home_widget: ^0.7.0
 
+  # App version info
+  package_info_plus: ^8.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

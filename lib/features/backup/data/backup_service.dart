@@ -19,7 +19,17 @@ class BackupService {
   /// Sjekk om bruker er logget inn.
   bool get isSignedIn => _currentUser != null;
 
-  /// Logg inn med Google.
+  /// Prøv stille innlogging (ingen dialog). Returnerer true hvis allerede logget inn.
+  Future<bool> trySignInSilently() async {
+    try {
+      _currentUser = await _googleSignIn.signInSilently();
+      return _currentUser != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Logg inn med Google (viser dialog).
   Future<bool> signIn() async {
     try {
       _currentUser = await _googleSignIn.signIn();

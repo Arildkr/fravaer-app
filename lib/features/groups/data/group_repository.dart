@@ -54,13 +54,15 @@ class GroupRepository {
           ..where((m) => m.gruppeId.equals(sourceGruppeId)))
         .get();
 
-    for (final member in members) {
-      await _db.into(_db.medlemskap).insert(MedlemskapCompanion.insert(
-        id: _uuid.v4(),
-        elevId: member.elevId,
-        gruppeId: newGroup.id,
-      ));
-    }
+    await _db.batch((batch) {
+      for (final member in members) {
+        batch.insert(_db.medlemskap, MedlemskapCompanion.insert(
+          id: _uuid.v4(),
+          elevId: member.elevId,
+          gruppeId: newGroup.id,
+        ));
+      }
+    });
 
     return newGroup;
   }
@@ -74,13 +76,15 @@ class GroupRepository {
   }) async {
     final newGroup = await createGroup(navn: nyttNavn, laererId: laererId);
 
-    for (final elevId in elevIder) {
-      await _db.into(_db.medlemskap).insert(MedlemskapCompanion.insert(
-        id: _uuid.v4(),
-        elevId: elevId,
-        gruppeId: newGroup.id,
-      ));
-    }
+    await _db.batch((batch) {
+      for (final elevId in elevIder) {
+        batch.insert(_db.medlemskap, MedlemskapCompanion.insert(
+          id: _uuid.v4(),
+          elevId: elevId,
+          gruppeId: newGroup.id,
+        ));
+      }
+    });
 
     return newGroup;
   }
@@ -142,18 +146,18 @@ class GroupRepository {
   /// Sjekk om en elev med dette navnet allerede finnes i gruppen.
   Future<bool> hasStudentWithName(String elevNavn, String gruppeId) async {
     final members = await getGroupMembers(gruppeId);
-    return members.any((e) => e.navn == elevNavn);
+    return members.any((e) => e.navn.toLowerCase() == elevNavn.toLowerCase());
   }
 
-  /// Legg til en elev i en gruppe. Blokkerer duplikatnavn.
-  Future<void> addStudentToGroup({
+  /// Legg til en elev i en gruppe. Returnerer false hvis duplikatnavn.
+  Future<bool> addStudentToGroup({
     required String elevNavn,
     required String gruppeId,
     String? elevId,
   }) async {
     // Blokker duplikatnavn i samme gruppe
     final existingMembers = await getGroupMembers(gruppeId);
-    if (existingMembers.any((e) => e.navn == elevNavn)) return;
+    if (existingMembers.any((e) => e.navn.toLowerCase() == elevNavn.toLowerCase())) return false;
 
     final studentId = _uuid.v4();
     await _db.into(_db.elever).insert(EleverCompanion.insert(
@@ -167,6 +171,7 @@ class GroupRepository {
       elevId: studentId,
       gruppeId: gruppeId,
     ));
+    return true;
   }
 
   /// Fjern elev fra gruppe (sletter kun medlemskap, ikke eleven).
@@ -198,12 +203,12 @@ class GroupRepository {
       final id = parts.length > 1 ? parts[1].trim() : null;
 
       if (navn.isNotEmpty) {
-        await addStudentToGroup(
+        final added = await addStudentToGroup(
           elevNavn: navn,
           gruppeId: gruppeId,
           elevId: id,
         );
-        imported++;
+        if (added) imported++;
       }
     }
     return imported;

@@ -32,14 +32,16 @@ class AttendanceRepository {
           ..where((m) => m.gruppeId.equals(gruppeId)))
         .get();
 
-    for (final member in members) {
-      await _db.into(_db.fravaersPoster).insert(FravaersPosterCompanion.insert(
-        id: _uuid.v4(),
-        elevId: member.elevId,
-        oktId: id,
-        status: AttendanceStatus.ukjent,
-      ));
-    }
+    await _db.batch((batch) {
+      for (final member in members) {
+        batch.insert(_db.fravaersPoster, FravaersPosterCompanion.insert(
+          id: _uuid.v4(),
+          elevId: member.elevId,
+          oktId: id,
+          status: AttendanceStatus.ukjent,
+        ));
+      }
+    });
 
     return (_db.select(_db.fravaersOkter)..where((s) => s.id.equals(id)))
         .getSingle();
@@ -83,6 +85,14 @@ class AttendanceRepository {
   Future<void> endSession(String oktId) async {
     await (_db.update(_db.fravaersOkter)..where((s) => s.id.equals(oktId)))
         .write(const FravaersOkterCompanion(avsluttet: Value(true)));
+  }
+
+  /// Hent aktiv (ikke avsluttet) økt for en gruppe, om den finnes.
+  Future<FravaersOkterData?> getActiveSessionForGroup(String gruppeId) {
+    return (_db.select(_db.fravaersOkter)
+          ..where((s) => s.gruppeId.equals(gruppeId) & s.avsluttet.equals(false))
+          ..limit(1))
+        .getSingleOrNull();
   }
 
   /// Hent aktive (ikke avsluttede) økter for en lærer.

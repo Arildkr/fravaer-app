@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -85,10 +86,18 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           const Divider(),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('Om Alle med'),
-            subtitle: Text('Versjon 1.0.0'),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              final version = snapshot.data != null
+                  ? 'Versjon ${snapshot.data!.version}'
+                  : 'Laster versjon...';
+              return ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Om Alle med'),
+                subtitle: Text(version),
+              );
+            },
           ),
           const ListTile(
             leading: Icon(Icons.lock_outline),

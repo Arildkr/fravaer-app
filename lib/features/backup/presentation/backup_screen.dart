@@ -34,7 +34,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _checkSignIn() async {
     setState(() => _loading = true);
     try {
-      final signedIn = await _backupService.signIn();
+      final signedIn = await _backupService.trySignInSilently();
       if (signedIn) {
         _signedIn = true;
         _lastBackup = await _backupService.getLastBackupDate();

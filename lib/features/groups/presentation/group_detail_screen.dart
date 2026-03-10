@@ -294,12 +294,48 @@ class GroupDetailScreen extends ConsumerWidget {
     final laererId = ref.read(activeLaererIdProvider);
     if (laererId == null) return;
 
-    final session =
-        await ref.read(attendanceRepositoryProvider).createSession(
-              gruppeId: group.id,
-              laererId: laererId,
-              type: type,
-            );
+    final attendanceRepo = ref.read(attendanceRepositoryProvider);
+
+    // Sjekk om det allerede finnes en aktiv økt for denne gruppen
+    final existing = await attendanceRepo.getActiveSessionForGroup(group.id);
+    if (existing != null) {
+      if (!context.mounted) return;
+      final resume = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Aktiv økt finnes'),
+          content: const Text(
+            'Det finnes allerede en aktiv økt for denne gruppen. '
+            'Vil du fortsette den?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Avbryt'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Fortsett'),
+            ),
+          ],
+        ),
+      );
+      if (resume != true || !context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => existing.type == SessionType.klasseromsOkt
+              ? ClassroomScreen(session: existing, group: group)
+              : TripScreen(session: existing, group: group),
+        ),
+      );
+      return;
+    }
+
+    final session = await attendanceRepo.createSession(
+      gruppeId: group.id,
+      laererId: laererId,
+      type: type,
+    );
 
     ref.read(activeSessionIdProvider.notifier).state = session.id;
 

@@ -199,6 +199,7 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
           .read(attendanceRepositoryProvider)
           .endSession(widget.session.id);
       await WidgetUpdater.clearSession();
+      ref.read(activeSessionIdProvider.notifier).state = null;
       if (context.mounted) Navigator.pop(context);
     }
   }
