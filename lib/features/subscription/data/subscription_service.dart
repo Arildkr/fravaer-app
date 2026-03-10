@@ -28,8 +28,21 @@ class SubscriptionService {
           _trialStartKey, DateTime.now().toIso8601String());
     }
 
+    // Sikkerhetsnett: vi forlater alltid loading-tilstand etter maks 8 sekunder
+    Future.delayed(const Duration(seconds: 8), () {
+      if (status.value == SubscriptionStatus.loading) {
+        _updateFromTrial(prefs);
+      }
+    });
+
     // Sjekk om butikken er tilgjengelig
-    final available = await _iap.isAvailable();
+    bool available = false;
+    try {
+      available = await _iap.isAvailable().timeout(const Duration(seconds: 5));
+    } catch (_) {
+      available = false;
+    }
+
     if (!available) {
       // Butikk ikke tilgjengelig (emulator etc.) — bruk kun prøveperiode
       _updateFromTrial(prefs);
@@ -42,8 +55,15 @@ class SubscriptionService {
       onError: (_) => _updateFromTrial(prefs),
     );
 
-    // Gjenopprett eksisterende kjøp
-    await _iap.restorePurchases();
+    // Gjenopprett eksisterende kjøp (med timeout)
+    try {
+      await _iap.restorePurchases().timeout(const Duration(seconds: 6));
+    } catch (_) {
+      // timeout eller feil — fall tilbake til prøveperiode
+    }
+
+    // Gi streamen litt tid til å levere resultater fra restore
+    await Future.delayed(const Duration(milliseconds: 500));
 
     // Hvis ingen aktive kjøp ble funnet, sjekk prøveperiode
     if (status.value == SubscriptionStatus.loading) {
@@ -87,7 +107,8 @@ class SubscriptionService {
               _iap.completePurchase(purchase);
             }
           case PurchaseStatus.pending:
-            status.value = SubscriptionStatus.loading;
+            // Ikke sett loading her — det kan låse appen permanent
+            break;
           case PurchaseStatus.error:
           case PurchaseStatus.canceled:
             // Behold gjeldende status (trial eller expired)
