@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/database.dart';
@@ -46,8 +47,9 @@ class _SplitGroupDialogState extends ConsumerState<SplitGroupDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Del gruppe'),
+      title: Text(l10n.splitGroupTitle),
       content: SizedBox(
         width: double.maxFinite,
         child: Column(
@@ -55,17 +57,17 @@ class _SplitGroupDialogState extends ConsumerState<SplitGroupDialog> {
           children: [
             TextField(
               controller: _navnController,
-              decoration: const InputDecoration(
-                labelText: 'Navn på ny gruppe',
-                hintText: 'f.eks. Turgruppe 1',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.newGroupNameLabel,
+                hintText: l10n.splitGroupNewGroupHint,
+                border: const OutlineInputBorder(),
               ),
               autofocus: true,
               textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 12),
             Text(
-              'Velg elever for den nye gruppen:',
+              l10n.selectStudentsForNewGroup,
               style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
             const SizedBox(height: 8),
@@ -84,17 +86,17 @@ class _SplitGroupDialogState extends ConsumerState<SplitGroupDialog> {
                         _selectedIds.addAll(_members!.map((m) => m.id));
                       });
                     },
-                    child: const Text('Velg alle'),
+                    child: Text(l10n.selectAll),
                   ),
                   TextButton(
                     onPressed: () {
                       setState(() => _selectedIds.clear());
                     },
-                    child: const Text('Fjern alle'),
+                    child: Text(l10n.clearAll),
                   ),
                   const Spacer(),
                   Text(
-                    '${_selectedIds.length} valgt',
+                    l10n.selectedCount(_selectedIds.length),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -130,11 +132,11 @@ class _SplitGroupDialogState extends ConsumerState<SplitGroupDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Avbryt'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: _selectedIds.isEmpty ? null : _split,
-          child: const Text('Opprett gruppe'),
+          child: Text(l10n.createGroup),
         ),
       ],
     );
@@ -147,6 +149,8 @@ class _SplitGroupDialogState extends ConsumerState<SplitGroupDialog> {
     final laererId = ref.read(activeLaererIdProvider);
     if (laererId == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     await ref.read(groupRepositoryProvider).splitGroup(
           sourceGruppeId: widget.group.id,
           nyttNavn: navn,
@@ -157,7 +161,7 @@ class _SplitGroupDialogState extends ConsumerState<SplitGroupDialog> {
     if (mounted) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$navn opprettet med ${_selectedIds.length} elever')),
+        SnackBar(content: Text(l10n.groupCreatedWithStudents(navn, _selectedIds.length))),
       );
     }
   }

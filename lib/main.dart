@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'core/database/database_provider.dart';
 import 'core/database/database.dart';
@@ -34,6 +37,24 @@ class FravaerApp extends ConsumerWidget {
       themeMode: ThemeMode.light,
       home: const AppShell(),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('nb'),
+        Locale('sv'),
+        Locale('da'),
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale == null) return const Locale('nb');
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == locale.languageCode) return supported;
+        }
+        return const Locale('nb');
+      },
     );
   }
 }
@@ -152,7 +173,7 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     return keyAsync.when(
       loading: () => const SplashScreen(),
       error: (error, _) => Scaffold(
-        body: Center(child: Text('Feil ved oppstart: $error')),
+        body: Center(child: Text('${AppLocalizations.of(context)?.startupError ?? 'Error:'} $error')),
       ),
       data: (_) => _buildApp(),
     );

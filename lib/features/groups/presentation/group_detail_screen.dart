@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/database/database.dart';
@@ -21,6 +22,7 @@ class GroupDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final groupRepo = ref.watch(groupRepositoryProvider);
 
     return StreamBuilder<List<EleverData>>(
@@ -35,7 +37,7 @@ class GroupDetailScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.file_download),
-                tooltip: 'Eksporter semester',
+                tooltip: l10n.exportSemester,
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -46,17 +48,17 @@ class GroupDetailScreen extends ConsumerWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.history),
-                tooltip: 'Økthistorikk',
+                tooltip: l10n.sessionHistory,
                 onPressed: () => _showSessionHistory(context, ref),
               ),
               IconButton(
                 icon: const Icon(Icons.person_add),
-                tooltip: 'Legg til elev',
+                tooltip: l10n.addStudent,
                 onPressed: () => _showAddStudentDialog(context, ref),
               ),
               IconButton(
                 icon: const Icon(Icons.upload_file),
-                tooltip: 'Importer elever',
+                tooltip: l10n.importStudents,
                 onPressed: () => _showImportDialog(context),
               ),
             ],
@@ -71,21 +73,21 @@ class GroupDetailScreen extends ConsumerWidget {
                         Icon(Icons.people_outline,
                             size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Ingen elever i gruppen',
-                          style: TextStyle(
+                        Text(
+                          l10n.noStudentsInGroup,
+                          style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Legg til elever manuelt eller importer fra fil.',
+                        Text(
+                          l10n.addStudentsManuallyOrImport,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
                         FilledButton.icon(
                           onPressed: () => _showImportDialog(context),
                           icon: const Icon(Icons.upload_file),
-                          label: const Text('Importer elever'),
+                          label: Text(l10n.importStudents),
                         ),
                       ],
                     ),
@@ -101,7 +103,7 @@ class GroupDetailScreen extends ConsumerWidget {
                           .primary
                           .withValues(alpha: 0.1),
                       child: Text(
-                        '${members.length} elever',
+                        l10n.studentCount(members.length),
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600),
                         textAlign: TextAlign.center,
@@ -139,7 +141,7 @@ class GroupDetailScreen extends ConsumerWidget {
                               onPressed: () =>
                                   _showSessionHistory(context, ref),
                               icon: const Icon(Icons.history),
-                              label: const Text('Vis avsluttede økter'),
+                              label: Text(l10n.viewFinishedSessions),
                               style: OutlinedButton.styleFrom(
                                 minimumSize: const Size(double.infinity, 48),
                               ),
@@ -162,7 +164,7 @@ class GroupDetailScreen extends ConsumerWidget {
                               context, ref, SessionType.klasseromsOkt)
                           : null,
                       icon: const Icon(Icons.school),
-                      label: const Text('Klasserom'),
+                      label: Text(l10n.classroom),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 56),
                       ),
@@ -176,7 +178,7 @@ class GroupDetailScreen extends ConsumerWidget {
                               context, ref, SessionType.turregistrering)
                           : null,
                       icon: const Icon(Icons.hiking),
-                      label: const Text('Tur'),
+                      label: Text(l10n.trip),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(0, 56),
                         backgroundColor:
@@ -220,16 +222,17 @@ class GroupDetailScreen extends ConsumerWidget {
 
   void _showRenameStudentDialog(
       BuildContext context, WidgetRef ref, EleverData elev) {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: elev.navn);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Endre elevnavn'),
+        title: Text(l10n.renameStudentTitle),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Nytt navn',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.newNameHint,
+            border: const OutlineInputBorder(),
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -237,7 +240,7 @@ class GroupDetailScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -248,7 +251,7 @@ class GroupDetailScreen extends ConsumerWidget {
                   .renameStudent(elev.id, navn);
               if (ctx.mounted) Navigator.pop(ctx);
             },
-            child: const Text('Lagre'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -257,18 +260,16 @@ class GroupDetailScreen extends ConsumerWidget {
 
   void _confirmRemoveStudent(
       BuildContext context, WidgetRef ref, EleverData elev) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Fjern elev fra gruppen?'),
-        content: Text(
-          '${elev.navn} fjernes fra denne gruppen. '
-          'Elevens data og historikk beholdes.',
-        ),
+        title: Text(l10n.removeStudentTitle),
+        content: Text(l10n.removeStudentContent(elev.navn)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -279,7 +280,7 @@ class GroupDetailScreen extends ConsumerWidget {
               Navigator.pop(ctx);
             },
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Fjern'),
+            child: Text(l10n.remove),
           ),
         ],
       ),
@@ -300,22 +301,20 @@ class GroupDetailScreen extends ConsumerWidget {
     final existing = await attendanceRepo.getActiveSessionForGroup(group.id);
     if (existing != null) {
       if (!context.mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       final resume = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Aktiv økt finnes'),
-          content: const Text(
-            'Det finnes allerede en aktiv økt for denne gruppen. '
-            'Vil du fortsette den?',
-          ),
+          title: Text(l10n.activeSessionExistsTitle),
+          content: Text(l10n.activeSessionExistsContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Avbryt'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Fortsett'),
+              child: Text(l10n.continueSession),
             ),
           ],
         ),
@@ -408,8 +407,9 @@ class _AddStudentsDialogState extends State<_AddStudentsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Legg til elever'),
+      title: Text(l10n.addStudent),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -445,11 +445,11 @@ class _AddStudentsDialogState extends State<_AddStudentsDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(_addedCount > 0 ? 'Ferdig' : 'Avbryt'),
+          child: Text(_addedCount > 0 ? 'Ferdig' : l10n.cancel),
         ),
         FilledButton(
           onPressed: _addStudent,
-          child: const Text('Legg til'),
+          child: Text(l10n.addStudent),
         ),
       ],
     );
@@ -464,12 +464,13 @@ class _SessionHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final attendanceRepo = ref.watch(attendanceRepositoryProvider);
     final dateFormat = DateFormat('dd.MM.yyyy HH:mm', 'nb');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Historikk — ${group.navn}'),
+        title: Text(l10n.historyTitle(group.navn)),
       ),
       body: StreamBuilder<List<FravaersOkterData>>(
         stream: attendanceRepo.watchSessionHistory(group.id),
@@ -489,14 +490,14 @@ class _SessionHistoryScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.history, size: 64, color: Colors.grey[400]),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Ingen avsluttede økter',
-                      style: TextStyle(
+                    Text(
+                      l10n.noFinishedSessions,
+                      style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Avsluttede økter vises her slik at du kan se rapport eller redigere fravær i ettertid.',
+                    Text(
+                      l10n.finishedSessionsDescription,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -519,7 +520,7 @@ class _SessionHistoryScreen extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  isClassroom ? 'Klasserom' : 'Tur',
+                  isClassroom ? l10n.classroom : l10n.trip,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(dateFormat.format(session.dato)),
@@ -528,7 +529,7 @@ class _SessionHistoryScreen extends ConsumerWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.description),
-                      tooltip: 'Rapport',
+                      tooltip: l10n.report,
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -540,7 +541,7 @@ class _SessionHistoryScreen extends ConsumerWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
-                      tooltip: 'Rediger fravær',
+                      tooltip: l10n.editAbsence,
                       onPressed: () =>
                           _reopenSession(context, ref, session),
                     ),

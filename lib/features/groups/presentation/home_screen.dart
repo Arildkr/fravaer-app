@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../core/database/database.dart';
 import '../../../core/providers/app_providers.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final laererId = ref.watch(activeLaererIdProvider);
 
     if (laererId == null) {
@@ -26,11 +28,11 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mine grupper'),
+        title: Text(l10n.myGroups),
         actions: [
           IconButton(
             icon: const Icon(Icons.archive),
-            tooltip: 'Arkiverte grupper',
+            tooltip: l10n.archivedGroups,
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -41,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            tooltip: 'Innstillinger',
+            tooltip: l10n.settings,
             onPressed: () {
               final subService = ref.read(subscriptionServiceProvider);
               Navigator.of(context).push(
@@ -73,15 +75,15 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.group_add, size: 64, color: Colors.grey[400]),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Ingen grupper ennå',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.noGroupsYet,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Opprett din første gruppe for å komme i gang.',
+                    Text(
+                      l10n.noGroupsDescription,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -102,7 +104,7 @@ class HomeScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateGroupDialog(context),
         icon: const Icon(Icons.add),
-        label: const Text('Ny gruppe'),
+        label: Text(l10n.newGroup),
       ),
     );
   }
@@ -122,6 +124,7 @@ class _GroupCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final groupRepo = ref.watch(groupRepositoryProvider);
 
     return Card(
@@ -144,7 +147,7 @@ class _GroupCard extends ConsumerWidget {
               group.navn,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            subtitle: Text('$memberCount elever'),
+            subtitle: Text(l10n.studentCount(memberCount)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.of(context).push(
@@ -161,6 +164,7 @@ class _GroupCard extends ConsumerWidget {
   }
 
   void _showGroupOptions(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final laererId = ref.read(activeLaererIdProvider);
     showModalBottomSheet(
       context: context,
@@ -170,7 +174,7 @@ class _GroupCard extends ConsumerWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('Endre navn'),
+              title: Text(l10n.renameGroup),
               onTap: () {
                 Navigator.pop(ctx);
                 _showRenameGroupDialog(context, ref);
@@ -178,8 +182,8 @@ class _GroupCard extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.copy),
-              title: const Text('Kopier gruppe'),
-              subtitle: const Text('Ny gruppe med samme elever'),
+              title: Text(l10n.copyGroup),
+              subtitle: Text(l10n.copyGroupSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 _showCopyGroupDialog(context, ref, laererId);
@@ -187,8 +191,8 @@ class _GroupCard extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.call_split),
-              title: const Text('Del gruppe'),
-              subtitle: const Text('Velg elever for ny undergruppe'),
+              title: Text(l10n.splitGroupAction),
+              subtitle: Text(l10n.splitGroupSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 _showSplitGroupDialog(context);
@@ -197,15 +201,15 @@ class _GroupCard extends ConsumerWidget {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.archive, color: Colors.orange),
-              title: const Text('Arkiver gruppe'),
+              title: Text(l10n.archiveGroup),
               onTap: () {
                 ref.read(groupRepositoryProvider).archiveGroup(group.id);
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${group.navn} arkivert'),
+                    content: Text(l10n.groupArchived(group.navn)),
                     action: SnackBarAction(
-                      label: 'Angre',
+                      label: l10n.undoAction,
                       onPressed: () {
                         ref.read(groupRepositoryProvider).restoreGroup(group.id);
                       },
@@ -221,16 +225,17 @@ class _GroupCard extends ConsumerWidget {
   }
 
   void _showRenameGroupDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: group.navn);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Endre gruppenavn'),
+        title: Text(l10n.renameGroupTitle),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Nytt navn',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.groupNameLabel,
+            border: const OutlineInputBorder(),
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -238,7 +243,7 @@ class _GroupCard extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -249,7 +254,7 @@ class _GroupCard extends ConsumerWidget {
                   .renameGroup(group.id, navn);
               if (ctx.mounted) Navigator.pop(ctx);
             },
-            child: const Text('Lagre'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -257,17 +262,18 @@ class _GroupCard extends ConsumerWidget {
   }
 
   void _showCopyGroupDialog(BuildContext context, WidgetRef ref, String? laererId) {
+    final l10n = AppLocalizations.of(context)!;
     if (laererId == null) return;
     final controller = TextEditingController(text: '${group.navn} (kopi)');
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Kopier gruppe'),
+        title: Text(l10n.copyGroupTitle),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Navn på ny gruppe',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.newGroupNameLabel,
+            border: const OutlineInputBorder(),
           ),
           autofocus: true,
           textCapitalization: TextCapitalization.words,
@@ -275,7 +281,7 @@ class _GroupCard extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -289,11 +295,11 @@ class _GroupCard extends ConsumerWidget {
               if (ctx.mounted) {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$navn opprettet')),
+                  SnackBar(content: Text(l10n.groupCopied(navn))),
                 );
               }
             },
-            child: const Text('Kopier'),
+            child: Text(l10n.copy),
           ),
         ],
       ),

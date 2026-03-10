@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -47,24 +48,26 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Future<void> _signIn() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _loading = true);
     try {
       final ok = await _backupService.signIn();
       if (ok) {
         _signedIn = true;
         _lastBackup = await _backupService.getLastBackupDate();
-        setState(() => _statusMessage = 'Logget inn');
+        setState(() => _statusMessage = l10n.signedIn);
       } else {
-        setState(() => _statusMessage = 'Innlogging avbrutt');
+        setState(() => _statusMessage = l10n.signInCancelled);
       }
     } catch (e) {
-      setState(() => _statusMessage = 'Feil ved innlogging: $e');
+      setState(() => _statusMessage = '${l10n.signInError} $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _backup() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _statusMessage = null;
@@ -72,32 +75,30 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       await _backupService.uploadBackup(widget.dbPath);
       _lastBackup = DateTime.now();
-      setState(() => _statusMessage = 'Backup fullført');
+      setState(() => _statusMessage = l10n.backupDone);
     } catch (e) {
-      setState(() => _statusMessage = 'Feil ved backup: $e');
+      setState(() => _statusMessage = '${l10n.backupError} $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _restore() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Gjenopprett fra backup?'),
-        content: const Text(
-          'All nåværende data erstattes med dataen fra backup. '
-          'Appen vil starte på nytt.',
-        ),
+        title: Text(l10n.restoreConfirmTitle),
+        content: Text(l10n.restoreConfirmContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text('Gjenopprett'),
+            child: Text(l10n.restore),
           ),
         ],
       ),
@@ -113,7 +114,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       final restoredPath = await _backupService.downloadBackup();
       if (restoredPath == null) {
-        setState(() => _statusMessage = 'Ingen backup funnet på Google Drive');
+        setState(() => _statusMessage = l10n.noBackupFound);
         return;
       }
 
@@ -121,10 +122,9 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final restoredFile = File(restoredPath);
       await restoredFile.copy(widget.dbPath);
 
-      setState(() =>
-          _statusMessage = 'Gjenopprettet. Start appen på nytt for å ta i bruk.');
+      setState(() => _statusMessage = l10n.restoreSuccess);
     } catch (e) {
-      setState(() => _statusMessage = 'Feil ved gjenoppretting: $e');
+      setState(() => _statusMessage = '${l10n.restoreError} $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -132,11 +132,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('dd.MM.yyyy HH:mm', 'nb');
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Backup'),
+        title: Text(l10n.backup),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -145,15 +146,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           children: [
             const Icon(Icons.cloud_upload, size: 48, color: Colors.blue),
             const SizedBox(height: 16),
-            const Text(
-              'Google Drive Backup',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              l10n.googleDriveBackup,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Lagre en kryptert kopi av databasen din på Google Drive. '
-              'Kun du har tilgang til backupen.',
-            ),
+            Text(l10n.backupDescription),
             const SizedBox(height: 24),
             if (_lastBackup != null)
               Container(
@@ -169,7 +167,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Siste backup: ${dateFormat.format(_lastBackup!)}',
+                        l10n.lastBackup(dateFormat.format(_lastBackup!)),
                         style: TextStyle(color: Colors.green[700]),
                       ),
                     ),
@@ -194,7 +192,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 child: FilledButton.icon(
                   onPressed: _loading ? null : _signIn,
                   icon: const Icon(Icons.login),
-                  label: const Text('Logg inn med Google'),
+                  label: Text(l10n.signInWithGoogle),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(0, 56),
                   ),
@@ -212,7 +210,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.cloud_upload),
-                  label: const Text('Ta backup nå'),
+                  label: Text(l10n.takeBackupNow),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(0, 56),
                   ),
@@ -224,7 +222,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                 child: OutlinedButton.icon(
                   onPressed: _loading ? null : _restore,
                   icon: const Icon(Icons.cloud_download),
-                  label: const Text('Gjenopprett fra backup'),
+                  label: Text(l10n.restoreFromBackup),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(0, 56),
                   ),

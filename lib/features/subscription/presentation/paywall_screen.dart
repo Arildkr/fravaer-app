@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../data/subscription_service.dart';
 
@@ -22,6 +23,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   String? _error;
 
   Future<void> _subscribe() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -30,16 +32,17 @@ class _PaywallScreenState extends State<PaywallScreen> {
     try {
       final started = await widget.subscriptionService.purchase();
       if (!started) {
-        setState(() => _error = 'Kunne ikke starte kjøp. Prøv igjen senere.');
+        setState(() => _error = l10n.purchaseError);
       }
     } catch (e) {
-      setState(() => _error = 'Noe gikk galt: $e');
+      setState(() => _error = '${l10n.purchaseGenericError} $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _restore() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _loading = true;
       _error = null;
@@ -58,11 +61,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
       if (result) {
         widget.onSubscribed();
       } else {
-        setState(
-            () => _error = 'Ingen tidligere abonnement funnet.');
+        setState(() => _error = l10n.noSubscriptionFound);
       }
     } catch (e) {
-      setState(() => _error = 'Kunne ikke gjenopprette: $e');
+      setState(() => _error = '${l10n.restoreFailedError} $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -70,6 +72,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -89,7 +93,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Prøveperioden er utløpt',
+                l10n.trialExpired,
                 style: TextStyle(fontSize: 18, color: Colors.grey[600]),
               ),
               const SizedBox(height: 32),
@@ -107,25 +111,25 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     width: 2,
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
                     Text(
-                      'Årsabonnement',
+                      l10n.yearlySubscription,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      '29 kr / år',
+                      l10n.yearlyPrice,
                       style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
+                          const TextStyle(fontSize: 32, fontWeight: FontWeight.w800),
                     ),
-                    SizedBox(height: 16),
-                    _Feature(text: 'Ubegrenset antall grupper og elever'),
-                    _Feature(text: 'Klasseroms- og turmodus'),
-                    _Feature(text: 'Rapporter og eksport'),
-                    _Feature(text: 'Kryptert lokal lagring'),
-                    _Feature(text: 'Biometrisk lås'),
+                    const SizedBox(height: 16),
+                    _Feature(text: l10n.featureUnlimitedGroups),
+                    _Feature(text: l10n.featureClassroomTrip),
+                    _Feature(text: l10n.featureReports),
+                    _Feature(text: l10n.featureEncrypted),
+                    _Feature(text: l10n.featureBiometric),
                   ],
                 ),
               ),
@@ -154,16 +158,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Abonner — 29 kr/år',
-                          style: TextStyle(fontSize: 18),
+                      : Text(
+                          l10n.subscribeCta,
+                          style: const TextStyle(fontSize: 18),
                         ),
                 ),
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: _loading ? null : _restore,
-                child: const Text('Gjenopprett tidligere kjøp'),
+                child: Text(l10n.restorePurchase),
               ),
               const Spacer(),
             ],

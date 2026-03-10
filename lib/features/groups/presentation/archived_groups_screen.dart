@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../core/database/database.dart';
 import '../../../core/providers/app_providers.dart';
@@ -10,6 +11,7 @@ class ArchivedGroupsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final laererId = ref.watch(activeLaererIdProvider);
     if (laererId == null) return const SizedBox.shrink();
 
@@ -17,7 +19,7 @@ class ArchivedGroupsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Arkiverte grupper'),
+        title: Text(l10n.archivedGroups),
       ),
       body: StreamBuilder<List<GrupperData>>(
         stream: groupRepo.watchArchivedGroups(laererId),
@@ -33,10 +35,10 @@ class ArchivedGroupsScreen extends ConsumerWidget {
                   children: [
                     Icon(Icons.archive, size: 64, color: Colors.grey[400]),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Ingen arkiverte grupper',
+                    Text(
+                      l10n.noArchivedGroups,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -61,10 +63,10 @@ class ArchivedGroupsScreen extends ConsumerWidget {
                   onPressed: () {
                     ref.read(groupRepositoryProvider).restoreGroup(group.id);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${group.navn} gjenopprettet')),
+                      SnackBar(content: Text(l10n.groupRestored(group.navn))),
                     );
                   },
-                  child: const Text('Gjenopprett'),
+                  child: Text(l10n.restore),
                 ),
               );
             },

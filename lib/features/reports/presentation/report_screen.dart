@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
@@ -29,31 +30,33 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rapport'),
+        title: Text(l10n.report),
         actions: [
           IconButton(
             icon: const Icon(Icons.picture_as_pdf),
-            tooltip: 'Eksporter PDF',
+            tooltip: l10n.exportPdf,
             onPressed: _exportPdf,
           ),
           IconButton(
             icon: const Icon(Icons.copy),
-            tooltip: 'Kopier til utklippstavle',
+            tooltip: l10n.copyToClipboard,
             onPressed: () async {
               final text = await _reportFuture;
               await Clipboard.setData(ClipboardData(text: text));
               if (context.mounted) {
+                final l10n = AppLocalizations.of(context)!;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Rapport kopiert')),
+                  SnackBar(content: Text(l10n.reportCopied)),
                 );
               }
             },
           ),
           IconButton(
             icon: const Icon(Icons.share),
-            tooltip: 'Del rapport',
+            tooltip: l10n.shareReport,
             onPressed: () async {
               final text = await _reportFuture;
               await Share.share(text);
@@ -104,7 +107,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   child: FilledButton.icon(
                     onPressed: _exportPdf,
                     icon: const Icon(Icons.picture_as_pdf),
-                    label: const Text('Eksporter PDF'),
+                    label: Text(l10n.exportPdf),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(0, 56),
                     ),
@@ -118,15 +121,16 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                       final text = await _reportFuture;
                       await Clipboard.setData(ClipboardData(text: text));
                       if (context.mounted) {
+                        final l10n = AppLocalizations.of(context)!;
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Rapport kopiert til utklippstavle'),
+                          SnackBar(
+                            content: Text(l10n.reportCopiedFull),
                           ),
                         );
                       }
                     },
                     icon: const Icon(Icons.copy),
-                    label: const Text('Kopier rapport'),
+                    label: Text(l10n.copyReport),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 56),
                     ),
@@ -141,7 +145,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                       await Share.share(text);
                     },
                     icon: const Icon(Icons.share),
-                    label: const Text('Del via...'),
+                    label: Text(l10n.shareVia),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 56),
                     ),
@@ -167,8 +171,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       );
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Feil ved PDF-eksport: $e')),
+          SnackBar(content: Text('${l10n.pdfExportError} $e')),
         );
       }
     }

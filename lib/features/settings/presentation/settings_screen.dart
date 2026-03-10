@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,12 +22,13 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final laererId = ref.watch(activeLaererIdProvider);
     final db = ref.watch(databaseProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Innstillinger'),
+        title: Text(l10n.settings),
       ),
       body: ListView(
         children: [
@@ -52,10 +54,8 @@ class SettingsScreen extends ConsumerWidget {
                 if (laerer == null) return const SizedBox.shrink();
 
                 return SwitchListTile(
-                  title: const Text('Biometrisk lås'),
-                  subtitle: const Text(
-                    'Krev fingeravtrykk eller ansikt ved oppstart',
-                  ),
+                  title: Text(l10n.biometricLock),
+                  subtitle: Text(l10n.biometricLockSubtitle),
                   secondary: const Icon(Icons.fingerprint),
                   value: laerer.biometriskLaasAktiv,
                   onChanged: (value) async {
@@ -70,8 +70,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ListTile(
             leading: const Icon(Icons.cloud_upload),
-            title: const Text('Backup'),
-            subtitle: const Text('Sikkerhetskopi til Google Drive'),
+            title: Text(l10n.backup),
+            subtitle: Text(l10n.backupSubtitle),
             trailing: const Icon(Icons.chevron_right),
             onTap: () async {
               final dir = await getApplicationDocumentsDirectory();
@@ -89,23 +89,20 @@ class SettingsScreen extends ConsumerWidget {
           FutureBuilder<PackageInfo>(
             future: PackageInfo.fromPlatform(),
             builder: (context, snapshot) {
-              final version = snapshot.data != null
-                  ? 'Versjon ${snapshot.data!.version}'
-                  : 'Laster versjon...';
+              final versionText = snapshot.data != null
+                  ? l10n.versionLabel(snapshot.data!.version)
+                  : l10n.loadingVersion;
               return ListTile(
                 leading: const Icon(Icons.info_outline),
-                title: const Text('Om Alle med'),
-                subtitle: Text(version),
+                title: Text(l10n.aboutApp),
+                subtitle: Text(versionText),
               );
             },
           ),
-          const ListTile(
-            leading: Icon(Icons.lock_outline),
-            title: Text('Personvern'),
-            subtitle: Text(
-              'All data lagres kryptert lokalt på din enhet. '
-              'Ingen data sendes til noen server.',
-            ),
+          ListTile(
+            leading: const Icon(Icons.lock_outline),
+            title: Text(l10n.privacyTitle),
+            subtitle: Text(l10n.privacySubtitle),
           ),
         ],
       ),
@@ -121,6 +118,8 @@ class _SubscriptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     final String title;
     final String subtitle;
     final IconData icon;
@@ -128,22 +127,22 @@ class _SubscriptionTile extends StatelessWidget {
 
     switch (status) {
       case SubscriptionStatus.active:
-        title = 'Abonnement aktivt';
-        subtitle = 'Årsabonnement — 29 kr/år';
+        title = l10n.subscriptionActive;
+        subtitle = l10n.subscriptionActiveSubtitle;
         icon = Icons.verified;
         iconColor = Colors.green;
       case SubscriptionStatus.trial:
-        title = 'Prøveperiode';
-        subtitle = 'Gratis i 30 dager';
+        title = l10n.trialStatus;
+        subtitle = l10n.trialFree;
         icon = Icons.schedule;
         iconColor = Colors.orange;
       case SubscriptionStatus.expired:
-        title = 'Abonnement utløpt';
-        subtitle = 'Abonner for å fortsette å bruke appen';
+        title = l10n.subscriptionExpired;
+        subtitle = l10n.subscriptionExpiredSubtitle;
         icon = Icons.warning;
         iconColor = Colors.red;
       case SubscriptionStatus.loading:
-        title = 'Laster...';
+        title = l10n.loadingStatus;
         subtitle = '';
         icon = Icons.hourglass_empty;
         iconColor = Colors.grey;
@@ -154,7 +153,7 @@ class _SubscriptionTile extends StatelessWidget {
       builder: (context, snapshot) {
         final daysLeft = snapshot.data;
         final displaySubtitle = status == SubscriptionStatus.trial && daysLeft != null
-            ? '$daysLeft dager igjen av prøveperioden'
+            ? l10n.trialDaysLeft(daysLeft)
             : subtitle;
 
         return ListTile(

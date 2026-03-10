@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/app_providers.dart';
@@ -39,8 +40,10 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
       return _buildPreviewDialog();
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return AlertDialog(
-      title: const Text('Importer elever'),
+      title: Text(l10n.importStudents),
       contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       content: SizedBox(
         width: double.maxFinite,
@@ -59,8 +62,8 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
                     )
                   : const Icon(Icons.upload_file),
               label: Text(_parsingFile
-                  ? 'Leser fil...'
-                  : 'Velg fil (.xlsx, .csv)'),
+                  ? l10n.readingFile
+                  : l10n.chooseFile),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(0, 52),
                 textStyle: const TextStyle(fontSize: 16),
@@ -74,23 +77,23 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
                   style: const TextStyle(color: Colors.red, fontSize: 14),
                 ),
               ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
-                  Expanded(child: Divider()),
+                  const Expanded(child: Divider()),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('eller', style: TextStyle(color: Colors.grey)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(l10n.orSeparator, style: const TextStyle(color: Colors.grey)),
                   ),
-                  Expanded(child: Divider()),
+                  const Expanded(child: Divider()),
                 ],
               ),
             ),
             // Manuell innliming
-            const Text(
-              'Lim inn elevliste (ett navn per linje)',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              l10n.pasteStudentList,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -104,12 +107,11 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
               style: const TextStyle(fontSize: 16),
             ),
             // Tooltip
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Skriv navn i kolonne A. Etternavn kan legges i kolonne B. '
-                'Første rad kan være overskrift — appen finner ut av det automatisk.',
-                style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+                l10n.importHint,
+                style: const TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
               ),
             ),
           ],
@@ -118,7 +120,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
       actions: [
         TextButton(
           onPressed: _importing ? null : () => Navigator.pop(context),
-          child: const Text('Avbryt'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: _importing ? null : _importFromText,
@@ -128,7 +130,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Importer'),
+              : Text(l10n.importAction),
         ),
       ],
     );
@@ -136,8 +138,9 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
 
   Widget _buildPreviewDialog() {
     final preview = _preview!;
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Forhåndsvisning'),
+      title: Text(l10n.previewTitle),
       contentPadding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       content: SizedBox(
         width: double.maxFinite,
@@ -157,8 +160,8 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Fant ${preview.names.length} elever'
-                      '${preview.hadHeader ? ' (overskriftsrad hoppet over)' : ''}',
+                      l10n.foundStudentsCount(preview.names.length) +
+                          (preview.hadHeader ? ' ${l10n.headerSkipped}' : ''),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -170,7 +173,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ser dette riktig ut?',
+              l10n.doesThisLookRight,
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 8),
@@ -218,7 +221,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
             _preview = null;
             _fileError = null;
           }),
-          child: const Text('Tilbake'),
+          child: Text(l10n.back),
         ),
         FilledButton(
           onPressed: _importing ? null : _importFromPreview,
@@ -228,7 +231,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text('Importer ${preview.names.length} elever'),
+              : Text(l10n.importCountStudents(preview.names.length)),
         ),
       ],
     );
@@ -239,6 +242,8 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
       _parsingFile = true;
       _fileError = null;
     });
+
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -255,7 +260,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
       if (filePath == null) {
         setState(() {
           _parsingFile = false;
-          _fileError = 'Kunne ikke lese filen';
+          _fileError = l10n.couldNotReadFile;
         });
         return;
       }
@@ -265,7 +270,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
       if (preview.names.isEmpty) {
         setState(() {
           _parsingFile = false;
-          _fileError = 'Fant ingen navn i filen';
+          _fileError = l10n.noNamesFound;
         });
         return;
       }
@@ -277,7 +282,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
     } catch (e) {
       setState(() {
         _parsingFile = false;
-        _fileError = 'Kunne ikke lese filen: ${e.toString().replaceAll('Exception: ', '')}';
+        _fileError = '${l10n.couldNotReadFile}: ${e.toString().replaceAll('Exception: ', '')}';
       });
     }
   }
@@ -288,6 +293,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
     setState(() => _importing = true);
 
     final repo = ref.read(groupRepositoryProvider);
+    final l10n = AppLocalizations.of(context)!;
     int count = 0;
     for (final name in _preview!.names) {
       await repo.addStudentToGroup(
@@ -300,7 +306,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
     if (mounted) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$count elever importert')),
+        SnackBar(content: Text(l10n.studentsImported(count))),
       );
     }
   }
@@ -311,6 +317,8 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
 
     setState(() => _importing = true);
 
+    final l10n = AppLocalizations.of(context)!;
+
     final count =
         await ref.read(groupRepositoryProvider).importStudentsFromText(
               text: text,
@@ -320,7 +328,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
     if (mounted) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$count elever importert')),
+        SnackBar(content: Text(l10n.studentsImported(count))),
       );
     }
   }

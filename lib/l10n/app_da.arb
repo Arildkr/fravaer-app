@@ -1,0 +1,607 @@
+{
+  "@@locale": "da",
+
+  "appTitle": "Alle med",
+  "@appTitle": {},
+
+  "cancel": "Annuller",
+  "@cancel": {},
+
+  "save": "Gem",
+  "@save": {},
+
+  "next": "Næste",
+  "@next": {},
+
+  "skip": "Spring over",
+  "@skip": {},
+
+  "getStarted": "Kom i gang",
+  "@getStarted": {},
+
+  "create": "Opret",
+  "@create": {},
+
+  "importAction": "Importer",
+  "@importAction": {},
+
+  "back": "Tilbage",
+  "@back": {},
+
+  "restore": "Gendan",
+  "@restore": {},
+
+  "remove": "Fjern",
+  "@remove": {},
+
+  "report": "Rapport",
+  "@report": {},
+
+  "end": "Afslut",
+  "@end": {},
+
+  "copy": "Kopier",
+  "@copy": {},
+
+  "statusUnknown": "Ukendt",
+  "@statusUnknown": {},
+
+  "statusPresent": "Til stede",
+  "@statusPresent": {},
+
+  "statusAbsent": "Fravær",
+  "@statusAbsent": {},
+
+  "statusLate": "Forsinket",
+  "@statusLate": {},
+
+  "statusPlannedAbsent": "Planlagt fraværende",
+  "@statusPlannedAbsent": {},
+
+  "myGroups": "Mine grupper",
+  "@myGroups": {},
+
+  "archivedGroups": "Arkiverede grupper",
+  "@archivedGroups": {},
+
+  "settings": "Indstillinger",
+  "@settings": {},
+
+  "noGroupsYet": "Ingen grupper endnu",
+  "@noGroupsYet": {},
+
+  "noGroupsDescription": "Opret din første gruppe for at komme i gang.",
+  "@noGroupsDescription": {},
+
+  "newGroup": "Ny gruppe",
+  "@newGroup": {},
+
+  "studentCount": "{count} elever",
+  "@studentCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "exportSemester": "Eksporter semester",
+  "@exportSemester": {},
+
+  "sessionHistory": "Sessionshistorik",
+  "@sessionHistory": {},
+
+  "addStudent": "Tilføj elev",
+  "@addStudent": {},
+
+  "importStudents": "Importer elever",
+  "@importStudents": {},
+
+  "noStudentsInGroup": "Ingen elever i gruppen",
+  "@noStudentsInGroup": {},
+
+  "addStudentsManuallyOrImport": "Tilføj elever manuelt eller importer fra fil.",
+  "@addStudentsManuallyOrImport": {},
+
+  "classroom": "Klasseværelse",
+  "@classroom": {},
+
+  "trip": "Tur",
+  "@trip": {},
+
+  "viewFinishedSessions": "Vis afsluttede sessioner",
+  "@viewFinishedSessions": {},
+
+  "activeSessionExistsTitle": "Aktiv session findes",
+  "@activeSessionExistsTitle": {},
+
+  "activeSessionExistsContent": "Der findes allerede en aktiv session for denne gruppe. Vil du fortsætte den?",
+  "@activeSessionExistsContent": {},
+
+  "continueSession": "Fortsæt",
+  "@continueSession": {},
+
+  "renameStudentTitle": "Skift elevnavn",
+  "@renameStudentTitle": {},
+
+  "newNameHint": "Nyt navn",
+  "@newNameHint": {},
+
+  "removeStudentTitle": "Fjern elev fra gruppen?",
+  "@removeStudentTitle": {},
+
+  "removeStudentContent": "{name} fjernes fra denne gruppe. Elevens data og historik bevares.",
+  "@removeStudentContent": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "historyTitle": "Historik — {groupName}",
+  "@historyTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "noFinishedSessions": "Ingen afsluttede sessioner",
+  "@noFinishedSessions": {},
+
+  "finishedSessionsDescription": "Afsluttede sessioner vises her, så du kan se rapport eller redigere fravær efterfølgende.",
+  "@finishedSessionsDescription": {},
+
+  "editAbsence": "Rediger fravær",
+  "@editAbsence": {},
+
+  "classroomTitle": "{groupName} — Klasseværelse",
+  "@classroomTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "tripTitle": "{groupName} — Tur",
+  "@tripTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Tryk = skift status · Hold inde = flere valg",
+  "@tapChangeStatusHint": {},
+
+  "endSession": "Afslut session",
+  "@endSession": {},
+
+  "endSessionTitle": "Afslut session?",
+  "@endSessionTitle": {},
+
+  "endTripTitle": "Afslut turregistrering?",
+  "@endTripTitle": {},
+
+  "reportStillAvailable": "Du kan stadig se rapporten efter afslutning.",
+  "@reportStillAvailable": {},
+
+  "searchStudent": "Søg efter elev...",
+  "@searchStudent": {},
+
+  "registeredCount": "{registered} / {total} registreret",
+  "@registeredCount": {
+    "placeholders": {
+      "registered": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "notRegisteredCount": "{count} ikke registreret",
+  "@notRegisteredCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "minutesLate": "{minutes} min forsinket",
+  "@minutesLate": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+
+  "lateLabel": "Forsinket:",
+  "@lateLabel": {},
+
+  "exportPdf": "Eksporter PDF",
+  "@exportPdf": {},
+
+  "copyToClipboard": "Kopier til udklipsholder",
+  "@copyToClipboard": {},
+
+  "shareReport": "Del rapport",
+  "@shareReport": {},
+
+  "reportCopied": "Rapport kopieret",
+  "@reportCopied": {},
+
+  "copyReport": "Kopier rapport",
+  "@copyReport": {},
+
+  "reportCopiedFull": "Rapport kopieret til udklipsholder",
+  "@reportCopiedFull": {},
+
+  "shareVia": "Del via...",
+  "@shareVia": {},
+
+  "pdfExportError": "Fejl ved PDF-eksport:",
+  "@pdfExportError": {},
+
+  "exportScreenTitle": "Eksporter — {groupName}",
+  "@exportScreenTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "choosePeriod": "Vælg periode",
+  "@choosePeriod": {},
+
+  "exportCsvDescription": "Eksporterer CSV med alle sessioner i perioden. Én række per elev, én kolonne per session.",
+  "@exportCsvDescription": {},
+
+  "from": "Fra",
+  "@from": {},
+
+  "to": "Til",
+  "@to": {},
+
+  "csvLegend": "Forklaring:\nT = Til stede · F = Fravær · S15 = Forsinket 15 min\nP = Planlagt fraværende · ? = Ikke registreret",
+  "@csvLegend": {},
+
+  "exportCsv": "Eksporter CSV",
+  "@exportCsv": {},
+
+  "noSessionsInPeriod": "Ingen sessioner i valgt periode.",
+  "@noSessionsInPeriod": {},
+
+  "exportError": "Fejl ved eksport:",
+  "@exportError": {},
+
+  "biometricLock": "Biometrisk lås",
+  "@biometricLock": {},
+
+  "biometricLockSubtitle": "Kræv fingeraftryk eller ansigt ved opstart",
+  "@biometricLockSubtitle": {},
+
+  "backup": "Sikkerhedskopi",
+  "@backup": {},
+
+  "backupSubtitle": "Sikkerhedskopi til Google Drive",
+  "@backupSubtitle": {},
+
+  "aboutApp": "Om Alle med",
+  "@aboutApp": {},
+
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+
+  "loadingVersion": "Indlæser version...",
+  "@loadingVersion": {},
+
+  "privacyTitle": "Privatliv",
+  "@privacyTitle": {},
+
+  "privacySubtitle": "Alle data gemmes krypteret lokalt på din enhed. Ingen data sendes til nogen server.",
+  "@privacySubtitle": {},
+
+  "subscriptionActive": "Abonnement aktivt",
+  "@subscriptionActive": {},
+
+  "subscriptionActiveSubtitle": "Årsabonnement — 29 kr/år",
+  "@subscriptionActiveSubtitle": {},
+
+  "trialStatus": "Prøveperiode",
+  "@trialStatus": {},
+
+  "trialFree": "Gratis i 30 dage",
+  "@trialFree": {},
+
+  "trialDaysLeft": "{days} dage tilbage af prøveperioden",
+  "@trialDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "subscriptionExpired": "Abonnement udløbet",
+  "@subscriptionExpired": {},
+
+  "subscriptionExpiredSubtitle": "Abonner for at fortsætte med at bruge appen",
+  "@subscriptionExpiredSubtitle": {},
+
+  "loadingStatus": "Indlæser...",
+  "@loadingStatus": {},
+
+  "googleDriveBackup": "Google Drive Sikkerhedskopi",
+  "@googleDriveBackup": {},
+
+  "backupDescription": "Gem en krypteret kopi af din database på Google Drive. Kun du har adgang til sikkerhedskopien.",
+  "@backupDescription": {},
+
+  "lastBackup": "Seneste sikkerhedskopi: {date}",
+  "@lastBackup": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+
+  "signInWithGoogle": "Log ind med Google",
+  "@signInWithGoogle": {},
+
+  "takeBackupNow": "Tag sikkerhedskopi nu",
+  "@takeBackupNow": {},
+
+  "restoreFromBackup": "Gendan fra sikkerhedskopi",
+  "@restoreFromBackup": {},
+
+  "restoreConfirmTitle": "Gendan fra sikkerhedskopi?",
+  "@restoreConfirmTitle": {},
+
+  "restoreConfirmContent": "Alle nuværende data erstattes med data fra sikkerhedskopien. Appen genstarter.",
+  "@restoreConfirmContent": {},
+
+  "noBackupFound": "Ingen sikkerhedskopi fundet på Google Drive",
+  "@noBackupFound": {},
+
+  "restoreSuccess": "Gendannet. Genstart appen for at tage i brug.",
+  "@restoreSuccess": {},
+
+  "signedIn": "Logget ind",
+  "@signedIn": {},
+
+  "signInCancelled": "Login annulleret",
+  "@signInCancelled": {},
+
+  "signInError": "Fejl ved login:",
+  "@signInError": {},
+
+  "backupError": "Fejl ved sikkerhedskopi:",
+  "@backupError": {},
+
+  "restoreError": "Fejl ved gendannelse:",
+  "@restoreError": {},
+
+  "backupDone": "Sikkerhedskopi fuldført",
+  "@backupDone": {},
+
+  "onboarding1Title": "Opret grupper",
+  "@onboarding1Title": {},
+
+  "onboarding1Desc": "Start med at oprette en gruppe og tilføj elever.\nImporter fra CSV eller tilføj manuelt.",
+  "@onboarding1Desc": {},
+
+  "onboarding2Title": "Klasseværelsestilstand",
+  "@onboarding2Title": {},
+
+  "onboarding2Desc": "Tryk på en elev for at registrere til stede.\nTryk igen for fravær. Hold inde for flere valg.",
+  "@onboarding2Desc": {},
+
+  "onboarding3Title": "Tur-tilstand",
+  "@onboarding3Title": {},
+
+  "onboarding3Desc": "Designet til en-hånds brug udendørs.\nSøg efter elever med tre bogstaver — ét tryk registrerer.",
+  "@onboarding3Desc": {},
+
+  "onboarding4Title": "Rapport",
+  "@onboarding4Title": {},
+
+  "onboarding4Desc": "Generer rapport med ét tryk.\nKopier eller del via e-mail, SMS osv.",
+  "@onboarding4Desc": {},
+
+  "onboarding5Title": "Sikkert og privat",
+  "@onboarding5Title": {},
+
+  "onboarding5Desc": "Alle data gemmes krypteret på din enhed.\nBiometrisk lås beskytter elevdata.\nFungerer helt uden internet.",
+  "@onboarding5Desc": {},
+
+  "trialExpired": "Prøveperioden er udløbet",
+  "@trialExpired": {},
+
+  "yearlySubscription": "Årsabonnement",
+  "@yearlySubscription": {},
+
+  "yearlyPrice": "29 kr / år",
+  "@yearlyPrice": {},
+
+  "featureUnlimitedGroups": "Ubegrænset antal grupper og elever",
+  "@featureUnlimitedGroups": {},
+
+  "featureClassroomTrip": "Klasseværelses- og tur-tilstand",
+  "@featureClassroomTrip": {},
+
+  "featureReports": "Rapporter og eksport",
+  "@featureReports": {},
+
+  "featureEncrypted": "Krypteret lokal lagring",
+  "@featureEncrypted": {},
+
+  "featureBiometric": "Biometrisk lås",
+  "@featureBiometric": {},
+
+  "subscribeCta": "Abonner — 29 kr/år",
+  "@subscribeCta": {},
+
+  "restorePurchase": "Gendan tidligere køb",
+  "@restorePurchase": {},
+
+  "purchaseError": "Kunne ikke starte køb. Prøv igen senere.",
+  "@purchaseError": {},
+
+  "purchaseGenericError": "Noget gik galt:",
+  "@purchaseGenericError": {},
+
+  "noSubscriptionFound": "Ingen tidligere abonnement fundet.",
+  "@noSubscriptionFound": {},
+
+  "restoreFailedError": "Kunne ikke gendanne:",
+  "@restoreFailedError": {},
+
+  "authenticateToOpen": "Godkend for at åbne appen",
+  "@authenticateToOpen": {},
+
+  "unlockApp": "Lås op",
+  "@unlockApp": {},
+
+  "biometricReason": "Lås op Alle med",
+  "@biometricReason": {},
+
+  "authFailed": "Godkendelse mislykkedes",
+  "@authFailed": {},
+
+  "noArchivedGroups": "Ingen arkiverede grupper",
+  "@noArchivedGroups": {},
+
+  "groupRestored": "{name} gendannet",
+  "@groupRestored": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "groupNameLabel": "Gruppenavn",
+  "@groupNameLabel": {},
+
+  "groupNameHint": "f.eks. 10A, Tur Naturpark",
+  "@groupNameHint": {},
+
+  "renameGroup": "Skift navn",
+  "@renameGroup": {},
+
+  "copyGroup": "Kopier gruppe",
+  "@copyGroup": {},
+
+  "copyGroupSubtitle": "Ny gruppe med samme elever",
+  "@copyGroupSubtitle": {},
+
+  "splitGroupAction": "Del gruppe",
+  "@splitGroupAction": {},
+
+  "splitGroupSubtitle": "Vælg elever til ny undergruppe",
+  "@splitGroupSubtitle": {},
+
+  "archiveGroup": "Arkiver gruppe",
+  "@archiveGroup": {},
+
+  "groupArchived": "{name} arkiveret",
+  "@groupArchived": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "undoAction": "Fortryd",
+  "@undoAction": {},
+
+  "renameGroupTitle": "Skift gruppenavn",
+  "@renameGroupTitle": {},
+
+  "copyGroupTitle": "Kopier gruppe",
+  "@copyGroupTitle": {},
+
+  "newGroupNameLabel": "Navn på ny gruppe",
+  "@newGroupNameLabel": {},
+
+  "groupCopied": "{name} oprettet",
+  "@groupCopied": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "splitGroupTitle": "Del gruppe",
+  "@splitGroupTitle": {},
+
+  "splitGroupNewGroupHint": "f.eks. Turgruppe 1",
+  "@splitGroupNewGroupHint": {},
+
+  "selectStudentsForNewGroup": "Vælg elever til den nye gruppe:",
+  "@selectStudentsForNewGroup": {},
+
+  "selectAll": "Vælg alle",
+  "@selectAll": {},
+
+  "clearAll": "Ryd alle",
+  "@clearAll": {},
+
+  "selectedCount": "{count} valgt",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "createGroup": "Opret gruppe",
+  "@createGroup": {},
+
+  "groupCreatedWithStudents": "{name} oprettet med {count} elever",
+  "@groupCreatedWithStudents": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+
+  "readingFile": "Læser fil...",
+  "@readingFile": {},
+
+  "chooseFile": "Vælg fil (.xlsx, .csv)",
+  "@chooseFile": {},
+
+  "orSeparator": "eller",
+  "@orSeparator": {},
+
+  "pasteStudentList": "Indsæt elevliste (ét navn per linje)",
+  "@pasteStudentList": {},
+
+  "importHint": "Skriv navn i kolonne A. Efternavn kan placeres i kolonne B. Første række kan være overskrift — appen finder ud af det automatisk.",
+  "@importHint": {},
+
+  "previewTitle": "Forhåndsvisning",
+  "@previewTitle": {},
+
+  "foundStudentsCount": "Fandt {count} elever",
+  "@foundStudentsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "headerSkipped": " (overskriftsrække sprunget over)",
+  "@headerSkipped": {},
+
+  "doesThisLookRight": "Ser dette rigtigt ud?",
+  "@doesThisLookRight": {},
+
+  "importCountStudents": "Importer {count} elever",
+  "@importCountStudents": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "studentsImported": "{count} elever importeret",
+  "@studentsImported": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "couldNotReadFile": "Kunne ikke læse filen",
+  "@couldNotReadFile": {},
+
+  "noNamesFound": "Fandt ingen navne i filen",
+  "@noNamesFound": {},
+
+  "startupError": "Fejl ved opstart:",
+  "@startupError": {}
+}

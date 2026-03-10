@@ -1,7 +1,7 @@
 name: fravaer_app
 description: "Alle med — fraværsverktøy for lærere"
 publish_to: 'none'
-version: 1.0.4+6
+version: 1.0.5+7
 # version format: major.minor.patch+buildNumber
 # Increment buildNumber for each Play Store upload
 
@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # State management
@@ -75,6 +77,7 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/icon2.png"
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/icon5.png

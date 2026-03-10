@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../core/database/tables.dart';
 import '../../../core/theme/app_theme.dart';
@@ -27,6 +28,8 @@ class CountBanner extends StatelessWidget {
 
     final alleDone = ukjente == 0 && total > 0;
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -37,7 +40,7 @@ class CountBanner extends StatelessWidget {
         children: [
           // Hovedteller — stor og tydelig
           Text(
-            '$registrert / $total registrert',
+            l10n.registeredCount(registrert, total),
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.bold,
@@ -54,20 +57,20 @@ class CountBanner extends StatelessWidget {
             runSpacing: 6,
             children: [
               _CountChip(
-                  label: 'Til stede',
+                  label: l10n.statusPresent,
                   count: tilStede,
                   color: AppTheme.statusTilStede),
               _CountChip(
-                  label: 'Fravær',
+                  label: l10n.statusAbsent,
                   count: fravaer,
                   color: AppTheme.statusFravaer),
               _CountChip(
-                  label: 'Forsinket',
+                  label: l10n.statusLate,
                   count: forsinket,
                   color: AppTheme.statusForseinka),
               if (ukjente > 0)
                 _CountChip(
-                    label: 'Ukjent',
+                    label: l10n.statusUnknown,
                     count: ukjente,
                     color: AppTheme.statusUkjent),
             ],
@@ -84,7 +87,7 @@ class CountBanner extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '$ukjente ikke registrert',
+                  l10n.notRegisteredCount(ukjente),
                   style: const TextStyle(
                     color: Color(0xFFE65100),
                     fontWeight: FontWeight.bold,

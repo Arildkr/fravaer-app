@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Interaktiv startguide — 5 skjermer som viser de vanligste brukstilfellene.
 class OnboardingScreen extends StatefulWidget {
@@ -14,45 +15,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
 
-  static const _pages = [
-    _OnboardingPage(
-      icon: Icons.groups,
-      title: 'Opprett grupper',
-      description:
-          'Start med å opprette en gruppe og legg til elever.\n'
-          'Importer fra CSV eller legg til manuelt.',
-    ),
-    _OnboardingPage(
-      icon: Icons.school,
-      title: 'Klasseromsmodus',
-      description:
-          'Trykk på en elev for å registrere til stede.\n'
-          'Trykk igjen for fravær. Hold inne for flere valg.',
-    ),
-    _OnboardingPage(
-      icon: Icons.hiking,
-      title: 'Turmodus',
-      description:
-          'Designet for en-hånds bruk ute.\n'
-          'Søk etter elever med tre bokstaver — ett trykk registrerer.',
-    ),
-    _OnboardingPage(
-      icon: Icons.description,
-      title: 'Rapport',
-      description:
-          'Generer rapport med ett trykk.\n'
-          'Kopier eller del via e-post, SMS etc.',
-    ),
-    _OnboardingPage(
-      icon: Icons.lock,
-      title: 'Trygt og privat',
-      description:
-          'All data lagres kryptert på din enhet.\n'
-          'Biometrisk lås beskytter elevdata.\n'
-          'Fungerer helt uten internett.',
-    ),
-  ];
-
   @override
   void dispose() {
     _pageController.dispose();
@@ -61,7 +23,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLast = _currentPage == _pages.length - 1;
+    final l10n = AppLocalizations.of(context)!;
+
+    final pages = [
+      _OnboardingPage(
+        icon: Icons.groups,
+        title: l10n.onboarding1Title,
+        description: l10n.onboarding1Desc,
+      ),
+      _OnboardingPage(
+        icon: Icons.school,
+        title: l10n.onboarding2Title,
+        description: l10n.onboarding2Desc,
+      ),
+      _OnboardingPage(
+        icon: Icons.hiking,
+        title: l10n.onboarding3Title,
+        description: l10n.onboarding3Desc,
+      ),
+      _OnboardingPage(
+        icon: Icons.description,
+        title: l10n.onboarding4Title,
+        description: l10n.onboarding4Desc,
+      ),
+      _OnboardingPage(
+        icon: Icons.lock,
+        title: l10n.onboarding5Title,
+        description: l10n.onboarding5Desc,
+      ),
+    ];
+
+    final isLast = _currentPage == pages.length - 1;
 
     return Scaffold(
       body: SafeArea(
@@ -72,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               alignment: Alignment.topRight,
               child: TextButton(
                 onPressed: widget.onComplete,
-                child: const Text('Hopp over'),
+                child: Text(l10n.skip),
               ),
             ),
             // Sider
@@ -80,9 +72,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PageView.builder(
                 controller: _pageController,
                 onPageChanged: (page) => setState(() => _currentPage = page),
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 itemBuilder: (context, index) {
-                  final page = _pages[index];
+                  final page = pages[index];
                   return Padding(
                     padding: const EdgeInsets.all(32),
                     child: Column(
@@ -122,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Prikker
                   Row(
                     children: List.generate(
-                      _pages.length,
+                      pages.length,
                       (index) => Container(
                         margin: const EdgeInsets.only(right: 8),
                         width: index == _currentPage ? 24 : 8,
@@ -151,7 +143,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(120, 48),
                     ),
-                    child: Text(isLast ? 'Kom i gang' : 'Neste'),
+                    child: Text(isLast ? l10n.getStarted : l10n.next),
                   ),
                 ],
               ),

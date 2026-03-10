@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -48,7 +49,7 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
       initialDate: isFrom ? _fraDato : _tilDato,
       firstDate: DateTime(2020),
       lastDate: DateTime.now().add(const Duration(days: 365)),
-      locale: const Locale('nb', 'NO'),
+      locale: Localizations.localeOf(context),
     );
     if (picked != null) {
       setState(() {
@@ -64,6 +65,8 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
   Future<void> _export() async {
     setState(() => _exporting = true);
 
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final csv = await ref.read(reportRepositoryProvider).generateSemesterCsv(
             gruppeId: widget.group.id,
@@ -74,7 +77,7 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
       if (csv.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ingen økter i valgt periode.')),
+            SnackBar(content: Text(l10n.noSessionsInPeriod)),
           );
         }
         return;
@@ -93,7 +96,7 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Feil ved eksport: $e')),
+          SnackBar(content: Text('${l10n.exportError} $e')),
         );
       }
     } finally {
@@ -103,30 +106,28 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Eksporter — ${widget.group.navn}'),
+        title: Text(l10n.exportScreenTitle(widget.group.navn)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Velg periode',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              l10n.choosePeriod,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Eksporterer CSV med alle økter i perioden. '
-              'Én rad per elev, én kolonne per økt.',
-            ),
+            Text(l10n.exportCsvDescription),
             const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
                   child: _DateButton(
-                    label: 'Fra',
+                    label: l10n.from,
                     date: _dateFormat.format(_fraDato),
                     onTap: () => _pickDate(true),
                   ),
@@ -134,7 +135,7 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _DateButton(
-                    label: 'Til',
+                    label: l10n.to,
                     date: _dateFormat.format(_tilDato),
                     onTap: () => _pickDate(false),
                   ),
@@ -142,11 +143,9 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Forklaring:\n'
-              'T = Til stede · F = Fravær · S15 = Forsinket 15 min\n'
-              'P = Planlagt borte · ? = Ikke registrert',
-              style: TextStyle(fontSize: 13, color: Colors.grey),
+            Text(
+              l10n.csvLegend,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
             ),
             const Spacer(),
             SizedBox(
@@ -160,7 +159,7 @@ class _SemesterExportScreenState extends ConsumerState<SemesterExportScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.file_download),
-                label: const Text('Eksporter CSV'),
+                label: Text(l10n.exportCsv),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(0, 56),
                 ),

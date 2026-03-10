@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../core/database/tables.dart';
 import '../../../core/utils/status_helpers.dart';
@@ -33,10 +34,10 @@ class StatusPickerDialog extends StatelessWidget {
           ),
           const Divider(height: 20),
           // Hurtigval for forsinkelse
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
-            child: Text('Forsinket:',
-                style: TextStyle(
+            child: Text(AppLocalizations.of(context)!.lateLabel,
+                style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: Color(0xFF333333))),

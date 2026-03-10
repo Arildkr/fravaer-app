@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:local_auth/local_auth.dart';
 
 /// Biometrisk låseskjerm — obligatorisk ved oppstart.
@@ -34,6 +35,8 @@ class _LockScreenState extends State<LockScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     setState(() {
       _isAuthenticating = true;
       _error = null;
@@ -49,7 +52,7 @@ class _LockScreenState extends State<LockScreen> {
       }
 
       final didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Lås opp Alle med',
+        localizedReason: l10n.biometricReason,
         options: const AuthenticationOptions(
           stickyAuth: true,
           biometricOnly: false,
@@ -59,7 +62,7 @@ class _LockScreenState extends State<LockScreen> {
       if (didAuthenticate) {
         widget.onAuthenticated();
       } else {
-        setState(() => _error = 'Autentisering mislyktes');
+        setState(() => _error = l10n.authFailed);
       }
     } catch (_) {
       // Biometri/PIN ikke konfigurert eller ikke tilgjengelig — slipp gjennom
@@ -72,6 +75,8 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -86,9 +91,9 @@ class _LockScreenState extends State<LockScreen> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Autentiser for å åpne appen',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+              Text(
+                l10n.authenticateToOpen,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
@@ -103,7 +108,7 @@ class _LockScreenState extends State<LockScreen> {
                 FilledButton.icon(
                   onPressed: _authenticate,
                   icon: const Icon(Icons.fingerprint),
-                  label: const Text('Lås opp'),
+                  label: Text(l10n.unlockApp),
                   style: FilledButton.styleFrom(
                     minimumSize: const Size(200, 56),
                   ),

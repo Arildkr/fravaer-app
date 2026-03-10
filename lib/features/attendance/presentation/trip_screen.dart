@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/database.dart';
@@ -49,11 +50,11 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('${widget.group.navn} — Tur'),
+          title: Text(AppLocalizations.of(context)!.tripTitle(widget.group.navn)),
           actions: [
             IconButton(
               icon: const Icon(Icons.description),
-              tooltip: 'Rapport',
+              tooltip: AppLocalizations.of(context)!.report,
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -65,7 +66,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.check_circle),
-              tooltip: 'Avslutt økt',
+              tooltip: AppLocalizations.of(context)!.endSession,
               onPressed: () => _endSession(context),
             ),
           ],
@@ -115,9 +116,9 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   color: Colors.grey[100],
-                  child: const Text(
-                    'Trykk = endre status · Hold inne = flere valg',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
+                  child: Text(
+                    AppLocalizations.of(context)!.tapChangeStatusHint,
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF888888)),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -126,7 +127,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Søk etter elev...',
+                      hintText: AppLocalizations.of(context)!.searchStudent,
                       prefixIcon: const Icon(Icons.search, size: 28),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
@@ -219,20 +220,20 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   }
 
   Future<void> _endSession(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Avslutt turregistrering?'),
-        content:
-            const Text('Du kan fortsatt se rapporten etter avslutning.'),
+        title: Text(l10n.endTripTitle),
+        content: Text(l10n.reportStillAvailable),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Avslutt'),
+            child: Text(l10n.end),
           ),
         ],
       ),

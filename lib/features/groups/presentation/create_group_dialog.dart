@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/app_providers.dart';
@@ -21,14 +22,15 @@ class _CreateGroupDialogState extends ConsumerState<CreateGroupDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Ny gruppe'),
+      title: Text(l10n.newGroup),
       content: TextField(
         controller: _navnController,
-        decoration: const InputDecoration(
-          labelText: 'Gruppenavn',
-          hintText: 'f.eks. 10A, Tur Hardangervidda',
-          border: OutlineInputBorder(),
+        decoration: InputDecoration(
+          labelText: l10n.groupNameLabel,
+          hintText: l10n.groupNameHint,
+          border: const OutlineInputBorder(),
         ),
         autofocus: true,
         textCapitalization: TextCapitalization.words,
@@ -37,11 +39,11 @@ class _CreateGroupDialogState extends ConsumerState<CreateGroupDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Avbryt'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: _createGroup,
-          child: const Text('Opprett'),
+          child: Text(l10n.create),
         ),
       ],
     );

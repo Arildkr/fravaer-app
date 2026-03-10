@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/database/database.dart';
@@ -41,11 +42,11 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('${widget.group.navn} — Klasserom'),
+          title: Text(AppLocalizations.of(context)!.classroomTitle(widget.group.navn)),
           actions: [
             IconButton(
               icon: const Icon(Icons.description),
-              tooltip: 'Rapport',
+              tooltip: AppLocalizations.of(context)!.report,
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -57,7 +58,7 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.check_circle),
-              tooltip: 'Avslutt økt',
+              tooltip: AppLocalizations.of(context)!.endSession,
               onPressed: () => _endSession(context),
             ),
           ],
@@ -99,9 +100,9 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   color: Colors.grey[100],
-                  child: const Text(
-                    'Trykk = endre status · Hold inne = flere valg',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
+                  child: Text(
+                    AppLocalizations.of(context)!.tapChangeStatusHint,
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF888888)),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -175,20 +176,20 @@ class _ClassroomScreenState extends ConsumerState<ClassroomScreen> {
   }
 
   Future<void> _endSession(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Avslutt økt?'),
-        content:
-            const Text('Du kan fortsatt se rapporten etter avslutning.'),
+        title: Text(l10n.endSessionTitle),
+        content: Text(l10n.reportStillAvailable),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Avbryt'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Avslutt'),
+            child: Text(l10n.end),
           ),
         ],
       ),

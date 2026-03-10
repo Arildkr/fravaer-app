@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../core/database/tables.dart';
 import '../../../core/utils/status_helpers.dart';
@@ -68,7 +69,7 @@ class AttendanceTile extends StatelessWidget {
                   if (status == AttendanceStatus.forseinka &&
                       record.post.forsinkelsesMinutter != null)
                     Text(
-                      '${record.post.forsinkelsesMinutter} min forsinket',
+                      AppLocalizations.of(context)!.minutesLate(record.post.forsinkelsesMinutter!),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,

@@ -1,0 +1,607 @@
+{
+  "@@locale": "sv",
+
+  "appTitle": "Alla med",
+  "@appTitle": {},
+
+  "cancel": "Avbryt",
+  "@cancel": {},
+
+  "save": "Spara",
+  "@save": {},
+
+  "next": "Nästa",
+  "@next": {},
+
+  "skip": "Hoppa över",
+  "@skip": {},
+
+  "getStarted": "Kom igång",
+  "@getStarted": {},
+
+  "create": "Skapa",
+  "@create": {},
+
+  "importAction": "Importera",
+  "@importAction": {},
+
+  "back": "Tillbaka",
+  "@back": {},
+
+  "restore": "Återställ",
+  "@restore": {},
+
+  "remove": "Ta bort",
+  "@remove": {},
+
+  "report": "Rapport",
+  "@report": {},
+
+  "end": "Avsluta",
+  "@end": {},
+
+  "copy": "Kopiera",
+  "@copy": {},
+
+  "statusUnknown": "Okänd",
+  "@statusUnknown": {},
+
+  "statusPresent": "Närvarande",
+  "@statusPresent": {},
+
+  "statusAbsent": "Frånvaro",
+  "@statusAbsent": {},
+
+  "statusLate": "Försenad",
+  "@statusLate": {},
+
+  "statusPlannedAbsent": "Planerad frånvaro",
+  "@statusPlannedAbsent": {},
+
+  "myGroups": "Mina grupper",
+  "@myGroups": {},
+
+  "archivedGroups": "Arkiverade grupper",
+  "@archivedGroups": {},
+
+  "settings": "Inställningar",
+  "@settings": {},
+
+  "noGroupsYet": "Inga grupper ännu",
+  "@noGroupsYet": {},
+
+  "noGroupsDescription": "Skapa din första grupp för att komma igång.",
+  "@noGroupsDescription": {},
+
+  "newGroup": "Ny grupp",
+  "@newGroup": {},
+
+  "studentCount": "{count} elever",
+  "@studentCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "exportSemester": "Exportera termin",
+  "@exportSemester": {},
+
+  "sessionHistory": "Sessionshistorik",
+  "@sessionHistory": {},
+
+  "addStudent": "Lägg till elev",
+  "@addStudent": {},
+
+  "importStudents": "Importera elever",
+  "@importStudents": {},
+
+  "noStudentsInGroup": "Inga elever i gruppen",
+  "@noStudentsInGroup": {},
+
+  "addStudentsManuallyOrImport": "Lägg till elever manuellt eller importera från fil.",
+  "@addStudentsManuallyOrImport": {},
+
+  "classroom": "Klassrum",
+  "@classroom": {},
+
+  "trip": "Utflykt",
+  "@trip": {},
+
+  "viewFinishedSessions": "Visa avslutade sessioner",
+  "@viewFinishedSessions": {},
+
+  "activeSessionExistsTitle": "Aktiv session finns",
+  "@activeSessionExistsTitle": {},
+
+  "activeSessionExistsContent": "Det finns redan en aktiv session för den här gruppen. Vill du fortsätta den?",
+  "@activeSessionExistsContent": {},
+
+  "continueSession": "Fortsätt",
+  "@continueSession": {},
+
+  "renameStudentTitle": "Ändra elevnamn",
+  "@renameStudentTitle": {},
+
+  "newNameHint": "Nytt namn",
+  "@newNameHint": {},
+
+  "removeStudentTitle": "Ta bort elev från gruppen?",
+  "@removeStudentTitle": {},
+
+  "removeStudentContent": "{name} tas bort från den här gruppen. Elevens data och historik behålls.",
+  "@removeStudentContent": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "historyTitle": "Historik — {groupName}",
+  "@historyTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "noFinishedSessions": "Inga avslutade sessioner",
+  "@noFinishedSessions": {},
+
+  "finishedSessionsDescription": "Avslutade sessioner visas här så att du kan se rapport eller redigera frånvaro i efterhand.",
+  "@finishedSessionsDescription": {},
+
+  "editAbsence": "Redigera frånvaro",
+  "@editAbsence": {},
+
+  "classroomTitle": "{groupName} — Klassrum",
+  "@classroomTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "tripTitle": "{groupName} — Utflykt",
+  "@tripTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Tryck = ändra status · Håll in = fler val",
+  "@tapChangeStatusHint": {},
+
+  "endSession": "Avsluta session",
+  "@endSession": {},
+
+  "endSessionTitle": "Avsluta session?",
+  "@endSessionTitle": {},
+
+  "endTripTitle": "Avsluta utflyktsregistrering?",
+  "@endTripTitle": {},
+
+  "reportStillAvailable": "Du kan fortfarande se rapporten efter avslutning.",
+  "@reportStillAvailable": {},
+
+  "searchStudent": "Sök efter elev...",
+  "@searchStudent": {},
+
+  "registeredCount": "{registered} / {total} registrerade",
+  "@registeredCount": {
+    "placeholders": {
+      "registered": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "notRegisteredCount": "{count} inte registrerade",
+  "@notRegisteredCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "minutesLate": "{minutes} min försenad",
+  "@minutesLate": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+
+  "lateLabel": "Försenad:",
+  "@lateLabel": {},
+
+  "exportPdf": "Exportera PDF",
+  "@exportPdf": {},
+
+  "copyToClipboard": "Kopiera till urklipp",
+  "@copyToClipboard": {},
+
+  "shareReport": "Dela rapport",
+  "@shareReport": {},
+
+  "reportCopied": "Rapport kopierad",
+  "@reportCopied": {},
+
+  "copyReport": "Kopiera rapport",
+  "@copyReport": {},
+
+  "reportCopiedFull": "Rapport kopierad till urklipp",
+  "@reportCopiedFull": {},
+
+  "shareVia": "Dela via...",
+  "@shareVia": {},
+
+  "pdfExportError": "Fel vid PDF-export:",
+  "@pdfExportError": {},
+
+  "exportScreenTitle": "Exportera — {groupName}",
+  "@exportScreenTitle": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+
+  "choosePeriod": "Välj period",
+  "@choosePeriod": {},
+
+  "exportCsvDescription": "Exporterar CSV med alla sessioner i perioden. En rad per elev, en kolumn per session.",
+  "@exportCsvDescription": {},
+
+  "from": "Från",
+  "@from": {},
+
+  "to": "Till",
+  "@to": {},
+
+  "csvLegend": "Förklaring:\nN = Närvarande · F = Frånvaro · S15 = Försenad 15 min\nP = Planerad frånvaro · ? = Inte registrerad",
+  "@csvLegend": {},
+
+  "exportCsv": "Exportera CSV",
+  "@exportCsv": {},
+
+  "noSessionsInPeriod": "Inga sessioner i vald period.",
+  "@noSessionsInPeriod": {},
+
+  "exportError": "Fel vid export:",
+  "@exportError": {},
+
+  "biometricLock": "Biometriskt lås",
+  "@biometricLock": {},
+
+  "biometricLockSubtitle": "Kräv fingeravtryck eller ansikte vid uppstart",
+  "@biometricLockSubtitle": {},
+
+  "backup": "Säkerhetskopiering",
+  "@backup": {},
+
+  "backupSubtitle": "Säkerhetskopia till Google Drive",
+  "@backupSubtitle": {},
+
+  "aboutApp": "Om Alla med",
+  "@aboutApp": {},
+
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+
+  "loadingVersion": "Laddar version...",
+  "@loadingVersion": {},
+
+  "privacyTitle": "Integritet",
+  "@privacyTitle": {},
+
+  "privacySubtitle": "All data lagras krypterad lokalt på din enhet. Ingen data skickas till någon server.",
+  "@privacySubtitle": {},
+
+  "subscriptionActive": "Prenumeration aktiv",
+  "@subscriptionActive": {},
+
+  "subscriptionActiveSubtitle": "Årsprenumeration — 29 kr/år",
+  "@subscriptionActiveSubtitle": {},
+
+  "trialStatus": "Provperiod",
+  "@trialStatus": {},
+
+  "trialFree": "Gratis i 30 dagar",
+  "@trialFree": {},
+
+  "trialDaysLeft": "{days} dagar kvar av provperioden",
+  "@trialDaysLeft": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "subscriptionExpired": "Prenumeration utgången",
+  "@subscriptionExpired": {},
+
+  "subscriptionExpiredSubtitle": "Prenumerera för att fortsätta använda appen",
+  "@subscriptionExpiredSubtitle": {},
+
+  "loadingStatus": "Laddar...",
+  "@loadingStatus": {},
+
+  "googleDriveBackup": "Google Drive-säkerhetskopiering",
+  "@googleDriveBackup": {},
+
+  "backupDescription": "Spara en krypterad kopia av din databas på Google Drive. Bara du har tillgång till säkerhetskopian.",
+  "@backupDescription": {},
+
+  "lastBackup": "Senaste säkerhetskopia: {date}",
+  "@lastBackup": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+
+  "signInWithGoogle": "Logga in med Google",
+  "@signInWithGoogle": {},
+
+  "takeBackupNow": "Ta säkerhetskopia nu",
+  "@takeBackupNow": {},
+
+  "restoreFromBackup": "Återställ från säkerhetskopia",
+  "@restoreFromBackup": {},
+
+  "restoreConfirmTitle": "Återställ från säkerhetskopia?",
+  "@restoreConfirmTitle": {},
+
+  "restoreConfirmContent": "All nuvarande data ersätts med data från säkerhetskopian. Appen startar om.",
+  "@restoreConfirmContent": {},
+
+  "noBackupFound": "Ingen säkerhetskopia hittad på Google Drive",
+  "@noBackupFound": {},
+
+  "restoreSuccess": "Återställd. Starta om appen för att börja använda.",
+  "@restoreSuccess": {},
+
+  "signedIn": "Inloggad",
+  "@signedIn": {},
+
+  "signInCancelled": "Inloggning avbruten",
+  "@signInCancelled": {},
+
+  "signInError": "Fel vid inloggning:",
+  "@signInError": {},
+
+  "backupError": "Fel vid säkerhetskopiering:",
+  "@backupError": {},
+
+  "restoreError": "Fel vid återställning:",
+  "@restoreError": {},
+
+  "backupDone": "Säkerhetskopiering klar",
+  "@backupDone": {},
+
+  "onboarding1Title": "Skapa grupper",
+  "@onboarding1Title": {},
+
+  "onboarding1Desc": "Börja med att skapa en grupp och lägg till elever.\nImportera från CSV eller lägg till manuellt.",
+  "@onboarding1Desc": {},
+
+  "onboarding2Title": "Klassrumsläge",
+  "@onboarding2Title": {},
+
+  "onboarding2Desc": "Tryck på en elev för att registrera närvaro.\nTryck igen för frånvaro. Håll in för fler val.",
+  "@onboarding2Desc": {},
+
+  "onboarding3Title": "Utflyktsläge",
+  "@onboarding3Title": {},
+
+  "onboarding3Desc": "Utformat för en-hands användning utomhus.\nSök efter elever med tre bokstäver — ett tryck registrerar.",
+  "@onboarding3Desc": {},
+
+  "onboarding4Title": "Rapport",
+  "@onboarding4Title": {},
+
+  "onboarding4Desc": "Generera rapport med ett tryck.\nKopiera eller dela via e-post, SMS etc.",
+  "@onboarding4Desc": {},
+
+  "onboarding5Title": "Säkert och privat",
+  "@onboarding5Title": {},
+
+  "onboarding5Desc": "All data lagras krypterad på din enhet.\nBiometriskt lås skyddar elevdata.\nFungerar helt utan internet.",
+  "@onboarding5Desc": {},
+
+  "trialExpired": "Provperioden har gått ut",
+  "@trialExpired": {},
+
+  "yearlySubscription": "Årsprenumeration",
+  "@yearlySubscription": {},
+
+  "yearlyPrice": "29 kr / år",
+  "@yearlyPrice": {},
+
+  "featureUnlimitedGroups": "Obegränsat antal grupper och elever",
+  "@featureUnlimitedGroups": {},
+
+  "featureClassroomTrip": "Klassrums- och utflyktsläge",
+  "@featureClassroomTrip": {},
+
+  "featureReports": "Rapporter och export",
+  "@featureReports": {},
+
+  "featureEncrypted": "Krypterad lokal lagring",
+  "@featureEncrypted": {},
+
+  "featureBiometric": "Biometriskt lås",
+  "@featureBiometric": {},
+
+  "subscribeCta": "Prenumerera — 29 kr/år",
+  "@subscribeCta": {},
+
+  "restorePurchase": "Återställ tidigare köp",
+  "@restorePurchase": {},
+
+  "purchaseError": "Kunde inte starta köp. Försök igen senare.",
+  "@purchaseError": {},
+
+  "purchaseGenericError": "Något gick fel:",
+  "@purchaseGenericError": {},
+
+  "noSubscriptionFound": "Ingen tidigare prenumeration hittad.",
+  "@noSubscriptionFound": {},
+
+  "restoreFailedError": "Kunde inte återställa:",
+  "@restoreFailedError": {},
+
+  "authenticateToOpen": "Autentisera för att öppna appen",
+  "@authenticateToOpen": {},
+
+  "unlockApp": "Lås upp",
+  "@unlockApp": {},
+
+  "biometricReason": "Lås upp Alla med",
+  "@biometricReason": {},
+
+  "authFailed": "Autentisering misslyckades",
+  "@authFailed": {},
+
+  "noArchivedGroups": "Inga arkiverade grupper",
+  "@noArchivedGroups": {},
+
+  "groupRestored": "{name} återställd",
+  "@groupRestored": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "groupNameLabel": "Gruppnamn",
+  "@groupNameLabel": {},
+
+  "groupNameHint": "t.ex. 10A, Utflykt Fjällen",
+  "@groupNameHint": {},
+
+  "renameGroup": "Byt namn",
+  "@renameGroup": {},
+
+  "copyGroup": "Kopiera grupp",
+  "@copyGroup": {},
+
+  "copyGroupSubtitle": "Ny grupp med samma elever",
+  "@copyGroupSubtitle": {},
+
+  "splitGroupAction": "Dela grupp",
+  "@splitGroupAction": {},
+
+  "splitGroupSubtitle": "Välj elever för ny undergrupp",
+  "@splitGroupSubtitle": {},
+
+  "archiveGroup": "Arkivera grupp",
+  "@archiveGroup": {},
+
+  "groupArchived": "{name} arkiverad",
+  "@groupArchived": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "undoAction": "Ångra",
+  "@undoAction": {},
+
+  "renameGroupTitle": "Ändra gruppnamn",
+  "@renameGroupTitle": {},
+
+  "copyGroupTitle": "Kopiera grupp",
+  "@copyGroupTitle": {},
+
+  "newGroupNameLabel": "Namn på ny grupp",
+  "@newGroupNameLabel": {},
+
+  "groupCopied": "{name} skapad",
+  "@groupCopied": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "splitGroupTitle": "Dela grupp",
+  "@splitGroupTitle": {},
+
+  "splitGroupNewGroupHint": "t.ex. Utflyktsgrupp 1",
+  "@splitGroupNewGroupHint": {},
+
+  "selectStudentsForNewGroup": "Välj elever för den nya gruppen:",
+  "@selectStudentsForNewGroup": {},
+
+  "selectAll": "Välj alla",
+  "@selectAll": {},
+
+  "clearAll": "Rensa alla",
+  "@clearAll": {},
+
+  "selectedCount": "{count} valda",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "createGroup": "Skapa grupp",
+  "@createGroup": {},
+
+  "groupCreatedWithStudents": "{name} skapad med {count} elever",
+  "@groupCreatedWithStudents": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+
+  "readingFile": "Läser fil...",
+  "@readingFile": {},
+
+  "chooseFile": "Välj fil (.xlsx, .csv)",
+  "@chooseFile": {},
+
+  "orSeparator": "eller",
+  "@orSeparator": {},
+
+  "pasteStudentList": "Klistra in elevlista (ett namn per rad)",
+  "@pasteStudentList": {},
+
+  "importHint": "Skriv namn i kolumn A. Efternamn kan läggas i kolumn B. Första raden kan vara rubrik — appen löser det automatiskt.",
+  "@importHint": {},
+
+  "previewTitle": "Förhandsgranskning",
+  "@previewTitle": {},
+
+  "foundStudentsCount": "Hittade {count} elever",
+  "@foundStudentsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "headerSkipped": " (rubrikrad hoppad över)",
+  "@headerSkipped": {},
+
+  "doesThisLookRight": "Ser det här rätt ut?",
+  "@doesThisLookRight": {},
+
+  "importCountStudents": "Importera {count} elever",
+  "@importCountStudents": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "studentsImported": "{count} elever importerade",
+  "@studentsImported": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "couldNotReadFile": "Kunde inte läsa filen",
+  "@couldNotReadFile": {},
+
+  "noNamesFound": "Hittade inga namn i filen",
+  "@noNamesFound": {},
+
+  "startupError": "Fel vid uppstart:",
+  "@startupError": {}
+}
