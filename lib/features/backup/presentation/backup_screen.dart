@@ -133,7 +133,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat('dd.MM.yyyy HH:mm', 'nb');
+    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
 
     return Scaffold(
       appBar: AppBar(

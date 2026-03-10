@@ -466,7 +466,7 @@ class _SessionHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final attendanceRepo = ref.watch(attendanceRepositoryProvider);
-    final dateFormat = DateFormat('dd.MM.yyyy HH:mm', 'nb');
+    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
 
     return Scaffold(
       appBar: AppBar(
@@ -477,6 +477,10 @@ class _SessionHistoryScreen extends ConsumerWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('${snapshot.error}'));
           }
 
           final sessions = snapshot.data ?? [];

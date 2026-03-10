@@ -85,6 +85,7 @@ class _StatusOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: status.color.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(12),
@@ -109,7 +110,7 @@ class _StatusOption extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Text(
-                status.label,
+                status.labelOf(l10n),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../database/tables.dart';
 import '../theme/app_theme.dart';
@@ -17,6 +18,21 @@ extension AttendanceStatusExtension on AttendanceStatus {
         return 'Forsinket';
       case AttendanceStatus.planlagtBorte:
         return 'Planlagt borte';
+    }
+  }
+
+  String labelOf(AppLocalizations l10n) {
+    switch (this) {
+      case AttendanceStatus.ukjent:
+        return l10n.statusUnknown;
+      case AttendanceStatus.tilStede:
+        return l10n.statusPresent;
+      case AttendanceStatus.fravaer:
+        return l10n.statusAbsent;
+      case AttendanceStatus.forseinka:
+        return l10n.statusLate;
+      case AttendanceStatus.planlagtBorte:
+        return l10n.statusPlannedAbsent;
     }
   }
 

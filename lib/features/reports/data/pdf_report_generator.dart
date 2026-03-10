@@ -15,7 +15,7 @@ class PdfReportGenerator {
     required List<AttendanceRecord> records,
   }) async {
     final pdf = pw.Document();
-    final datoStr = DateFormat('dd.MM.yyyy HH:mm', 'nb').format(dato);
+    final datoStr = DateFormat('dd.MM.yyyy HH:mm').format(dato);
 
     final tilStede = records
         .where((r) => r.post.status == AttendanceStatus.tilStede)

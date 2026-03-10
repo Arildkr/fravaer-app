@@ -22,6 +22,7 @@ class AttendanceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = record.post.status;
+    final l10n = AppLocalizations.of(context)!;
 
     return InkWell(
       onTap: onTap,
@@ -96,7 +97,7 @@ class AttendanceTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                status.label,
+                status.labelOf(l10n),
                 style: TextStyle(
                   fontSize: 13,
                   color: status.color,
