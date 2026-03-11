@@ -212,7 +212,12 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
       );
     }
 
-    if (!_authenticated && _biometricLockEnabled) {
+    // Reaktiv: oppdateres umiddelbart når innstillingen endres i Innstillinger.
+    final biometricEnabled =
+        ref.watch(biometricLockEnabledProvider).valueOrNull ??
+            _biometricLockEnabled;
+
+    if (!_authenticated && biometricEnabled) {
       return LockScreen(
         onAuthenticated: () => setState(() => _authenticated = true),
       );

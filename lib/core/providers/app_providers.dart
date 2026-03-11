@@ -6,6 +6,7 @@ import '../../features/groups/data/group_repository.dart';
 import '../../features/attendance/data/attendance_repository.dart';
 import '../../features/reports/data/report_repository.dart';
 import '../../features/subscription/data/subscription_service.dart';
+import '../database/database.dart';
 
 /// Repository providers
 
@@ -33,3 +34,14 @@ final subscriptionServiceProvider = StateProvider<SubscriptionService?>((ref) =>
 
 /// Valgt app-språk. Null = følg systemspråket.
 final localeProvider = StateProvider<Locale?>((ref) => null);
+
+/// Reaktiv strøm av om biometrisk lås er aktivert.
+/// Oppdateres umiddelbart når innstillingen endres i Innstillinger.
+final biometricLockEnabledProvider = StreamProvider<bool>((ref) {
+  final laererId = ref.watch(activeLaererIdProvider);
+  if (laererId == null) return Stream.value(false);
+  final db = ref.watch(databaseProvider);
+  return (db.select(db.laerere)..where((l) => l.id.equals(laererId)))
+      .watchSingle()
+      .map((l) => l.biometriskLaasAktiv);
+});
