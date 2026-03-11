@@ -32,7 +32,12 @@ class FileImportService {
         fileName.endsWith('.ods')) {
       return _parseSpreadsheet(bytes, fileName);
     } else {
-      throw FormatException('Filtypen støttes ikke: $fileName');
+      // Ukjent filtype (f.eks. fra Google Drive) — prøv regneark, så CSV.
+      try {
+        return _parseSpreadsheet(bytes, fileName);
+      } catch (_) {
+        return _parseCsv(bytes, fileName);
+      }
     }
   }
 

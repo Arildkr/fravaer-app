@@ -247,8 +247,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
 
     try {
       final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['xlsx', 'xls', 'csv', 'ods', 'txt'],
+        type: FileType.any,
       );
 
       if (result == null || result.files.isEmpty) {
