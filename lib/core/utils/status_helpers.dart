@@ -9,15 +9,15 @@ extension AttendanceStatusExtension on AttendanceStatus {
   String get label {
     switch (this) {
       case AttendanceStatus.ukjent:
-        return 'Ukjent';
+        return 'Ikke møtt';
       case AttendanceStatus.tilStede:
-        return 'Til stede';
+        return 'Innsjekket';
       case AttendanceStatus.fravaer:
         return 'Fravær';
       case AttendanceStatus.forseinka:
         return 'Forsinket';
-      case AttendanceStatus.planlagtBorte:
-        return 'Planlagt borte';
+      case AttendanceStatus.utsjekket:
+        return 'Utsjekket';
     }
   }
 
@@ -31,8 +31,8 @@ extension AttendanceStatusExtension on AttendanceStatus {
         return l10n.statusAbsent;
       case AttendanceStatus.forseinka:
         return l10n.statusLate;
-      case AttendanceStatus.planlagtBorte:
-        return l10n.statusPlannedAbsent;
+      case AttendanceStatus.utsjekket:
+        return l10n.statusCheckedOut;
     }
   }
 
@@ -46,8 +46,8 @@ extension AttendanceStatusExtension on AttendanceStatus {
         return '\u274C'; // ❌
       case AttendanceStatus.forseinka:
         return '\uD83D\uDD50'; // 🕐
-      case AttendanceStatus.planlagtBorte:
-        return '\uD83D\uDCCB'; // 📋
+      case AttendanceStatus.utsjekket:
+        return '\uD83C\uDFE0'; // 🏠
     }
   }
 
@@ -61,24 +61,24 @@ extension AttendanceStatusExtension on AttendanceStatus {
         return AppTheme.statusFravaer;
       case AttendanceStatus.forseinka:
         return AppTheme.statusForseinka;
-      case AttendanceStatus.planlagtBorte:
+      case AttendanceStatus.utsjekket:
         return AppTheme.statusPlanlagtBorte;
     }
   }
 
-  /// Neste status i syklusen ved trykk (for enkel toggle).
+  /// Tap-syklus: ikke møtt → innsjekket → utsjekket → ikke møtt
   AttendanceStatus get nextStatus {
     switch (this) {
       case AttendanceStatus.ukjent:
         return AttendanceStatus.tilStede;
       case AttendanceStatus.tilStede:
-        return AttendanceStatus.fravaer;
-      case AttendanceStatus.fravaer:
-        return AttendanceStatus.forseinka;
-      case AttendanceStatus.forseinka:
-        return AttendanceStatus.planlagtBorte;
-      case AttendanceStatus.planlagtBorte:
+        return AttendanceStatus.utsjekket;
+      case AttendanceStatus.utsjekket:
         return AttendanceStatus.ukjent;
+      case AttendanceStatus.fravaer:
+        return AttendanceStatus.ukjent;
+      case AttendanceStatus.forseinka:
+        return AttendanceStatus.tilStede;
     }
   }
 }

@@ -32,7 +32,7 @@ class CountBanner extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       color: alleDone
           ? AppTheme.statusTilStede.withValues(alpha: 0.12)
           : AppTheme.statusUkjent.withValues(alpha: 0.08),
@@ -49,12 +49,12 @@ class CountBanner extends StatelessWidget {
                   : const Color(0xFF111111),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           // Detaljerte tall — Wrap for å unngå overflow på smale skjermer
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 10,
-            runSpacing: 6,
+            runSpacing: 4,
             children: [
               _CountChip(
                   label: l10n.statusPresent,
@@ -75,27 +75,6 @@ class CountBanner extends StatelessWidget {
                     color: AppTheme.statusUkjent),
             ],
           ),
-          // Advarsel — tydeligere
-          if (ukjente > 0)
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  l10n.notRegisteredCount(ukjente),
-                  style: const TextStyle(
-                    color: Color(0xFFE65100),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );

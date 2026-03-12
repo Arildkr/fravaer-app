@@ -43,10 +43,10 @@
   "copy": "Copy",
   "@copy": {},
 
-  "statusUnknown": "Unknown",
+  "statusUnknown": "Not arrived",
   "@statusUnknown": {},
 
-  "statusPresent": "Present",
+  "statusPresent": "Checked in",
   "@statusPresent": {},
 
   "statusAbsent": "Absent",
@@ -55,8 +55,8 @@
   "statusLate": "Late",
   "@statusLate": {},
 
-  "statusPlannedAbsent": "Planned absence",
-  "@statusPlannedAbsent": {},
+  "statusCheckedOut": "Checked out",
+  "@statusCheckedOut": {},
 
   "myGroups": "My groups",
   "@myGroups": {},
@@ -100,6 +100,21 @@
 
   "addStudentsManuallyOrImport": "Add students manually or import from file.",
   "@addStudentsManuallyOrImport": {},
+
+  "startSession": "Start registration",
+  "@startSession": {},
+
+  "sessionName": "Session name (optional)",
+  "@sessionName": {},
+
+  "sessionNameHint": "e.g. Friday practice, Trip to the mountains",
+  "@sessionNameHint": {},
+
+  "noteLabel": "Note",
+  "@noteLabel": {},
+
+  "noteHint": "Add note...",
+  "@noteHint": {},
 
   "classroom": "Classroom",
   "@classroom": {},
@@ -165,7 +180,14 @@
     }
   },
 
-  "tapChangeStatusHint": "Tap = change status · Hold = more options",
+  "sessionTitle": "{sessionName}",
+  "@sessionTitle": {
+    "placeholders": {
+      "sessionName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Tap = check in/out · Hold = note and more options",
   "@tapChangeStatusHint": {},
 
   "endSession": "End session",

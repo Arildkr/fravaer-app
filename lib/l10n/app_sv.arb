@@ -43,10 +43,10 @@
   "copy": "Kopiera",
   "@copy": {},
 
-  "statusUnknown": "Okänd",
+  "statusUnknown": "Ej anlänt",
   "@statusUnknown": {},
 
-  "statusPresent": "Närvarande",
+  "statusPresent": "Incheckad",
   "@statusPresent": {},
 
   "statusAbsent": "Frånvaro",
@@ -55,8 +55,8 @@
   "statusLate": "Försenad",
   "@statusLate": {},
 
-  "statusPlannedAbsent": "Planerad frånvaro",
-  "@statusPlannedAbsent": {},
+  "statusCheckedOut": "Utcheckad",
+  "@statusCheckedOut": {},
 
   "myGroups": "Mina grupper",
   "@myGroups": {},
@@ -100,6 +100,21 @@
 
   "addStudentsManuallyOrImport": "Lägg till elever manuellt eller importera från fil.",
   "@addStudentsManuallyOrImport": {},
+
+  "startSession": "Starta registrering",
+  "@startSession": {},
+
+  "sessionName": "Sessionens namn (valfritt)",
+  "@sessionName": {},
+
+  "sessionNameHint": "t.ex. Fredagsträning, Utflykt till fjället",
+  "@sessionNameHint": {},
+
+  "noteLabel": "Anteckning",
+  "@noteLabel": {},
+
+  "noteHint": "Lägg till anteckning...",
+  "@noteHint": {},
 
   "classroom": "Klassrum",
   "@classroom": {},
@@ -165,7 +180,14 @@
     }
   },
 
-  "tapChangeStatusHint": "Tryck = ändra status · Håll in = fler val",
+  "sessionTitle": "{sessionName}",
+  "@sessionTitle": {
+    "placeholders": {
+      "sessionName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Tryck = inchecka/utchecka · Håll in = anteckning och fler val",
   "@tapChangeStatusHint": {},
 
   "endSession": "Avsluta session",

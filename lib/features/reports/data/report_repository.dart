@@ -31,8 +31,37 @@ class ReportRepository {
 
     buffer.writeln('FRAVÆRSRAPPORT');
     buffer.writeln('Gruppe: ${gruppe.navn}');
+    if (session.navn != null && session.navn!.isNotEmpty) {
+      buffer.writeln('Økt: ${session.navn}');
+    }
     buffer.writeln('Dato: $dato');
     buffer.writeln('---');
+
+    final innsjekket = records
+        .where((r) => r.post.status == AttendanceStatus.tilStede)
+        .toList();
+    if (innsjekket.isNotEmpty) {
+      buffer.writeln('');
+      buffer.writeln('INNSJEKKET:');
+      for (final r in innsjekket) {
+        final merknad = r.post.merknad ?? '';
+        buffer.writeln(
+            '  ${r.elev.navn}${merknad.isNotEmpty ? ' — $merknad' : ''}');
+      }
+    }
+
+    final utsjekket = records
+        .where((r) => r.post.status == AttendanceStatus.utsjekket)
+        .toList();
+    if (utsjekket.isNotEmpty) {
+      buffer.writeln('');
+      buffer.writeln('UTSJEKKET:');
+      for (final r in utsjekket) {
+        final merknad = r.post.merknad ?? '';
+        buffer.writeln(
+            '  ${r.elev.navn}${merknad.isNotEmpty ? ' — $merknad' : ''}');
+      }
+    }
 
     final fravaerende = records
         .where((r) => r.post.status == AttendanceStatus.fravaer)
@@ -41,7 +70,9 @@ class ReportRepository {
       buffer.writeln('');
       buffer.writeln('FRAVÆR:');
       for (final r in fravaerende) {
-        buffer.writeln('  ${r.elev.navn}');
+        final merknad = r.post.merknad ?? '';
+        buffer.writeln(
+            '  ${r.elev.navn}${merknad.isNotEmpty ? ' — $merknad' : ''}');
       }
     }
 
@@ -53,20 +84,9 @@ class ReportRepository {
       buffer.writeln('FORSINKET:');
       for (final r in forsinkede) {
         final min = r.post.forsinkelsesMinutter ?? 0;
-        buffer.writeln('  ${r.elev.navn} - $min min');
-      }
-    }
-
-    final planlagt = records
-        .where((r) => r.post.status == AttendanceStatus.planlagtBorte)
-        .toList();
-    if (planlagt.isNotEmpty) {
-      buffer.writeln('');
-      buffer.writeln('PLANLAGT FRAVÆR:');
-      for (final r in planlagt) {
         final merknad = r.post.merknad ?? '';
         buffer.writeln(
-            '  ${r.elev.navn}${merknad.isNotEmpty ? ' - $merknad' : ''}');
+            '  ${r.elev.navn} - $min min${merknad.isNotEmpty ? ' — $merknad' : ''}');
       }
     }
 
@@ -77,20 +97,19 @@ class ReportRepository {
       buffer.writeln('');
       buffer.writeln('IKKE REGISTRERT:');
       for (final r in ukjente) {
-        buffer.writeln('  ${r.elev.navn}');
+        final merknad = r.post.merknad ?? '';
+        buffer.writeln(
+            '  ${r.elev.navn}${merknad.isNotEmpty ? ' — $merknad' : ''}');
       }
     }
 
-    final tilStede = records
-        .where((r) => r.post.status == AttendanceStatus.tilStede)
-        .length;
     buffer.writeln('');
     buffer.writeln('---');
     buffer.writeln(
-        'Oppsummering: $tilStede til stede, ${fravaerende.length} fravær, '
-        '${forsinkede.length} forsinket, ${planlagt.length} planlagt borte, '
+        'Oppsummering: ${innsjekket.length} innsjekket, ${utsjekket.length} utsjekket, '
+        '${fravaerende.length} fravær, ${forsinkede.length} forsinket, '
         '${ukjente.length} ikke registrert');
-    buffer.writeln('Totalt: ${records.length} elever');
+    buffer.writeln('Totalt: ${records.length} deltakere');
 
     return buffer.toString();
   }
@@ -109,6 +128,7 @@ class ReportRepository {
 
     return PdfReportGenerator.generate(
       gruppeNavn: gruppe.navn,
+      sessionNavn: session.navn,
       dato: session.dato,
       records: records,
     );
@@ -192,8 +212,8 @@ class ReportRepository {
               final min = post.forsinkelsesMinutter ?? 0;
               row.add('S$min');
               totalForsinket++;
-            case AttendanceStatus.planlagtBorte:
-              row.add('P');
+            case AttendanceStatus.utsjekket:
+              row.add('U');
             case AttendanceStatus.ukjent:
               row.add('?');
           }

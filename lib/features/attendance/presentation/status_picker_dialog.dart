@@ -4,74 +4,128 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../core/database/tables.dart';
 import '../../../core/utils/status_helpers.dart';
 
-/// Dialog for å velge status. Store trykkeflater for utendørs bruk.
-class StatusPickerDialog extends StatelessWidget {
+/// Dialog for å velge status og skrive merknad.
+/// Store trykkeflater for utendørs bruk.
+class StatusPickerDialog extends StatefulWidget {
   final String elevNavn;
+  final String? currentMerknad;
 
-  const StatusPickerDialog({super.key, required this.elevNavn});
+  const StatusPickerDialog({
+    super.key,
+    required this.elevNavn,
+    this.currentMerknad,
+  });
+
+  @override
+  State<StatusPickerDialog> createState() => _StatusPickerDialogState();
+}
+
+class _StatusPickerDialogState extends State<StatusPickerDialog> {
+  late final TextEditingController _noteController;
+
+  @override
+  void initState() {
+    super.initState();
+    _noteController = TextEditingController(text: widget.currentMerknad ?? '');
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  void _pop(StatusResult result) {
+    final merknad = _noteController.text.trim();
+    Navigator.pop(
+      context,
+      StatusResult(result.status,
+          forsinkelsesMinutter: result.forsinkelsesMinutter,
+          merknad: merknad.isEmpty ? null : merknad),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(
-        elevNavn,
+        widget.elevNavn,
         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _StatusOption(
-            status: AttendanceStatus.tilStede,
-            onTap: () => Navigator.pop(
-                context, const StatusResult(AttendanceStatus.tilStede)),
-          ),
-          const SizedBox(height: 6),
-          _StatusOption(
-            status: AttendanceStatus.fravaer,
-            onTap: () => Navigator.pop(
-                context, const StatusResult(AttendanceStatus.fravaer)),
-          ),
-          const Divider(height: 20),
-          // Hurtigval for forsinkelse
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(AppLocalizations.of(context)!.lateLabel,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Color(0xFF333333))),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              for (final min in [5, 10, 15, 20, 30, 45, 60])
-                _DelayChip(
-                  minutes: min,
-                  onTap: () => Navigator.pop(
-                    context,
-                    StatusResult(AttendanceStatus.forseinka,
-                        forsinkelsesMinutter: min),
-                  ),
+      contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Merknads-felt øverst
+            TextField(
+              controller: _noteController,
+              decoration: InputDecoration(
+                labelText: l10n.noteLabel,
+                hintText: l10n.noteHint,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.edit_note),
+                suffixIcon: ValueListenableBuilder(
+                  valueListenable: _noteController,
+                  builder: (_, value, __) => value.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () => _noteController.clear(),
+                        )
+                      : const SizedBox.shrink(),
                 ),
-            ],
-          ),
-          const Divider(height: 20),
-          _StatusOption(
-            status: AttendanceStatus.planlagtBorte,
-            onTap: () => Navigator.pop(context,
-                const StatusResult(AttendanceStatus.planlagtBorte)),
-          ),
-          const SizedBox(height: 6),
-          _StatusOption(
-            status: AttendanceStatus.ukjent,
-            onTap: () => Navigator.pop(
-                context, const StatusResult(AttendanceStatus.ukjent)),
-          ),
-        ],
+              ),
+              maxLines: 2,
+              minLines: 1,
+              textCapitalization: TextCapitalization.sentences,
+            ),
+            const Divider(height: 20),
+            _StatusOption(
+              status: AttendanceStatus.tilStede,
+              onTap: () => _pop(const StatusResult(AttendanceStatus.tilStede)),
+            ),
+            const SizedBox(height: 6),
+            _StatusOption(
+              status: AttendanceStatus.utsjekket,
+              onTap: () => _pop(const StatusResult(AttendanceStatus.utsjekket)),
+            ),
+            const SizedBox(height: 6),
+            _StatusOption(
+              status: AttendanceStatus.fravaer,
+              onTap: () => _pop(const StatusResult(AttendanceStatus.fravaer)),
+            ),
+            const Divider(height: 20),
+            // Hurtigval for forsinkelse
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(l10n.lateLabel,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color(0xFF333333))),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final min in [5, 10, 15, 20, 30, 45, 60])
+                  _DelayChip(
+                    minutes: min,
+                    onTap: () => _pop(StatusResult(AttendanceStatus.forseinka,
+                        forsinkelsesMinutter: min)),
+                  ),
+              ],
+            ),
+            const Divider(height: 20),
+            _StatusOption(
+              status: AttendanceStatus.ukjent,
+              onTap: () => _pop(const StatusResult(AttendanceStatus.ukjent)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -149,10 +203,11 @@ class _DelayChip extends StatelessWidget {
   }
 }
 
-/// Resultat fra statusvalg.
+/// Resultat fra statusvalg, inkl. eventuell merknad.
 class StatusResult {
   final AttendanceStatus status;
   final int? forsinkelsesMinutter;
+  final String? merknad;
 
-  const StatusResult(this.status, {this.forsinkelsesMinutter});
+  const StatusResult(this.status, {this.forsinkelsesMinutter, this.merknad});
 }

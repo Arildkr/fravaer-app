@@ -11,6 +11,7 @@ import '../../attendance/data/attendance_repository.dart';
 class PdfReportGenerator {
   static Future<Uint8List> generate({
     required String gruppeNavn,
+    String? sessionNavn,
     required DateTime dato,
     required List<AttendanceRecord> records,
   }) async {
@@ -26,8 +27,8 @@ class PdfReportGenerator {
     final forsinket = records
         .where((r) => r.post.status == AttendanceStatus.forseinka)
         .toList();
-    final planlagt = records
-        .where((r) => r.post.status == AttendanceStatus.planlagtBorte)
+    final utsjekket = records
+        .where((r) => r.post.status == AttendanceStatus.utsjekket)
         .toList();
     final ukjent = records
         .where((r) => r.post.status == AttendanceStatus.ukjent)
@@ -46,6 +47,9 @@ class PdfReportGenerator {
             pw.SizedBox(height: 4),
             pw.Text('Gruppe: $gruppeNavn',
                 style: const pw.TextStyle(fontSize: 14)),
+            if (sessionNavn != null && sessionNavn.isNotEmpty)
+              pw.Text('Økt: $sessionNavn',
+                  style: const pw.TextStyle(fontSize: 14)),
             pw.Text('Dato: $datoStr',
                 style: const pw.TextStyle(fontSize: 14)),
             pw.Divider(),
@@ -73,10 +77,10 @@ class PdfReportGenerator {
             child: pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
               children: [
-                _summaryItem('Til stede', tilStede.length, '#4CAF50'),
+                _summaryItem('Innsjekket', tilStede.length, '#4CAF50'),
+                _summaryItem('Utsjekket', utsjekket.length, '#2196F3'),
                 _summaryItem('Fravær', fravaer.length, '#F44336'),
                 _summaryItem('Forsinket', forsinket.length, '#FF9800'),
-                _summaryItem('Planlagt', planlagt.length, '#2196F3'),
                 _summaryItem('Ukjent', ukjent.length, '#9E9E9E'),
               ],
             ),
@@ -115,9 +119,9 @@ class PdfReportGenerator {
 
           pw.SizedBox(height: 16),
           pw.Text(
-            'Totalt: ${records.length} elever — '
-            '${tilStede.length} til stede, ${fravaer.length} fravær, '
-            '${forsinket.length} forsinket, ${planlagt.length} planlagt borte, '
+            'Totalt: ${records.length} deltakere — '
+            '${tilStede.length} innsjekket, ${utsjekket.length} utsjekket, '
+            '${fravaer.length} fravær, ${forsinket.length} forsinket, '
             '${ukjent.length} ikke registrert',
             style: const pw.TextStyle(fontSize: 11),
           ),
@@ -168,8 +172,8 @@ class PdfReportGenerator {
         text = 'Fravær';
       case AttendanceStatus.forseinka:
         text = 'Forsinket${minutter != null ? ' ($minutter min)' : ''}';
-      case AttendanceStatus.planlagtBorte:
-        text = 'Planlagt borte';
+      case AttendanceStatus.utsjekket:
+        text = 'Utsjekket';
       case AttendanceStatus.ukjent:
         text = 'Ikke registrert';
     }

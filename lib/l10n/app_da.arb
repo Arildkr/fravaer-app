@@ -43,10 +43,10 @@
   "copy": "Kopier",
   "@copy": {},
 
-  "statusUnknown": "Ukendt",
+  "statusUnknown": "Ikke ankommet",
   "@statusUnknown": {},
 
-  "statusPresent": "Til stede",
+  "statusPresent": "Checket ind",
   "@statusPresent": {},
 
   "statusAbsent": "Fravær",
@@ -55,8 +55,8 @@
   "statusLate": "Forsinket",
   "@statusLate": {},
 
-  "statusPlannedAbsent": "Planlagt fraværende",
-  "@statusPlannedAbsent": {},
+  "statusCheckedOut": "Checket ud",
+  "@statusCheckedOut": {},
 
   "myGroups": "Mine grupper",
   "@myGroups": {},
@@ -100,6 +100,21 @@
 
   "addStudentsManuallyOrImport": "Tilføj elever manuelt eller importer fra fil.",
   "@addStudentsManuallyOrImport": {},
+
+  "startSession": "Start registrering",
+  "@startSession": {},
+
+  "sessionName": "Sessionens navn (valgfrit)",
+  "@sessionName": {},
+
+  "sessionNameHint": "f.eks. Fredagstræning, Tur til Himmelbjerget",
+  "@sessionNameHint": {},
+
+  "noteLabel": "Bemærkning",
+  "@noteLabel": {},
+
+  "noteHint": "Tilføj bemærkning...",
+  "@noteHint": {},
 
   "classroom": "Klasseværelse",
   "@classroom": {},
@@ -165,7 +180,14 @@
     }
   },
 
-  "tapChangeStatusHint": "Tryk = skift status · Hold inde = flere valg",
+  "sessionTitle": "{sessionName}",
+  "@sessionTitle": {
+    "placeholders": {
+      "sessionName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Tryk = check ind/ud · Hold inde = bemærkning og flere valg",
   "@tapChangeStatusHint": {},
 
   "endSession": "Afslut session",

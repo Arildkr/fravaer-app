@@ -43,10 +43,10 @@
   "copy": "Kopier",
   "@copy": {},
 
-  "statusUnknown": "Ukjent",
+  "statusUnknown": "Ikke møtt",
   "@statusUnknown": {},
 
-  "statusPresent": "Til stede",
+  "statusPresent": "Innsjekket",
   "@statusPresent": {},
 
   "statusAbsent": "Fravær",
@@ -55,8 +55,8 @@
   "statusLate": "Forsinket",
   "@statusLate": {},
 
-  "statusPlannedAbsent": "Planlagt borte",
-  "@statusPlannedAbsent": {},
+  "statusCheckedOut": "Utsjekket",
+  "@statusCheckedOut": {},
 
   "myGroups": "Mine grupper",
   "@myGroups": {},
@@ -100,6 +100,21 @@
 
   "addStudentsManuallyOrImport": "Legg til elever manuelt eller importer fra fil.",
   "@addStudentsManuallyOrImport": {},
+
+  "startSession": "Start registrering",
+  "@startSession": {},
+
+  "sessionName": "Navn på registreringen (valgfritt)",
+  "@sessionName": {},
+
+  "sessionNameHint": "f.eks. Fredagstrening, Tur til Gaustatoppen",
+  "@sessionNameHint": {},
+
+  "noteLabel": "Merknad",
+  "@noteLabel": {},
+
+  "noteHint": "Legg til merknad...",
+  "@noteHint": {},
 
   "classroom": "Klasserom",
   "@classroom": {},
@@ -165,7 +180,14 @@
     }
   },
 
-  "tapChangeStatusHint": "Trykk = endre status · Hold inne = flere valg",
+  "sessionTitle": "{sessionName}",
+  "@sessionTitle": {
+    "placeholders": {
+      "sessionName": {"type": "String"}
+    }
+  },
+
+  "tapChangeStatusHint": "Trykk = innsjekk/utsjekk · Hold inne = merknad og flere valg",
   "@tapChangeStatusHint": {},
 
   "endSession": "Avslutt økt",
@@ -251,7 +273,7 @@
   "to": "Til",
   "@to": {},
 
-  "csvLegend": "Forklaring:\nT = Til stede · F = Fravær · S15 = Forsinket 15 min\nP = Planlagt borte · ? = Ikke registrert",
+  "csvLegend": "Forklaring:\nI = Innsjekket · F = Fravær · S15 = Forsinket 15 min\nU = Utsjekket · ? = Ikke registrert",
   "@csvLegend": {},
 
   "exportCsv": "Eksporter CSV",
@@ -380,16 +402,16 @@
   "onboarding1Desc": "Start med å opprette en gruppe og legg til elever.\nImporter fra CSV eller legg til manuelt.",
   "@onboarding1Desc": {},
 
-  "onboarding2Title": "Klasseromsmodus",
+  "onboarding2Title": "Innsjekk og utsjekk",
   "@onboarding2Title": {},
 
-  "onboarding2Desc": "Trykk på en elev for å registrere til stede.\nTrykk igjen for fravær. Hold inne for flere valg.",
+  "onboarding2Desc": "Trykk én gang for å sjekke inn en person.\nTrykk igjen for å sjekke ut. Søk etter navn øverst.",
   "@onboarding2Desc": {},
 
-  "onboarding3Title": "Turmodus",
+  "onboarding3Title": "Merknader og fravær",
   "@onboarding3Title": {},
 
-  "onboarding3Desc": "Designet for en-hånds bruk ute.\nSøk etter elever med tre bokstaver — ett trykk registrerer.",
+  "onboarding3Desc": "Hold inne på en person for merknad eller andre statuser.\nMerknader vises i rapporten.",
   "@onboarding3Desc": {},
 
   "onboarding4Title": "Rapport",
@@ -416,7 +438,7 @@
   "featureUnlimitedGroups": "Ubegrenset antall grupper og elever",
   "@featureUnlimitedGroups": {},
 
-  "featureClassroomTrip": "Klasseroms- og turmodus",
+  "featureClassroomTrip": "Innsjekk og utsjekk med merknader",
   "@featureClassroomTrip": {},
 
   "featureReports": "Rapporter og eksport",

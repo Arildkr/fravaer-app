@@ -1,34 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/database/database.dart';
 import '../../../core/database/tables.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/utils/haptic_feedback.dart';
+import '../../../core/utils/status_helpers.dart';
 import '../../../core/utils/widget_updater.dart';
 import '../data/attendance_repository.dart';
 import '../../reports/presentation/report_screen.dart';
-import 'count_banner.dart';
 import 'attendance_tile.dart';
+import 'count_banner.dart';
 import 'status_picker_dialog.dart';
 
-/// Turmodus — designet for en-hånds bruk i bevegelse.
-class TripScreen extends ConsumerStatefulWidget {
+/// Universell registreringsskjerm for innsjekk/utsjekk.
+/// Erstatter tidligere Klasseromsmodus og Turmodus.
+class SessionScreen extends ConsumerStatefulWidget {
   final FravaersOkterData session;
   final GrupperData group;
 
-  const TripScreen({
+  const SessionScreen({
     super.key,
     required this.session,
     required this.group,
   });
 
   @override
-  ConsumerState<TripScreen> createState() => _TripScreenState();
+  ConsumerState<SessionScreen> createState() => _SessionScreenState();
 }
 
-class _TripScreenState extends ConsumerState<TripScreen> {
+class _SessionScreenState extends ConsumerState<SessionScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
   bool _searchActive = false;
@@ -48,6 +51,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       _searchQuery = '';
       _searchActive = false;
     });
+  }
+
+  String _buildTitle(AppLocalizations l10n) {
+    if (widget.session.navn != null && widget.session.navn!.isNotEmpty) {
+      return widget.session.navn!;
+    }
+    final dato = DateFormat('dd.MM.yyyy').format(widget.session.dato);
+    return '${widget.group.navn} — $dato';
   }
 
   @override
@@ -75,7 +86,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                   onChanged: (v) => setState(() => _searchQuery = v),
                   textInputAction: TextInputAction.search,
                 )
-              : Text(l10n.tripTitle(widget.group.navn)),
+              : Text(_buildTitle(l10n)),
           actions: _searchActive
               ? [
                   IconButton(
@@ -95,7 +106,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     tooltip: l10n.report,
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => ReportScreen(oktId: widget.session.id),
+                        builder: (_) =>
+                            ReportScreen(oktId: widget.session.id),
                       ),
                     ),
                   ),
@@ -123,10 +135,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               );
             }
 
-            // Haptisk feedback kun én gang
+            // Haptisk feedback kun én gang når alle er registrert
             if (records.isNotEmpty &&
-                records.every(
-                    (r) => r.post.status != AttendanceStatus.ukjent)) {
+                records
+                    .every((r) => r.post.status != AttendanceStatus.ukjent)) {
               if (!_allRegisteredNotified) {
                 _allRegisteredNotified = true;
                 HapticService.onAllRegistered();
@@ -149,8 +161,9 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: filtered.length + 1,
-                    separatorBuilder: (_, index) =>
-                        index == 0 ? const SizedBox.shrink() : const Divider(height: 1),
+                    separatorBuilder: (_, index) => index == 0
+                        ? const SizedBox.shrink()
+                        : const Divider(height: 1),
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         return Padding(
@@ -182,26 +195,24 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     );
   }
 
+  /// Tap-syklus: ikke møtt → innsjekket → utsjekket → ikke møtt
   Future<void> _quickRegister(AttendanceRecord record) async {
     final repo = ref.read(attendanceRepositoryProvider);
-    final current = record.post.status;
+    final next = record.post.status.nextStatus;
 
-    if (current == AttendanceStatus.ukjent) {
-      await repo.updateStatus(
-          postId: record.post.id, status: AttendanceStatus.tilStede);
+    await repo.updateStatus(
+      postId: record.post.id,
+      status: next,
+      merknad: record.post.merknad, // behold eksisterende merknad
+    );
+
+    if (next == AttendanceStatus.tilStede) {
       await HapticService.onPresent();
-    } else if (current == AttendanceStatus.tilStede) {
-      await repo.updateStatus(
-          postId: record.post.id, status: AttendanceStatus.fravaer);
+    } else if (next == AttendanceStatus.fravaer) {
       await HapticService.onAbsent();
-    } else {
-      await repo.updateStatus(
-          postId: record.post.id, status: AttendanceStatus.ukjent);
     }
 
-    if (_searchQuery.isNotEmpty) {
-      _clearSearch();
-    }
+    if (_searchQuery.isNotEmpty) _clearSearch();
   }
 
   Future<void> _showStatusPicker(
@@ -210,7 +221,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   ) async {
     final result = await showDialog<StatusResult>(
       context: context,
-      builder: (_) => StatusPickerDialog(elevNavn: record.elev.navn),
+      builder: (_) => StatusPickerDialog(
+        elevNavn: record.elev.navn,
+        currentMerknad: record.post.merknad,
+      ),
     );
 
     if (result != null) {
@@ -218,7 +232,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             postId: record.post.id,
             status: result.status,
             forsinkelsesMinutter: result.forsinkelsesMinutter,
+            merknad: result.merknad,
           );
+
+      if (result.status == AttendanceStatus.tilStede) {
+        await HapticService.onPresent();
+      } else if (result.status == AttendanceStatus.fravaer) {
+        await HapticService.onAbsent();
+      }
     }
   }
 
@@ -227,7 +248,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.endTripTitle),
+        title: Text(l10n.endSessionTitle),
         content: Text(l10n.reportStillAvailable),
         actions: [
           TextButton(

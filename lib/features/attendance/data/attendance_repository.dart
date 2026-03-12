@@ -14,15 +14,16 @@ class AttendanceRepository {
   Future<FravaersOkterData> createSession({
     required String gruppeId,
     required String laererId,
-    required SessionType type,
+    String? navn,
   }) async {
     final id = _uuid.v4();
     final now = DateTime.now();
 
     await _db.into(_db.fravaersOkter).insert(FravaersOkterCompanion.insert(
       id: id,
+      navn: Value(navn),
       dato: now,
-      type: type,
+      type: SessionType.turregistrering,
       gruppeId: gruppeId,
       laererId: laererId,
     ));

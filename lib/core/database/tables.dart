@@ -1,13 +1,12 @@
 import 'package:drift/drift.dart';
 
-/// Statusmodell for fraværsregistrering.
-/// Ukjent er standardstatus — tvinger læreren til å ta aktivt stilling.
+/// Statusmodell for inn-/utsjekk-registrering.
 enum AttendanceStatus {
-  ukjent,
-  tilStede,
-  fravaer,
-  forseinka,
-  planlagtBorte,
+  ukjent,     // Ikke møtt / ikke registrert ennå (index 0)
+  tilStede,   // Innsjekket / til stede (index 1)
+  fravaer,    // Fravær — møter ikke opp (index 2)
+  forseinka,  // Sen ankomst (index 3)
+  utsjekket,  // Utsjekket / trygt hjemme (index 4, var planlagtBorte)
 }
 
 /// Gruppetype
@@ -18,7 +17,7 @@ enum GroupType {
   annet,
 }
 
-/// Type fraværsøkt
+/// Type fraværsøkt (beholdes for bakoverkompatibilitet)
 enum SessionType {
   klasseromsOkt,
   turregistrering,
@@ -77,11 +76,12 @@ class Medlemskap extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-/// Fraværsøkt — representerer én registreringsrunde (time, tur, etc.)
+/// Fraværsøkt — representerer én registreringsrunde (tur, trening, time, etc.)
 class FravaersOkter extends Table {
   TextColumn get id => text()(); // UUID
+  TextColumn get navn => text().nullable()(); // Valgfritt navn, f.eks. "Tur til Gaustatoppen"
   DateTimeColumn get dato => dateTime()();
-  IntColumn get type => intEnum<SessionType>()();
+  IntColumn get type => intEnum<SessionType>()(); // Beholdes for bakoverkompatibilitet
   TextColumn get gruppeId => text().references(Grupper, #id)();
   TextColumn get laererId => text().references(Laerere, #id)();
   BoolColumn get avsluttet => boolean().withDefault(const Constant(false))();

@@ -9,8 +9,7 @@ import '../../../core/database/tables.dart';
 import '../../../core/providers/app_providers.dart';
 import '../data/group_repository.dart';
 import '../../attendance/data/attendance_repository.dart';
-import '../../attendance/presentation/classroom_screen.dart';
-import '../../attendance/presentation/trip_screen.dart';
+import '../../attendance/presentation/session_screen.dart';
 import '../../reports/presentation/report_screen.dart';
 import '../../reports/presentation/semester_export_screen.dart';
 import 'import_students_dialog.dart';
@@ -155,38 +154,15 @@ class GroupDetailScreen extends ConsumerWidget {
           bottomNavigationBar: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: hasMembers
-                          ? () => _startSession(
-                              context, ref, SessionType.klasseromsOkt)
-                          : null,
-                      icon: const Icon(Icons.school),
-                      label: Text(l10n.classroom),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(0, 56),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: hasMembers
-                          ? () => _startSession(
-                              context, ref, SessionType.turregistrering)
-                          : null,
-                      icon: const Icon(Icons.hiking),
-                      label: Text(l10n.trip),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(0, 56),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                ],
+              child: FilledButton.icon(
+                onPressed: hasMembers
+                    ? () => _startSession(context, ref)
+                    : null,
+                icon: const Icon(Icons.how_to_reg),
+                label: Text(l10n.startSession),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                ),
               ),
             ),
           ),
@@ -287,11 +263,7 @@ class GroupDetailScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _startSession(
-    BuildContext context,
-    WidgetRef ref,
-    SessionType type,
-  ) async {
+  Future<void> _startSession(BuildContext context, WidgetRef ref) async {
     final laererId = ref.read(activeLaererIdProvider);
     if (laererId == null) return;
 
@@ -320,31 +292,63 @@ class GroupDetailScreen extends ConsumerWidget {
         ),
       );
       if (resume != true || !context.mounted) return;
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => existing.type == SessionType.klasseromsOkt
-              ? ClassroomScreen(session: existing, group: group)
-              : TripScreen(session: existing, group: group),
-        ),
-      );
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => SessionScreen(session: existing, group: group),
+      ));
       return;
     }
+
+    if (!context.mounted) return;
+
+    // Be om valgfritt navn på registreringen
+    final sessionName = await _askSessionName(context);
+    if (!context.mounted) return;
+    if (sessionName == null) return; // avbrutt
 
     final session = await attendanceRepo.createSession(
       gruppeId: group.id,
       laererId: laererId,
-      type: type,
+      navn: sessionName.isEmpty ? null : sessionName,
     );
 
     ref.read(activeSessionIdProvider.notifier).state = session.id;
 
     if (!context.mounted) return;
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => SessionScreen(session: session, group: group),
+    ));
+  }
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => type == SessionType.klasseromsOkt
-            ? ClassroomScreen(session: session, group: group)
-            : TripScreen(session: session, group: group),
+  /// Viser dialog for å gi navn til registreringen.
+  /// Returnerer null hvis bruker trykker Avbryt, ellers streng (tom = ingen navn).
+  Future<String?> _askSessionName(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.startSession),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: l10n.sessionName,
+            hintText: l10n.sessionNameHint,
+            border: const OutlineInputBorder(),
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          onSubmitted: (_) => Navigator.pop(ctx, controller.text.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, null),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text(l10n.startSession),
+          ),
+        ],
       ),
     );
   }
@@ -515,16 +519,17 @@ class _SessionHistoryScreen extends ConsumerWidget {
             separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final session = sessions[index];
-              final isClassroom =
-                  session.type == SessionType.klasseromsOkt;
+              final displayName = (session.navn != null && session.navn!.isNotEmpty)
+                  ? session.navn!
+                  : l10n.startSession;
 
               return ListTile(
                 leading: Icon(
-                  isClassroom ? Icons.school : Icons.hiking,
+                  Icons.how_to_reg,
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  isClassroom ? l10n.classroom : l10n.trip,
+                  displayName,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 subtitle: Text(dateFormat.format(session.dato)),
@@ -571,9 +576,7 @@ class _SessionHistoryScreen extends ConsumerWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => session.type == SessionType.klasseromsOkt
-            ? ClassroomScreen(session: session, group: group)
-            : TripScreen(session: session, group: group),
+        builder: (_) => SessionScreen(session: session, group: group),
       ),
     );
   }
