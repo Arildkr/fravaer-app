@@ -319,7 +319,6 @@ class GroupDetailScreen extends ConsumerWidget {
           controller: controller,
           decoration: InputDecoration(
             labelText: l10n.sessionName,
-            hintText: l10n.sessionNameHint,
             border: const OutlineInputBorder(),
           ),
           autofocus: true,

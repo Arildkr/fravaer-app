@@ -173,8 +173,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
               filtered.sort((a, b) {
                 int order(AttendanceStatus s) {
                   if (s == AttendanceStatus.tilStede) return 0; // trenger utsjekk
-                  if (s == AttendanceStatus.utsjekket) return 2; // ferdig
-                  return 1; // fravaer / ukjent / forseinka
+                  if (s == AttendanceStatus.forseinka) return 1; // trenger utsjekk
+                  if (s == AttendanceStatus.utsjekket) return 3; // ferdig
+                  return 2; // fravaer / ukjent
                 }
                 return order(a.post.status).compareTo(order(b.post.status));
               });
@@ -203,10 +204,11 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                         );
                       }
                       final record = filtered[index - 1];
-                      // Dimm elever som ikke er relevante i utsjekk-fase
+                      // Dimm kun ukjent/fravaer i utsjekk-fase; forsinket er aktiv
                       final dimmed = !isInnsjekk &&
                           record.post.status != AttendanceStatus.tilStede &&
-                          record.post.status != AttendanceStatus.utsjekket;
+                          record.post.status != AttendanceStatus.utsjekket &&
+                          record.post.status != AttendanceStatus.forseinka;
                       return Opacity(
                         opacity: dimmed ? 0.35 : 1.0,
                         child: AttendanceTile(
@@ -264,24 +266,30 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   }
 
   /// Tap-logikk avhenger av fase.
-  /// Innsjekk: alt ↔ tilStede (toggle)
-  /// Utsjekk: kun tilStede ↔ utsjekket
+  /// Innsjekk: ukjent → tilStede → fravaer → ukjent (3-stegs syklus)
+  /// Utsjekk: tilStede/forseinka → utsjekket; utsjekket → tilStede
   Future<void> _quickRegister(AttendanceRecord record) async {
     final repo = ref.read(attendanceRepositoryProvider);
     final status = record.post.status;
 
     final AttendanceStatus next;
     if (_phase == SessionPhase.innsjekk) {
-      next = status == AttendanceStatus.tilStede
-          ? AttendanceStatus.ukjent
-          : AttendanceStatus.tilStede;
+      switch (status) {
+        case AttendanceStatus.ukjent:
+          next = AttendanceStatus.tilStede;
+        case AttendanceStatus.tilStede:
+          next = AttendanceStatus.fravaer;
+        default:
+          next = AttendanceStatus.ukjent;
+      }
     } else {
-      if (status == AttendanceStatus.tilStede) {
+      if (status == AttendanceStatus.tilStede ||
+          status == AttendanceStatus.forseinka) {
         next = AttendanceStatus.utsjekket;
       } else if (status == AttendanceStatus.utsjekket) {
         next = AttendanceStatus.tilStede;
       } else {
-        return; // ikke endre fravaer/ukjent i utsjekk-fase
+        return; // ikke endre ukjent i utsjekk-fase
       }
     }
 

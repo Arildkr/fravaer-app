@@ -117,6 +117,11 @@ class _StatusPickerDialogState extends State<StatusPickerDialog> {
                     onTap: () => _pop(StatusResult(AttendanceStatus.forseinka,
                         forsinkelsesMinutter: min)),
                   ),
+                _CustomDelayChip(
+                  onMinutes: (min) => _pop(StatusResult(
+                      AttendanceStatus.forseinka,
+                      forsinkelsesMinutter: min)),
+                ),
               ],
             ),
             const Divider(height: 20),
@@ -198,6 +203,65 @@ class _DelayChip extends StatelessWidget {
             AttendanceStatus.forseinka.color.withValues(alpha: 0.15),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         onPressed: onTap,
+      ),
+    );
+  }
+}
+
+class _CustomDelayChip extends StatelessWidget {
+  final void Function(int minutes) onMinutes;
+
+  const _CustomDelayChip({required this.onMinutes});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
+      child: ActionChip(
+        label: const Text(
+          '…',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        backgroundColor:
+            AttendanceStatus.forseinka.color.withValues(alpha: 0.15),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        onPressed: () async {
+          final controller = TextEditingController();
+          final result = await showDialog<int>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Antall minutter'),
+              content: TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Minutter forsinket',
+                  border: OutlineInputBorder(),
+                  suffixText: 'min',
+                ),
+                autofocus: true,
+                onSubmitted: (_) {
+                  final v = int.tryParse(controller.text);
+                  if (v != null && v > 0) Navigator.pop(ctx, v);
+                },
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Avbryt'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final v = int.tryParse(controller.text);
+                    if (v != null && v > 0) Navigator.pop(ctx, v);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          if (result != null) onMinutes(result);
+        },
       ),
     );
   }
