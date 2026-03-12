@@ -190,6 +190,24 @@
   "tapChangeStatusHint": "Tap = check in/out · Hold = note and more options",
   "@tapChangeStatusHint": {},
 
+  "phaseInnsjekk": "Check-in",
+  "@phaseInnsjekk": {},
+
+  "phaseUtsjekk": "Check-out",
+  "@phaseUtsjekk": {},
+
+  "switchToUtsjekk": "Switch to check-out",
+  "@switchToUtsjekk": {},
+
+  "switchToInnsjekk": "← Check-in",
+  "@switchToInnsjekk": {},
+
+  "innsjekkHint": "Tap to check in · Hold for note and absence",
+  "@innsjekkHint": {},
+
+  "utsjekkHint": "Tap to check out · Hold for note",
+  "@utsjekkHint": {},
+
   "endSession": "End session",
   "@endSession": {},
 

@@ -15,8 +15,9 @@ import 'attendance_tile.dart';
 import 'count_banner.dart';
 import 'status_picker_dialog.dart';
 
-/// Universell registreringsskjerm for innsjekk/utsjekk.
-/// Erstatter tidligere Klasseromsmodus og Turmodus.
+enum SessionPhase { innsjekk, utsjekk }
+
+/// Universell registreringsskjerm med to-fase innsjekk/utsjekk.
 class SessionScreen extends ConsumerStatefulWidget {
   final FravaersOkterData session;
   final GrupperData group;
@@ -35,7 +36,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
   bool _searchActive = false;
-  bool _allRegisteredNotified = false;
+  bool _allDoneNotified = false;
+  SessionPhase _phase = SessionPhase.innsjekk;
 
   @override
   void dispose() {
@@ -61,10 +63,17 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     return '${widget.group.navn} — $dato';
   }
 
+  void _togglePhase() => setState(() {
+        _phase =
+            _phase == SessionPhase.innsjekk ? SessionPhase.utsjekk : SessionPhase.innsjekk;
+        _allDoneNotified = false;
+      });
+
   @override
   Widget build(BuildContext context) {
     final attendanceRepo = ref.watch(attendanceRepositoryProvider);
     final l10n = AppLocalizations.of(context)!;
+    final isInnsjekk = _phase == SessionPhase.innsjekk;
 
     return PopScope(
       canPop: false,
@@ -106,15 +115,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                     tooltip: l10n.report,
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) =>
-                            ReportScreen(oktId: widget.session.id),
+                        builder: (_) => ReportScreen(oktId: widget.session.id),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.check_circle),
-                    tooltip: l10n.endSession,
-                    onPressed: () => _endSession(context),
                   ),
                 ],
         ),
@@ -123,7 +126,6 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
           builder: (context, snapshot) {
             final records = snapshot.data ?? [];
 
-            // Oppdater home screen widget
             if (records.isNotEmpty) {
               final tilStede = records
                   .where((r) => r.post.status == AttendanceStatus.tilStede)
@@ -132,45 +134,68 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                 gruppeNavn: widget.group.navn,
                 tilStede: tilStede,
                 totalt: records.length,
-              );
+              ).catchError((_) {});
             }
 
-            // Haptisk feedback kun én gang når alle er registrert
-            if (records.isNotEmpty &&
-                records
-                    .every((r) => r.post.status != AttendanceStatus.ukjent)) {
-              if (!_allRegisteredNotified) {
-                _allRegisteredNotified = true;
+            // Haptisk feedback når alle er ferdig registrert i gjeldende fase
+            if (isInnsjekk) {
+              final alleDone = records.isNotEmpty &&
+                  records.every((r) => r.post.status != AttendanceStatus.ukjent);
+              if (alleDone && !_allDoneNotified) {
+                _allDoneNotified = true;
                 HapticService.onAllRegistered();
+              } else if (!alleDone) {
+                _allDoneNotified = false;
               }
             } else {
-              _allRegisteredNotified = false;
+              final innsjekket = records
+                  .where((r) => r.post.status == AttendanceStatus.tilStede)
+                  .length;
+              if (innsjekket == 0 && records.isNotEmpty && !_allDoneNotified) {
+                _allDoneNotified = true;
+                HapticService.onAllRegistered();
+              } else if (innsjekket > 0) {
+                _allDoneNotified = false;
+              }
             }
 
-            final filtered = _searchQuery.isNotEmpty
+            // Filtrer på søk
+            var filtered = _searchQuery.isNotEmpty
                 ? records
                     .where((r) => r.elev.navn
                         .toLowerCase()
                         .contains(_searchQuery.toLowerCase()))
                     .toList()
-                : records;
+                : List<AttendanceRecord>.from(records);
+
+            // I utsjekk-fase: sorter slik at de som ikke er utsjekket kommer øverst
+            if (!isInnsjekk) {
+              filtered.sort((a, b) {
+                int order(AttendanceStatus s) {
+                  if (s == AttendanceStatus.tilStede) return 0; // trenger utsjekk
+                  if (s == AttendanceStatus.utsjekket) return 2; // ferdig
+                  return 1; // fravaer / ukjent / forseinka
+                }
+                return order(a.post.status).compareTo(order(b.post.status));
+              });
+            }
 
             return Column(
               children: [
-                CountBanner(records: records),
+                _PhaseBanner(phase: _phase, l10n: l10n),
+                CountBanner(records: records, isUtsjekkFase: !isInnsjekk),
                 Expanded(
                   child: ListView.separated(
                     itemCount: filtered.length + 1,
-                    separatorBuilder: (_, index) => index == 0
-                        ? const SizedBox.shrink()
-                        : const Divider(height: 1),
+                    separatorBuilder: (_, i) =>
+                        i == 0 ? const SizedBox.shrink() : const Divider(height: 1),
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 6),
                           child: Text(
-                            l10n.tapChangeStatusHint,
+                            isInnsjekk ? l10n.innsjekkHint : l10n.utsjekkHint,
                             style: const TextStyle(
                                 fontSize: 13, color: Color(0xFF888888)),
                             textAlign: TextAlign.center,
@@ -178,11 +203,17 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                         );
                       }
                       final record = filtered[index - 1];
-                      return AttendanceTile(
-                        record: record,
-                        onTap: () => _quickRegister(record),
-                        onLongPress: () =>
-                            _showStatusPicker(context, record),
+                      // Dimm elever som ikke er relevante i utsjekk-fase
+                      final dimmed = !isInnsjekk &&
+                          record.post.status != AttendanceStatus.tilStede &&
+                          record.post.status != AttendanceStatus.utsjekket;
+                      return Opacity(
+                        opacity: dimmed ? 0.35 : 1.0,
+                        child: AttendanceTile(
+                          record: record,
+                          onTap: () => _quickRegister(record),
+                          onLongPress: () => _showStatusPicker(context, record),
+                        ),
                       );
                     },
                   ),
@@ -191,19 +222,73 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
             );
           },
         ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _togglePhase,
+                    icon: Icon(
+                      isInnsjekk ? Icons.logout : Icons.login,
+                      size: 18,
+                    ),
+                    label: Text(
+                      isInnsjekk ? l10n.switchToUtsjekk : l10n.switchToInnsjekk,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 52),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => _endSession(context),
+                    icon: const Icon(Icons.check_circle, size: 18),
+                    label: Text(l10n.endSession),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 52),
+                      backgroundColor: Colors.green[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  /// Tap-syklus: ikke møtt → innsjekket → utsjekket → ikke møtt
+  /// Tap-logikk avhenger av fase.
+  /// Innsjekk: alt ↔ tilStede (toggle)
+  /// Utsjekk: kun tilStede ↔ utsjekket
   Future<void> _quickRegister(AttendanceRecord record) async {
     final repo = ref.read(attendanceRepositoryProvider);
-    final next = record.post.status.nextStatus;
+    final status = record.post.status;
+
+    final AttendanceStatus next;
+    if (_phase == SessionPhase.innsjekk) {
+      next = status == AttendanceStatus.tilStede
+          ? AttendanceStatus.ukjent
+          : AttendanceStatus.tilStede;
+    } else {
+      if (status == AttendanceStatus.tilStede) {
+        next = AttendanceStatus.utsjekket;
+      } else if (status == AttendanceStatus.utsjekket) {
+        next = AttendanceStatus.tilStede;
+      } else {
+        return; // ikke endre fravaer/ukjent i utsjekk-fase
+      }
+    }
 
     await repo.updateStatus(
       postId: record.post.id,
       status: next,
-      merknad: record.post.merknad, // behold eksisterende merknad
+      merknad: record.post.merknad,
     );
 
     if (next == AttendanceStatus.tilStede) {
@@ -267,9 +352,48 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       await ref
           .read(attendanceRepositoryProvider)
           .endSession(widget.session.id);
-      await WidgetUpdater.clearSession();
+      try {
+        await WidgetUpdater.clearSession();
+      } catch (_) {}
       ref.read(activeSessionIdProvider.notifier).state = null;
       if (context.mounted) Navigator.pop(context);
     }
+  }
+}
+
+/// Fase-banner øverst i listen — tydelig indikator på innsjekk vs utsjekk.
+class _PhaseBanner extends StatelessWidget {
+  final SessionPhase phase;
+  final AppLocalizations l10n;
+
+  const _PhaseBanner({required this.phase, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final isInnsjekk = phase == SessionPhase.innsjekk;
+    final color = isInnsjekk ? Colors.green[700]! : Colors.blue[700]!;
+    final bgColor = isInnsjekk ? Colors.green[50]! : Colors.blue[50]!;
+
+    return Container(
+      width: double.infinity,
+      color: bgColor,
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(isInnsjekk ? Icons.login : Icons.logout, size: 15, color: color),
+          const SizedBox(width: 6),
+          Text(
+            isInnsjekk ? l10n.phaseInnsjekk.toUpperCase() : l10n.phaseUtsjekk.toUpperCase(),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: color,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

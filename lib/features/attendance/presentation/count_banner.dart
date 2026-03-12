@@ -8,17 +8,20 @@ import '../data/attendance_repository.dart';
 /// Teljepanel: tydelig oversikt med store tall, lesbare i sollys.
 class CountBanner extends StatelessWidget {
   final List<AttendanceRecord> records;
+  final bool isUtsjekkFase;
 
-  const CountBanner({super.key, required this.records});
+  const CountBanner({super.key, required this.records, this.isUtsjekkFase = false});
 
   @override
   Widget build(BuildContext context) {
     final total = records.length;
     final ukjente =
         records.where((r) => r.post.status == AttendanceStatus.ukjent).length;
-    final registrert = total - ukjente;
     final tilStede = records
         .where((r) => r.post.status == AttendanceStatus.tilStede)
+        .length;
+    final utsjekket = records
+        .where((r) => r.post.status == AttendanceStatus.utsjekket)
         .length;
     final fravaer =
         records.where((r) => r.post.status == AttendanceStatus.fravaer).length;
@@ -26,9 +29,58 @@ class CountBanner extends StatelessWidget {
         .where((r) => r.post.status == AttendanceStatus.forseinka)
         .length;
 
-    final alleDone = ukjente == 0 && total > 0;
-
     final l10n = AppLocalizations.of(context)!;
+
+    if (isUtsjekkFase) {
+      // Utsjekk-fase: vis utsjekket av innsjekket
+      final innsjekket = tilStede + utsjekket;
+      final allUtsjekket = tilStede == 0 && innsjekket > 0;
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        color: allUtsjekket
+            ? AppTheme.statusPlanlagtBorte.withValues(alpha: 0.12)
+            : Colors.blue[50],
+        child: Column(
+          children: [
+            Text(
+              '$utsjekket / $innsjekket ${l10n.statusCheckedOut.toLowerCase()}',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: allUtsjekket ? AppTheme.statusPlanlagtBorte : Colors.blue[800],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 4,
+              children: [
+                if (tilStede > 0)
+                  _CountChip(
+                      label: l10n.statusPresent,
+                      count: tilStede,
+                      color: AppTheme.statusTilStede),
+                _CountChip(
+                    label: l10n.statusCheckedOut,
+                    count: utsjekket,
+                    color: AppTheme.statusPlanlagtBorte),
+                if (fravaer > 0)
+                  _CountChip(
+                      label: l10n.statusAbsent,
+                      count: fravaer,
+                      color: AppTheme.statusFravaer),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Innsjekk-fase: standard visning
+    final registrert = total - ukjente;
+    final alleDone = ukjente == 0 && total > 0;
 
     return Container(
       width: double.infinity,
@@ -38,7 +90,6 @@ class CountBanner extends StatelessWidget {
           : AppTheme.statusUkjent.withValues(alpha: 0.08),
       child: Column(
         children: [
-          // Hovedteller — stor og tydelig
           Text(
             l10n.registeredCount(registrert, total),
             style: TextStyle(
@@ -50,7 +101,6 @@ class CountBanner extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          // Detaljerte tall — Wrap for å unngå overflow på smale skjermer
           Wrap(
             alignment: WrapAlignment.center,
             spacing: 10,

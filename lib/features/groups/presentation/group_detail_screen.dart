@@ -132,20 +132,7 @@ class GroupDetailScreen extends ConsumerWidget {
                               ),
                             );
                           }
-                          // Historikk-knapp nederst i listen
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 16),
-                            child: OutlinedButton.icon(
-                              onPressed: () =>
-                                  _showSessionHistory(context, ref),
-                              icon: const Icon(Icons.history),
-                              label: Text(l10n.viewFinishedSessions),
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: const Size(double.infinity, 48),
-                              ),
-                            ),
-                          );
+                          return const SizedBox.shrink();
                         },
                       ),
                     ),

@@ -190,6 +190,24 @@
   "tapChangeStatusHint": "Trykk = innsjekk/utsjekk · Hold inne = merknad og flere valg",
   "@tapChangeStatusHint": {},
 
+  "phaseInnsjekk": "Innsjekk",
+  "@phaseInnsjekk": {},
+
+  "phaseUtsjekk": "Utsjekk",
+  "@phaseUtsjekk": {},
+
+  "switchToUtsjekk": "Bytt til utsjekk",
+  "@switchToUtsjekk": {},
+
+  "switchToInnsjekk": "← Innsjekk",
+  "@switchToInnsjekk": {},
+
+  "innsjekkHint": "Trykk for å sjekke inn · Hold inne for merknad og fravær",
+  "@innsjekkHint": {},
+
+  "utsjekkHint": "Trykk for å sjekke ut · Hold inne for merknad",
+  "@utsjekkHint": {},
+
   "endSession": "Avslutt økt",
   "@endSession": {},
 

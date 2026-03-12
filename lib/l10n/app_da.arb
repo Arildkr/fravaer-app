@@ -190,6 +190,24 @@
   "tapChangeStatusHint": "Tryk = check ind/ud · Hold inde = bemærkning og flere valg",
   "@tapChangeStatusHint": {},
 
+  "phaseInnsjekk": "Indtjekning",
+  "@phaseInnsjekk": {},
+
+  "phaseUtsjekk": "Udtjekning",
+  "@phaseUtsjekk": {},
+
+  "switchToUtsjekk": "Skift til udtjekning",
+  "@switchToUtsjekk": {},
+
+  "switchToInnsjekk": "← Indtjekning",
+  "@switchToInnsjekk": {},
+
+  "innsjekkHint": "Tryk for at tjekke ind · Hold inde for bemærkning og fravær",
+  "@innsjekkHint": {},
+
+  "utsjekkHint": "Tryk for at tjekke ud · Hold inde for bemærkning",
+  "@utsjekkHint": {},
+
   "endSession": "Afslut session",
   "@endSession": {},
 

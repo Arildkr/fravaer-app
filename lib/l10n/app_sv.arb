@@ -190,6 +190,24 @@
   "tapChangeStatusHint": "Tryck = inchecka/utchecka · Håll in = anteckning och fler val",
   "@tapChangeStatusHint": {},
 
+  "phaseInnsjekk": "Incheckning",
+  "@phaseInnsjekk": {},
+
+  "phaseUtsjekk": "Utcheckning",
+  "@phaseUtsjekk": {},
+
+  "switchToUtsjekk": "Byt till utcheckning",
+  "@switchToUtsjekk": {},
+
+  "switchToInnsjekk": "← Incheckning",
+  "@switchToInnsjekk": {},
+
+  "innsjekkHint": "Tryck för incheckning · Håll in för anteckning och frånvaro",
+  "@innsjekkHint": {},
+
+  "utsjekkHint": "Tryck för utcheckning · Håll in för anteckning",
+  "@utsjekkHint": {},
+
   "endSession": "Avsluta session",
   "@endSession": {},
 
