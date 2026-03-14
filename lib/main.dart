@@ -73,7 +73,7 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
   bool _authenticated = false;
   bool _onboardingDone = false;
   bool _initialized = false;
-  bool _biometricLockEnabled = true;
+  bool _biometricLockEnabled = false;
   DateTime? _lastPause;
 
   late final SubscriptionService _subscriptionService;
@@ -216,6 +216,15 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     final biometricEnabled =
         ref.watch(biometricLockEnabledProvider).valueOrNull ??
             _biometricLockEnabled;
+
+    // Re-lås appen umiddelbart dersom biometri slås PÅ mens brukeren er inne.
+    ref.listen<AsyncValue<bool>>(biometricLockEnabledProvider, (prev, next) {
+      final wasEnabled = prev?.valueOrNull ?? false;
+      final isEnabled = next.valueOrNull ?? false;
+      if (!wasEnabled && isEnabled && _authenticated) {
+        setState(() => _authenticated = false);
+      }
+    });
 
     if (!_authenticated && biometricEnabled) {
       return LockScreen(

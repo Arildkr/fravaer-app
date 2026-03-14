@@ -59,3 +59,13 @@ web/sql-wasm.wasm
 *.jks
 *.keystore
 android/key.properties
+
+# OAuth klient-hemmelighet
+android/app/client_secret_*.json
+
+# Midlertidige filer
+splash_*.png
+splash_*.mp4
+screenshot*.png
+screenshots/*/tmp*.png
+screenshots/*/tmp*.mp4

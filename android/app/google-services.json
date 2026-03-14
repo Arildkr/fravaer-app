@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "591979578674",
+    "project_id": "alle-med",
+    "storage_bucket": "alle-med.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591979578674:android:f9fac989e46365eec6032b",
+        "android_client_info": {
+          "package_name": "no.fravaer.fravaer_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "591979578674-jn7kdl4hhgl0hgf4kg1dg89v924p2nm4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "no.fravaer.fravaer_app",
+            "certificate_hash": "57f2559f61089d4702757602798ecafbe2bbd2f0"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5nu3lR1s1XpLrdlfLnsINwSmQJ0OaLyQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -30,7 +30,7 @@ class Laerere extends Table {
   TextColumn get id => text()(); // UUID
   TextColumn get navn => text().withLength(min: 1, max: 200)();
   TextColumn get epost => text().nullable()();
-  BoolColumn get biometriskLaasAktiv => boolean().withDefault(const Constant(true))();
+  BoolColumn get biometriskLaasAktiv => boolean().withDefault(const Constant(false))();
   DateTimeColumn get opprettetDato => dateTime().withDefault(currentDateAndTime)();
 
   @override

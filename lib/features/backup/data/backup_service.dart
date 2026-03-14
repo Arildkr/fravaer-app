@@ -30,13 +30,10 @@ class BackupService {
   }
 
   /// Logg inn med Google (viser dialog).
+  /// Kaster exception ved feil — null returneres kun om bruker avbrøt.
   Future<bool> signIn() async {
-    try {
-      _currentUser = await _googleSignIn.signIn();
-      return _currentUser != null;
-    } catch (_) {
-      return false;
-    }
+    _currentUser = await _googleSignIn.signIn();
+    return _currentUser != null;
   }
 
   /// Logg ut.
