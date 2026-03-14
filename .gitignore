@@ -63,6 +63,9 @@ android/key.properties
 # OAuth klient-hemmelighet
 android/app/client_secret_*.json
 
+# Firebase
+android/app/google-services.json
+
 # Midlertidige filer
 splash_*.png
 splash_*.mp4
