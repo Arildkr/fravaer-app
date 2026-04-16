@@ -8,7 +8,6 @@ import '../../../core/database/database.dart';
 import '../../../core/database/tables.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/utils/haptic_feedback.dart';
-import '../../../core/utils/status_helpers.dart';
 import '../../../core/utils/widget_updater.dart';
 import '../data/attendance_repository.dart';
 import '../../reports/presentation/report_screen.dart';

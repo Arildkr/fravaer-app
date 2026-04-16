@@ -148,7 +148,7 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
 
     if (existing == null) {
       await db.into(db.laerere).insert(LaerereCompanion.insert(
-            id: laererId!,
+            id: laererId,
             navn: 'Min bruker',
           ));
     }
@@ -163,17 +163,19 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
     final aktiveGrupper = alleGrupper.where((g) => !g.arkivert).toList();
     WidgetUpdater.saveGroups(
       aktiveGrupper.map((g) => (id: g.id, name: g.navn)).toList(),
-    ).catchError((_) {});
+    ).catchError((e) {
+      debugPrint('WidgetUpdater.saveGroups feil: $e');
+    });
 
     // Les biometrisk lås-innstilling
     final laerer = await (db.select(db.laerere)
           ..where((l) => l.id.equals(laererId!)))
-        .getSingle();
+        .getSingleOrNull();
 
     if (mounted) {
       setState(() {
         _onboardingDone = onboardingDone;
-        _biometricLockEnabled = laerer.biometriskLaasAktiv;
+        _biometricLockEnabled = laerer?.biometriskLaasAktiv ?? false;
         _initialized = true;
       });
     }

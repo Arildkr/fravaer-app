@@ -38,7 +38,11 @@ class GroupRepository {
       type: GroupType.klasse, // Standard, brukes ikke i UI
       laererId: laererId,
     ));
-    return (_db.select(_db.grupper)..where((g) => g.id.equals(id))).getSingle();
+    final group = await (_db.select(_db.grupper)
+          ..where((g) => g.id.equals(id)))
+        .getSingleOrNull();
+    if (group == null) throw StateError('Gruppe $id ikke funnet etter oppretting');
+    return group;
   }
 
   /// Kopier en gruppe — ny gruppe med samme elever.

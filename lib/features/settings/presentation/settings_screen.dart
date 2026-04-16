@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:fravaer_app/l10n/app_localizations.dart';
@@ -158,17 +156,24 @@ class _LanguageTile extends ConsumerWidget {
       context: context,
       builder: (ctx) => SimpleDialog(
         title: Text(l10n.language),
-        children: _languages.map((e) {
-          final isSelected = e.code == currentLocale?.languageCode;
-          final label = e.code == null ? l10n.languageSystem : e.label!;
-          return RadioListTile<String?>(
-            value: e.code,
+        children: [
+          RadioGroup<String?>(
             groupValue: currentLocale?.languageCode,
-            title: Text('${e.flag}  $label'),
-            selected: isSelected,
             onChanged: (v) => Navigator.of(ctx).pop(v ?? '__system__'),
-          );
-        }).toList(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _languages.map((e) {
+                final isSelected = e.code == currentLocale?.languageCode;
+                final label = e.code == null ? l10n.languageSystem : e.label!;
+                return RadioListTile<String?>(
+                  value: e.code,
+                  title: Text('${e.flag}  $label'),
+                  selected: isSelected,
+                );
+              }).toList(),
+            ),
+          ),
+        ],
       ),
     );
 

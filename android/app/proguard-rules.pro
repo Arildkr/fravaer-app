@@ -6,9 +6,7 @@
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
-# SQLCipher
--keep class net.sqlcipher.** { *; }
--keep class net.sqlcipher.database.** { *; }
+# sqlite3 / SQLite3MultipleCiphers er native .so — ingen ProGuard-regler nødvendig.
 
 # Keep native methods
 -keepclasseswithmembernames class * {

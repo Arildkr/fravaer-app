@@ -44,8 +44,11 @@ class AttendanceRepository {
       }
     });
 
-    return (_db.select(_db.fravaersOkter)..where((s) => s.id.equals(id)))
-        .getSingle();
+    final session = await (_db.select(_db.fravaersOkter)
+          ..where((s) => s.id.equals(id)))
+        .getSingleOrNull();
+    if (session == null) throw StateError('Økt $id ikke funnet etter oppretting');
+    return session;
   }
 
   /// Hent alle fraværsposter for en økt, med elevinfo.
@@ -115,9 +118,12 @@ class AttendanceRepository {
   }
 
   /// Hent en enkelt økt.
-  Future<FravaersOkterData> getSession(String oktId) {
-    return (_db.select(_db.fravaersOkter)..where((s) => s.id.equals(oktId)))
-        .getSingle();
+  Future<FravaersOkterData> getSession(String oktId) async {
+    final session = await (_db.select(_db.fravaersOkter)
+          ..where((s) => s.id.equals(oktId)))
+        .getSingleOrNull();
+    if (session == null) throw StateError('Økt $oktId ikke funnet');
+    return session;
   }
 
   /// Gjenåpne en avsluttet økt for redigering.

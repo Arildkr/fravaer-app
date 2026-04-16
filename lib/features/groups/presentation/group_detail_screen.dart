@@ -4,11 +4,9 @@ import 'package:fravaer_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/database/database.dart';
-import '../../../core/database/tables.dart';
 
 import '../../../core/providers/app_providers.dart';
 import '../data/group_repository.dart';
-import '../../attendance/data/attendance_repository.dart';
 import '../../attendance/presentation/session_screen.dart';
 import '../../reports/presentation/report_screen.dart';
 import '../../reports/presentation/semester_export_screen.dart';

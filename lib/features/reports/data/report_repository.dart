@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:csv/csv.dart';
 import 'package:drift/drift.dart';
 import 'package:intl/intl.dart';
@@ -18,11 +16,13 @@ class ReportRepository {
   Future<String> generateReport(String oktId) async {
     final session = await (_db.select(_db.fravaersOkter)
           ..where((s) => s.id.equals(oktId)))
-        .getSingle();
+        .getSingleOrNull();
+    if (session == null) throw StateError('Økt $oktId ikke funnet');
 
     final gruppe = await (_db.select(_db.grupper)
           ..where((g) => g.id.equals(session.gruppeId)))
-        .getSingle();
+        .getSingleOrNull();
+    if (gruppe == null) throw StateError('Gruppe ${session.gruppeId} ikke funnet');
 
     final records = await _getSessionRecords(oktId);
 
@@ -118,11 +118,13 @@ class ReportRepository {
   Future<Uint8List> generatePdfReport(String oktId) async {
     final session = await (_db.select(_db.fravaersOkter)
           ..where((s) => s.id.equals(oktId)))
-        .getSingle();
+        .getSingleOrNull();
+    if (session == null) throw StateError('Økt $oktId ikke funnet');
 
     final gruppe = await (_db.select(_db.grupper)
           ..where((g) => g.id.equals(session.gruppeId)))
-        .getSingle();
+        .getSingleOrNull();
+    if (gruppe == null) throw StateError('Gruppe ${session.gruppeId} ikke funnet');
 
     final records = await _getSessionRecords(oktId);
 

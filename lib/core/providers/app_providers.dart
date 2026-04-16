@@ -6,7 +6,6 @@ import '../../features/groups/data/group_repository.dart';
 import '../../features/attendance/data/attendance_repository.dart';
 import '../../features/reports/data/report_repository.dart';
 import '../../features/subscription/data/subscription_service.dart';
-import '../database/database.dart';
 
 /// Repository providers
 
