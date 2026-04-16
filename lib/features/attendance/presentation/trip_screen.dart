@@ -210,7 +210,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   ) async {
     final result = await showDialog<StatusResult>(
       context: context,
-      builder: (_) => StatusPickerDialog(elevNavn: record.elev.navn),
+      builder: (_) => StatusPickerDialog(
+            elevNavn: record.elev.navn,
+            currentStatus: record.post.status,
+          ),
     );
 
     if (result != null) {

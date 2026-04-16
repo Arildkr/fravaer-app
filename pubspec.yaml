@@ -1,7 +1,7 @@
 name: fravaer_app
 description: "Alle med — fraværsverktøy for lærere"
 publish_to: 'none'
-version: 1.1.5+19
+version: 1.1.6+20
 # version format: major.minor.patch+buildNumber
 # Increment buildNumber for each Play Store upload
 
@@ -16,12 +16,11 @@ dependencies:
 
   # State management
   flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
 
-  # Database (drift + SQLCipher for encrypted SQLite)
-  drift: ^2.22.1
-  sqlcipher_flutter_libs: ^0.6.5
-  sqlite3: ^2.4.6
+  # Database (drift + SQLite3MultipleCiphers for encrypted SQLite)
+  # Migrert fra sqlcipher_flutter_libs (EOL) til sqlite3 v3.x med sqlite3mc
+  drift: ^2.32.0
+  sqlite3: ^3.1.5
   path_provider: ^2.1.5
   path: ^1.9.0
 
@@ -62,12 +61,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  drift_dev: ^2.22.1
+  drift_dev: ^2.32.0
   build_runner: ^2.4.14
-  riverpod_generator: ^2.6.3
-  custom_lint:
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.4
+
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
 
 flutter_launcher_icons:
   android: true

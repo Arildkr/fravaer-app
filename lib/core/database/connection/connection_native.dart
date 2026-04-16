@@ -4,24 +4,21 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
-import 'package:sqlite3/open.dart';
 
 QueryExecutor openConnection(String encryptionKey) {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'fravaer.db'));
 
-    // Must override in both main isolate and background isolate
-    open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
-
     return NativeDatabase.createInBackground(
       file,
-      isolateSetup: () {
-        open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
-      },
+      isolateSetup: () {},
       setup: (database) {
-        // Hex-nøkkel: bruk x'...' format som er trygt og unngår SQL injection
+        // SQLite3MultipleCiphers med SQLCipher 4-kompatibilitet.
+        // cipher='sqlcipher' + legacy=4 matcher SQLCipher 4.x standardinnstillinger,
+        // slik at eksisterende krypterte databaser åpnes uten endring.
+        database.execute("pragma cipher = 'sqlcipher'");
+        database.execute('pragma legacy = 4');
         database.execute("PRAGMA key = \"x'$encryptionKey'\"");
         database.execute('PRAGMA foreign_keys = ON');
       },
