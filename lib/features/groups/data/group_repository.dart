@@ -113,6 +113,24 @@ class GroupRepository {
         .write(EleverCompanion(navn: Value(nyttNavn)));
   }
 
+  /// Hent alle elever i en gruppe med innmeldingsdato — brukes for sortering.
+  Stream<List<({EleverData elev, DateTime innmeldtDato})>> watchGroupMembersWithDate(String gruppeId) {
+    final query = _db.select(_db.elever).join([
+      innerJoin(
+        _db.medlemskap,
+        _db.medlemskap.elevId.equalsExp(_db.elever.id),
+      ),
+    ])
+      ..where(_db.medlemskap.gruppeId.equals(gruppeId));
+
+    return query.watch().map((rows) => rows
+        .map((row) => (
+              elev: row.readTable(_db.elever),
+              innmeldtDato: row.readTable(_db.medlemskap).innmeldtDato,
+            ))
+        .toList());
+  }
+
   /// Hent alle elever i en gruppe via medlemskap.
   Stream<List<EleverData>> watchGroupMembers(String gruppeId) {
     final query = _db.select(_db.elever).join([

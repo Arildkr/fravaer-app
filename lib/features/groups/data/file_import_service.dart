@@ -22,14 +22,19 @@ class ImportPreview {
 class FileImportService {
   /// Les og pars en fil. Returnerer forhåndsvisning med detekterte navn.
   static Future<ImportPreview> parseFile(File file) async {
-    final fileName = file.path.split(Platform.pathSeparator).last.toLowerCase();
+    final fileName = file.path.split(Platform.pathSeparator).last;
     final bytes = await file.readAsBytes();
+    return parseBytes(bytes, fileName);
+  }
 
-    if (fileName.endsWith('.csv') || fileName.endsWith('.txt')) {
+  /// Pars bytes direkte — brukes når filstien ikke er tilgjengelig (f.eks. Google Drive).
+  static ImportPreview parseBytes(Uint8List bytes, String fileName) {
+    final name = fileName.toLowerCase();
+    if (name.endsWith('.csv') || name.endsWith('.txt')) {
       return _parseCsv(bytes, fileName);
-    } else if (fileName.endsWith('.xlsx') ||
-        fileName.endsWith('.xls') ||
-        fileName.endsWith('.ods')) {
+    } else if (name.endsWith('.xlsx') ||
+        name.endsWith('.xls') ||
+        name.endsWith('.ods')) {
       return _parseSpreadsheet(bytes, fileName);
     } else {
       // Ukjent filtype (f.eks. fra Google Drive) — prøv regneark, så CSV.
@@ -88,23 +93,55 @@ class FileImportService {
     final hadHeader = _looksLikeHeader(nonEmpty.first);
     final dataRows = hadHeader ? nonEmpty.skip(1).toList() : nonEmpty;
 
-    // Finn antall brukte kolonner (maks i første datarader)
-    final maxCols = dataRows.isEmpty
+    // Finn første kolonne som inneholder navn (ikke rene tall/IDer)
+    final totalCols = dataRows.isEmpty
         ? 1
         : dataRows
             .take(5)
-            .map((r) => r.where((c) => c.trim().isNotEmpty).length)
+            .map((r) => r.length)
             .reduce((a, b) => a > b ? a : b);
+
+    int nameCol = 0;
+    for (int col = 0; col < totalCols && col < 6; col++) {
+      final sample = dataRows
+          .take(5)
+          .where((r) => r.length > col)
+          .map((r) => r[col].trim())
+          .where((c) => c.isNotEmpty)
+          .toList();
+      if (sample.isEmpty) continue;
+      // Hvis kolonnen ser ut som rene tall/IDer, hopp over den
+      final allNumeric = sample.every(
+          (c) => RegExp(r'^\d+([.,]\d+)?$').hasMatch(c));
+      if (!allNumeric) {
+        nameCol = col;
+        break;
+      }
+    }
+
+    // Sjekk om neste kolonne også er tekst (fornavn + etternavn)
+    bool hasTwoNameCols = false;
+    if (nameCol + 1 < totalCols) {
+      final nextSample = dataRows
+          .take(5)
+          .where((r) => r.length > nameCol + 1)
+          .map((r) => r[nameCol + 1].trim())
+          .where((c) => c.isNotEmpty)
+          .toList();
+      final nextAllNumeric = nextSample.every(
+          (c) => RegExp(r'^\d+([.,]\d+)?$').hasMatch(c));
+      hasTwoNameCols = nextSample.isNotEmpty && !nextAllNumeric;
+    }
 
     final names = <String>[];
     for (final row in dataRows) {
-      if (row.isEmpty) continue;
+      if (row.isEmpty || row.length <= nameCol) continue;
 
       String name;
-      if (maxCols >= 2 && row.length >= 2) {
+      if (hasTwoNameCols && row.length > nameCol + 1) {
         // To kolonner: fornavn + etternavn
-        final col1 = row[0].trim();
-        final col2 = row[1].trim();
+        final col1 = row[nameCol].trim();
+        final col2 = row[nameCol + 1].trim();
         if (col1.isNotEmpty && col2.isNotEmpty) {
           name = '$col1 $col2';
         } else if (col1.isNotEmpty) {
@@ -114,7 +151,7 @@ class FileImportService {
         }
       } else {
         // Én kolonne: fullt navn
-        name = row[0].trim();
+        name = row[nameCol].trim();
       }
 
       if (name.isNotEmpty) {

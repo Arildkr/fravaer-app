@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fravaer_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/app_providers.dart';
@@ -248,6 +248,7 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.any,
+        withData: true, // last bytes direkte — nødvendig for Google Drive-filer
       );
 
       if (result == null || result.files.isEmpty) {
@@ -255,16 +256,24 @@ class _ImportStudentsDialogState extends ConsumerState<ImportStudentsDialog> {
         return;
       }
 
-      final filePath = result.files.single.path;
-      if (filePath == null) {
+      final picked = result.files.single;
+      final bytes = picked.bytes;
+      final fileName = picked.name;
+
+      final ImportPreview preview;
+      if (bytes != null && bytes.isNotEmpty) {
+        // Foretrekk bytes (fungerer alltid, også fra Google Drive)
+        preview = FileImportService.parseBytes(bytes, fileName);
+      } else if (picked.path != null) {
+        // Fallback til filsti
+        preview = await FileImportService.parseFile(File(picked.path!));
+      } else {
         setState(() {
           _parsingFile = false;
           _fileError = l10n.couldNotReadFile;
         });
         return;
       }
-
-      final preview = await FileImportService.parseFile(File(filePath));
 
       if (preview.names.isEmpty) {
         setState(() {

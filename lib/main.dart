@@ -6,11 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fravaer_app/l10n/app_localizations.dart';
 
 import 'core/database/database_provider.dart';
 import 'core/database/database.dart';
 import 'core/providers/app_providers.dart';
+import 'core/utils/widget_updater.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/lock_screen.dart';
 import 'features/groups/presentation/home_screen.dart';
@@ -154,6 +155,15 @@ class _AppShellState extends ConsumerState<AppShell> with WidgetsBindingObserver
 
     ref.read(activeLaererIdProvider.notifier).state = laererId;
     ref.read(subscriptionServiceProvider.notifier).state = _subscriptionService;
+
+    // Skriv grupper til SharedPreferences så WidgetConfigActivity kan lese dem
+    final alleGrupper = await (db.select(db.grupper)
+          ..where((g) => g.laererId.equals(laererId!)))
+        .get();
+    final aktiveGrupper = alleGrupper.where((g) => !g.arkivert).toList();
+    WidgetUpdater.saveGroups(
+      aktiveGrupper.map((g) => (id: g.id, name: g.navn)).toList(),
+    ).catchError((_) {});
 
     // Les biometrisk lås-innstilling
     final laerer = await (db.select(db.laerere)

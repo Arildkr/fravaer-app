@@ -58,6 +58,9 @@
   "statusCheckedOut": "Checked out",
   "@statusCheckedOut": {},
 
+  "statusPlannedAbsent": "Planned absent",
+  "@statusPlannedAbsent": {},
+
   "myGroups": "My groups",
   "@myGroups": {},
 

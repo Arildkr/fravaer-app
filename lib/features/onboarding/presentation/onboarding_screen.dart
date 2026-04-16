@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fravaer_app/l10n/app_localizations.dart';
 
 /// Interaktiv startguide — 5 skjermer som viser de vanligste brukstilfellene.
 class OnboardingScreen extends StatefulWidget {

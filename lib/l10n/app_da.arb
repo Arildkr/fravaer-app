@@ -58,6 +58,9 @@
   "statusCheckedOut": "Checket ud",
   "@statusCheckedOut": {},
 
+  "statusPlannedAbsent": "Planlagt fraværende",
+  "@statusPlannedAbsent": {},
+
   "myGroups": "Mine grupper",
   "@myGroups": {},
 

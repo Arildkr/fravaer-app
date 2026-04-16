@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fravaer_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/database/database.dart';
@@ -14,33 +14,72 @@ import '../../reports/presentation/report_screen.dart';
 import '../../reports/presentation/semester_export_screen.dart';
 import 'import_students_dialog.dart';
 
-class GroupDetailScreen extends ConsumerWidget {
+enum _StudentSort { fornavn, etternavn, lagtTil }
+
+class GroupDetailScreen extends ConsumerStatefulWidget {
   final GrupperData group;
 
   const GroupDetailScreen({super.key, required this.group});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GroupDetailScreen> createState() => _GroupDetailScreenState();
+}
+
+class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
+  _StudentSort _sort = _StudentSort.fornavn;
+
+  List<EleverData> _applySort(
+      List<({EleverData elev, DateTime innmeldtDato})> raw) {
+    final sorted = List.of(raw);
+    switch (_sort) {
+      case _StudentSort.fornavn:
+        sorted.sort((a, b) =>
+            a.elev.navn.toLowerCase().compareTo(b.elev.navn.toLowerCase()));
+      case _StudentSort.etternavn:
+        sorted.sort((a, b) {
+          final aLast = a.elev.navn.trim().split(' ').last.toLowerCase();
+          final bLast = b.elev.navn.trim().split(' ').last.toLowerCase();
+          return aLast.compareTo(bLast);
+        });
+      case _StudentSort.lagtTil:
+        sorted.sort((a, b) => a.innmeldtDato.compareTo(b.innmeldtDato));
+    }
+    return sorted.map((m) => m.elev).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final groupRepo = ref.watch(groupRepositoryProvider);
 
-    return StreamBuilder<List<EleverData>>(
-      stream: groupRepo.watchGroupMembers(group.id),
+    return StreamBuilder<List<({EleverData elev, DateTime innmeldtDato})>>(
+      stream: groupRepo.watchGroupMembersWithDate(widget.group.id),
       builder: (context, snapshot) {
-        final members = snapshot.data ?? [];
+        final members = _applySort(snapshot.data ?? []);
         final hasMembers = members.isNotEmpty;
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(group.navn),
+            title: Text(widget.group.navn),
             actions: [
+              PopupMenuButton<_StudentSort>(
+                icon: const Icon(Icons.sort),
+                tooltip: 'Sorter',
+                initialValue: _sort,
+                onSelected: (v) => setState(() => _sort = v),
+                itemBuilder: (_) => const [
+                  PopupMenuItem(value: _StudentSort.fornavn,  child: Text('Fornavn')),
+                  PopupMenuItem(value: _StudentSort.etternavn, child: Text('Etternavn')),
+                  PopupMenuItem(value: _StudentSort.lagtTil,  child: Text('Rekkefølge lagt til')),
+                ],
+              ),
               IconButton(
                 icon: const Icon(Icons.file_download),
                 tooltip: l10n.exportSemester,
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => SemesterExportScreen(group: group),
+                      builder: (_) => SemesterExportScreen(group: widget.group),
                     ),
                   );
                 },
@@ -141,15 +180,31 @@ class GroupDetailScreen extends ConsumerWidget {
           bottomNavigationBar: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: FilledButton.icon(
-                onPressed: hasMembers
-                    ? () => _startSession(context, ref)
-                    : null,
-                icon: const Icon(Icons.how_to_reg),
-                label: Text(l10n.startSession),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 56),
-                ),
+              child: FutureBuilder<FravaersOkterData?>(
+                future: hasMembers
+                    ? ref
+                        .read(attendanceRepositoryProvider)
+                        .getActiveSessionForGroup(widget.group.id)
+                    : Future.value(null),
+                builder: (context, snapshot) {
+                  final hasActive = snapshot.data != null;
+                  return FilledButton.icon(
+                    onPressed: hasMembers
+                        ? () => _startSession(context, ref)
+                        : null,
+                    icon: Icon(
+                        hasActive ? Icons.play_arrow : Icons.how_to_reg),
+                    label: Text(hasActive
+                        ? l10n.continueSession
+                        : l10n.startSession),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 56),
+                      backgroundColor: hasActive
+                          ? Colors.green[700]
+                          : null,
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -161,7 +216,7 @@ class GroupDetailScreen extends ConsumerWidget {
   void _showSessionHistory(BuildContext context, WidgetRef ref) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => _SessionHistoryScreen(group: group),
+        builder: (_) => _SessionHistoryScreen(group: widget.group),
       ),
     );
   }
@@ -170,7 +225,7 @@ class GroupDetailScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => _AddStudentsDialog(
-        gruppeId: group.id,
+        gruppeId: widget.group.id,
         groupRepo: ref.read(groupRepositoryProvider),
       ),
     );
@@ -179,7 +234,7 @@ class GroupDetailScreen extends ConsumerWidget {
   void _showImportDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => ImportStudentsDialog(gruppeId: group.id),
+      builder: (_) => ImportStudentsDialog(gruppeId: widget.group.id),
     );
   }
 
@@ -238,7 +293,7 @@ class GroupDetailScreen extends ConsumerWidget {
             onPressed: () {
               ref.read(groupRepositoryProvider).removeStudentFromGroup(
                     elevId: elev.id,
-                    gruppeId: group.id,
+                    gruppeId: widget.group.id,
                   );
               Navigator.pop(ctx);
             },
@@ -256,31 +311,12 @@ class GroupDetailScreen extends ConsumerWidget {
 
     final attendanceRepo = ref.read(attendanceRepositoryProvider);
 
-    // Sjekk om det allerede finnes en aktiv økt for denne gruppen
-    final existing = await attendanceRepo.getActiveSessionForGroup(group.id);
+    // Gå direkte til aktiv økt hvis den finnes – ingen unødvendig dialog
+    final existing = await attendanceRepo.getActiveSessionForGroup(widget.group.id);
     if (existing != null) {
       if (!context.mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      final resume = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.activeSessionExistsTitle),
-          content: Text(l10n.activeSessionExistsContent),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.continueSession),
-            ),
-          ],
-        ),
-      );
-      if (resume != true || !context.mounted) return;
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => SessionScreen(session: existing, group: group),
+        builder: (_) => SessionScreen(session: existing, group: widget.group),
       ));
       return;
     }
@@ -293,7 +329,7 @@ class GroupDetailScreen extends ConsumerWidget {
     if (sessionName == null) return; // avbrutt
 
     final session = await attendanceRepo.createSession(
-      gruppeId: group.id,
+      gruppeId: widget.group.id,
       laererId: laererId,
       navn: sessionName.isEmpty ? null : sessionName,
     );
@@ -302,7 +338,7 @@ class GroupDetailScreen extends ConsumerWidget {
 
     if (!context.mounted) return;
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => SessionScreen(session: session, group: group),
+      builder: (_) => SessionScreen(session: session, group: widget.group),
     ));
   }
 

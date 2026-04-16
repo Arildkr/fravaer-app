@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fravaer_app/l10n/app_localizations.dart';
 
 import '../../../core/database/tables.dart';
 import '../../../core/utils/status_helpers.dart';
@@ -9,11 +9,15 @@ import '../../../core/utils/status_helpers.dart';
 class StatusPickerDialog extends StatefulWidget {
   final String elevNavn;
   final String? currentMerknad;
+  final bool isUtsjekkFase;
+  final AttendanceStatus currentStatus;
 
   const StatusPickerDialog({
     super.key,
     required this.elevNavn,
+    required this.currentStatus,
     this.currentMerknad,
+    this.isUtsjekkFase = false,
   });
 
   @override
@@ -54,6 +58,19 @@ class _StatusPickerDialogState extends State<StatusPickerDialog> {
         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
       ),
       contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        ValueListenableBuilder(
+          valueListenable: _noteController,
+          builder: (_, value, __) => FilledButton(
+            onPressed: () => _pop(StatusResult(widget.currentStatus)),
+            child: Text(l10n.save),
+          ),
+        ),
+      ],
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -88,6 +105,7 @@ class _StatusPickerDialogState extends State<StatusPickerDialog> {
             const SizedBox(height: 6),
             _StatusOption(
               status: AttendanceStatus.utsjekket,
+              labelOverride: widget.isUtsjekkFase ? null : l10n.statusPlannedAbsent,
               onTap: () => _pop(const StatusResult(AttendanceStatus.utsjekket)),
             ),
             const SizedBox(height: 6),
@@ -139,8 +157,9 @@ class _StatusPickerDialogState extends State<StatusPickerDialog> {
 class _StatusOption extends StatelessWidget {
   final AttendanceStatus status;
   final VoidCallback onTap;
+  final String? labelOverride;
 
-  const _StatusOption({required this.status, required this.onTap});
+  const _StatusOption({required this.status, required this.onTap, this.labelOverride});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +188,7 @@ class _StatusOption extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Text(
-                status.labelOf(l10n),
+                labelOverride ?? status.labelOf(l10n),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,

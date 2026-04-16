@@ -1,7 +1,7 @@
 name: fravaer_app
 description: "Alle med — fraværsverktøy for lærere"
 publish_to: 'none'
-version: 1.0.9+11
+version: 1.1.5+19
 # version format: major.minor.patch+buildNumber
 # Increment buildNumber for each Play Store upload
 
@@ -30,7 +30,7 @@ dependencies:
 
   # Utilities
   uuid: ^4.5.1
-  intl: ^0.19.0
+  intl: ^0.20.2
   share_plus: ^10.1.4
   csv: ^6.0.0
   shared_preferences: ^2.3.4

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:fravaer_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -130,11 +131,13 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
               final tilStede = records
                   .where((r) => r.post.status == AttendanceStatus.tilStede)
                   .length;
-              WidgetUpdater.updateActiveSession(
-                gruppeNavn: widget.group.navn,
-                tilStede: tilStede,
-                totalt: records.length,
-              ).catchError((_) {});
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                WidgetUpdater.updateActiveSession(
+                  gruppeNavn: widget.group.navn,
+                  tilStede: tilStede,
+                  totalt: records.length,
+                ).catchError((_) {});
+              });
             }
 
             // Haptisk feedback når alle er ferdig registrert i gjeldende fase
@@ -316,7 +319,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       context: context,
       builder: (_) => StatusPickerDialog(
         elevNavn: record.elev.navn,
+        currentStatus: record.post.status,
         currentMerknad: record.post.merknad,
+        isUtsjekkFase: _phase == SessionPhase.utsjekk,
       ),
     );
 
