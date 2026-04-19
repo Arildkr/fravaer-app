@@ -1,0 +1,1 @@
+{"firestore":{"rules":"firestore.rules"},"flutter":{"platforms":{"android":{"default":{"projectId":"fravaer-app-prod","appId":"1:945845824430:android:62721a95cc69206e21b63f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"fravaer-app-prod","configurations":{"android":"1:945845824430:android:62721a95cc69206e21b63f"}}}}}}

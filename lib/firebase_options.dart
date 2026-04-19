@@ -15,10 +15,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBA2EaoTrOqya7uEEOqNaXdXRF5NTVtZh0',
-    appId: '1:591979578674:android:f9fac989e46365eec6032b',
-    messagingSenderId: '591979578674',
-    projectId: 'alle-med',
-    storageBucket: 'alle-med.firebasestorage.app',
+    apiKey: 'AIzaSyA8ZnvpNXKfrCwtKPLpNi9nZ71-I5mD358',
+    appId: '1:945845824430:android:62721a95cc69206e21b63f',
+    messagingSenderId: '945845824430',
+    projectId: 'fravaer-app-prod',
+    storageBucket: 'fravaer-app-prod.firebasestorage.app',
   );
+
 }
