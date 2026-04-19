@@ -652,5 +652,92 @@
   "@language": {},
 
   "languageSystem": "Systemstandard",
-  "@languageSystem": {}
+  "@languageSystem": {},
+
+  "shareSession": "Del økt",
+  "@shareSession": {},
+
+  "joinSession": "Bli med i økt",
+  "@joinSession": {},
+
+  "sharingConsentTitle": "Deling av fraværsdata",
+  "@sharingConsentTitle": {},
+
+  "sharingConsentBody": "Elevnavn og oppmøtestatus vil midlertidig lagres i skyen (Google Firebase) under delingen. Dataene slettes automatisk når du avslutter deling.",
+  "@sharingConsentBody": {},
+
+  "sharingFirstNamesHint": "Anbefaling: bruk kun fornavn i elevlisten for å minimere personopplysningene som deles.",
+  "@sharingFirstNamesHint": {},
+
+  "sharingResponsibility": "Du er selv ansvarlig for at delingen er i tråd med skolens retningslinjer og GDPR.",
+  "@sharingResponsibility": {},
+
+  "sharingConsentAccept": "Jeg forstår, del økt",
+  "@sharingConsentAccept": {},
+
+  "shareSessionTitle": "Del denne økten",
+  "@shareSessionTitle": {},
+
+  "shareSessionInstructions": "Del denne koden med kolleger som skal registrere fravær i samme økt:",
+  "@shareSessionInstructions": {},
+
+  "tapToCopy": "Trykk på koden for å kopiere",
+  "@tapToCopy": {},
+
+  "codeCopied": "Kode kopiert",
+  "@codeCopied": {},
+
+  "stopSharing": "Stopp deling og slett skydata",
+  "@stopSharing": {},
+
+  "stopSharingTitle": "Stopp deling?",
+  "@stopSharingTitle": {},
+
+  "stopSharingConfirm": "All skydata for denne økten slettes umiddelbart. Din lokale kopi beholdes.",
+  "@stopSharingConfirm": {},
+
+  "stopSharingDone": "Deling stoppet og skydata slettet",
+  "@stopSharingDone": {},
+
+  "close": "Lukk",
+  "@close": {},
+
+  "joinSessionTitle": "Bli med i økt",
+  "@joinSessionTitle": {},
+
+  "joinSessionCodeHint": "Skriv inn invitasjonskoden du har mottatt:",
+  "@joinSessionCodeHint": {},
+
+  "invalidCode": "Koden må være 6 tegn",
+  "@invalidCode": {},
+
+  "codeNotFound": "Koden ble ikke funnet. Sjekk at den er riktig og at økten fortsatt er aktiv.",
+  "@codeNotFound": {},
+
+  "sharingError": "Noe gikk galt. Sjekk internettforbindelsen og prøv igjen.",
+  "@sharingError": {},
+
+  "joinSessionConfirmGroup": "Gruppe: {name}",
+  "@joinSessionConfirmGroup": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "joinSessionStudentCount": "{count} elever",
+  "@joinSessionStudentCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "joinSessionGroupKept": "Gruppen lagres lokalt på din enhet og kan brukes til fremtidige egne økter.",
+  "@joinSessionGroupKept": {},
+
+  "joinSessionAccept": "Bli med",
+  "@joinSessionAccept": {},
+
+  "activeSharingBanner": "Aktiv deling — data er i skyen",
+  "@activeSharingBanner": {},
+
+  "sharingMemberCount": "Deler med {count} kollega(er)",
+  "@sharingMemberCount": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

@@ -86,6 +86,8 @@ class FravaersOkter extends Table {
   TextColumn get laererId => text().references(Laerere, #id)();
   BoolColumn get avsluttet => boolean().withDefault(const Constant(false))();
   DateTimeColumn get opprettetDato => dateTime().withDefault(currentDateAndTime)();
+  /// Satt når økten deles via Firestore. Null = lokal økt.
+  TextColumn get shareId => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

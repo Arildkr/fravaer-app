@@ -652,5 +652,92 @@
   "@language": {},
 
   "languageSystem": "System default",
-  "@languageSystem": {}
+  "@languageSystem": {},
+
+  "shareSession": "Share session",
+  "@shareSession": {},
+
+  "joinSession": "Join session",
+  "@joinSession": {},
+
+  "sharingConsentTitle": "Sharing attendance data",
+  "@sharingConsentTitle": {},
+
+  "sharingConsentBody": "Student names and attendance status will be temporarily stored in the cloud (Google Firebase) during sharing. Data is automatically deleted when you stop sharing.",
+  "@sharingConsentBody": {},
+
+  "sharingFirstNamesHint": "Recommendation: use first names only to minimise personal data shared.",
+  "@sharingFirstNamesHint": {},
+
+  "sharingResponsibility": "You are responsible for ensuring this sharing complies with your school's guidelines and GDPR.",
+  "@sharingResponsibility": {},
+
+  "sharingConsentAccept": "I understand, share session",
+  "@sharingConsentAccept": {},
+
+  "shareSessionTitle": "Share this session",
+  "@shareSessionTitle": {},
+
+  "shareSessionInstructions": "Share this code with colleagues who will register attendance in the same session:",
+  "@shareSessionInstructions": {},
+
+  "tapToCopy": "Tap code to copy",
+  "@tapToCopy": {},
+
+  "codeCopied": "Code copied",
+  "@codeCopied": {},
+
+  "stopSharing": "Stop sharing and delete cloud data",
+  "@stopSharing": {},
+
+  "stopSharingTitle": "Stop sharing?",
+  "@stopSharingTitle": {},
+
+  "stopSharingConfirm": "All cloud data for this session will be deleted immediately. Your local copy is kept.",
+  "@stopSharingConfirm": {},
+
+  "stopSharingDone": "Sharing stopped and cloud data deleted",
+  "@stopSharingDone": {},
+
+  "close": "Close",
+  "@close": {},
+
+  "joinSessionTitle": "Join session",
+  "@joinSessionTitle": {},
+
+  "joinSessionCodeHint": "Enter the invite code you received:",
+  "@joinSessionCodeHint": {},
+
+  "invalidCode": "Code must be 6 characters",
+  "@invalidCode": {},
+
+  "codeNotFound": "Code not found. Check it is correct and the session is still active.",
+  "@codeNotFound": {},
+
+  "sharingError": "Something went wrong. Check your internet connection and try again.",
+  "@sharingError": {},
+
+  "joinSessionConfirmGroup": "Group: {name}",
+  "@joinSessionConfirmGroup": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "joinSessionStudentCount": "{count} students",
+  "@joinSessionStudentCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "joinSessionGroupKept": "The group will be saved locally and can be used for your own future sessions.",
+  "@joinSessionGroupKept": {},
+
+  "joinSessionAccept": "Join",
+  "@joinSessionAccept": {},
+
+  "activeSharingBanner": "Active sharing — data is in the cloud",
+  "@activeSharingBanner": {},
+
+  "sharingMemberCount": "Sharing with {count} colleague(s)",
+  "@sharingMemberCount": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

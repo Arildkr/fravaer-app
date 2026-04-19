@@ -637,4 +637,99 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get languageSystem => 'Systemstandard';
+
+  @override
+  String get shareSession => 'Dela session';
+
+  @override
+  String get joinSession => 'Gå med i session';
+
+  @override
+  String get sharingConsentTitle => 'Delning av frånvarodata';
+
+  @override
+  String get sharingConsentBody =>
+      'Elevnamn och närvaro lagras tillfälligt i molnet (Google Firebase) under delningen. Data raderas automatiskt när du avslutar delningen.';
+
+  @override
+  String get sharingFirstNamesHint =>
+      'Rekommendation: använd bara förnamn för att minimera personuppgifter som delas.';
+
+  @override
+  String get sharingResponsibility =>
+      'Du ansvarar själv för att delningen följer skolans riktlinjer och GDPR.';
+
+  @override
+  String get sharingConsentAccept => 'Jag förstår, dela session';
+
+  @override
+  String get shareSessionTitle => 'Dela denna session';
+
+  @override
+  String get shareSessionInstructions =>
+      'Dela den här koden med kollegor som ska registrera närvaro i samma session:';
+
+  @override
+  String get tapToCopy => 'Tryck på koden för att kopiera';
+
+  @override
+  String get codeCopied => 'Kod kopierad';
+
+  @override
+  String get stopSharing => 'Stoppa delning och radera molndata';
+
+  @override
+  String get stopSharingTitle => 'Stoppa delning?';
+
+  @override
+  String get stopSharingConfirm =>
+      'All molndata för denna session raderas omedelbart. Din lokala kopia behålls.';
+
+  @override
+  String get stopSharingDone => 'Delning stoppad och molndata raderad';
+
+  @override
+  String get close => 'Stäng';
+
+  @override
+  String get joinSessionTitle => 'Gå med i session';
+
+  @override
+  String get joinSessionCodeHint => 'Skriv in inbjudningskoden du fått:';
+
+  @override
+  String get invalidCode => 'Koden måste vara 6 tecken';
+
+  @override
+  String get codeNotFound =>
+      'Koden hittades inte. Kontrollera att den är korrekt och att sessionen fortfarande är aktiv.';
+
+  @override
+  String get sharingError =>
+      'Något gick fel. Kontrollera internetanslutningen och försök igen.';
+
+  @override
+  String joinSessionConfirmGroup(String name) {
+    return 'Grupp: $name';
+  }
+
+  @override
+  String joinSessionStudentCount(int count) {
+    return '$count elever';
+  }
+
+  @override
+  String get joinSessionGroupKept =>
+      'Gruppen sparas lokalt och kan användas för dina egna framtida sessioner.';
+
+  @override
+  String get joinSessionAccept => 'Gå med';
+
+  @override
+  String get activeSharingBanner => 'Aktiv delning — data finns i molnet';
+
+  @override
+  String sharingMemberCount(int count) {
+    return 'Delar med $count kollega(or)';
+  }
 }

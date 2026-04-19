@@ -51,6 +51,24 @@ class AttendanceRepository {
     return session;
   }
 
+  /// Hent alle fraværsposter for en økt éng gang (for deling).
+  Future<List<AttendanceRecord>> getSessionRecordsOnce(String oktId) async {
+    final query = _db.select(_db.fravaersPoster).join([
+      innerJoin(
+        _db.elever,
+        _db.elever.id.equalsExp(_db.fravaersPoster.elevId),
+      ),
+    ])
+      ..where(_db.fravaersPoster.oktId.equals(oktId))
+      ..orderBy([OrderingTerm.asc(_db.elever.navn)]);
+    final rows = await query.get();
+    return rows.map((row) {
+      final post = row.readTable(_db.fravaersPoster);
+      final elev = row.readTable(_db.elever);
+      return AttendanceRecord(post: post, elev: elev);
+    }).toList();
+  }
+
   /// Hent alle fraværsposter for en økt, med elevinfo.
   Stream<List<AttendanceRecord>> watchSessionRecords(String oktId) {
     final query = _db.select(_db.fravaersPoster).join([

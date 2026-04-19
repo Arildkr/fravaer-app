@@ -5,6 +5,7 @@ import 'package:fravaer_app/l10n/app_localizations.dart';
 import '../../../core/database/database.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../settings/presentation/settings_screen.dart';
+import '../../sharing/presentation/join_session_dialog.dart';
 import 'archived_groups_screen.dart';
 import 'create_group_dialog.dart';
 import 'group_detail_screen.dart';
@@ -30,6 +31,11 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.myGroups),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.link),
+            tooltip: l10n.joinSession,
+            onPressed: () => showJoinSessionDialog(context, ref),
+          ),
           IconButton(
             icon: const Icon(Icons.archive),
             tooltip: l10n.archivedGroups,

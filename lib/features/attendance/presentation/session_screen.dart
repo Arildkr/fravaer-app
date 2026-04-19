@@ -11,6 +11,9 @@ import '../../../core/utils/haptic_feedback.dart';
 import '../../../core/utils/widget_updater.dart';
 import '../data/attendance_repository.dart';
 import '../../reports/presentation/report_screen.dart';
+import '../../sharing/sharing_providers.dart';
+import '../../sharing/presentation/sharing_consent_dialog.dart';
+import '../../sharing/presentation/share_session_dialog.dart';
 import 'attendance_tile.dart';
 import 'count_banner.dart';
 import 'status_picker_dialog.dart';
@@ -39,9 +42,30 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   bool _allDoneNotified = false;
   SessionPhase _phase = SessionPhase.innsjekk;
 
+  String? _shareId;
+  String? _inviteCode;
+  bool _sharingLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Gjenoppta lytting hvis økten allerede er delt (f.eks. etter app-restart)
+    if (widget.session.shareId != null) {
+      _shareId = widget.session.shareId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(sessionSharingServiceProvider).startListening(
+              shareId: _shareId!,
+            );
+      });
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
+    if (_shareId != null) {
+      ref.read(sessionSharingServiceProvider).stopListening(_shareId!);
+    }
     super.dispose();
   }
 
@@ -119,6 +143,26 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
                       ),
                     ),
                   ),
+                  if (_sharingLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  else
+                    IconButton(
+                      icon: Icon(
+                        _shareId != null ? Icons.cloud_done : Icons.cloud_upload,
+                        color: _shareId != null ? Colors.greenAccent : null,
+                      ),
+                      tooltip: _shareId != null ? l10n.shareSession : l10n.shareSession,
+                      onPressed: () => _shareId != null
+                          ? _showShareDialog(context, l10n)
+                          : _shareSession(context, l10n),
+                    ),
                 ],
         ),
         body: StreamBuilder<List<AttendanceRecord>>(
@@ -185,6 +229,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
 
             return Column(
               children: [
+                if (_shareId != null) _SharingBanner(l10n: l10n),
                 _PhaseBanner(phase: _phase, l10n: l10n),
                 CountBanner(records: records, isUtsjekkFase: !isInnsjekk),
                 Expanded(
@@ -301,6 +346,15 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       merknad: record.post.merknad,
     );
 
+    if (_shareId != null) {
+      ref.read(sessionSharingServiceProvider).pushStatusUpdate(
+            shareId: _shareId!,
+            postId: record.post.id,
+            status: next,
+            merknad: record.post.merknad,
+          );
+    }
+
     if (next == AttendanceStatus.tilStede) {
       await HapticService.onPresent();
     } else if (next == AttendanceStatus.fravaer) {
@@ -332,11 +386,108 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
             merknad: result.merknad,
           );
 
+      if (_shareId != null) {
+        ref.read(sessionSharingServiceProvider).pushStatusUpdate(
+              shareId: _shareId!,
+              postId: record.post.id,
+              status: result.status,
+              forsinkelsesMinutter: result.forsinkelsesMinutter,
+              merknad: result.merknad,
+            );
+      }
+
       if (result.status == AttendanceStatus.tilStede) {
         await HapticService.onPresent();
       } else if (result.status == AttendanceStatus.fravaer) {
         await HapticService.onAbsent();
       }
+    }
+  }
+
+  // ─── Deling ─────────────────────────────────────────────────────
+
+  Future<void> _shareSession(BuildContext context, AppLocalizations l10n) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final consent = await showSharingConsentDialog(context);
+    if (!consent || !mounted) return;
+
+    setState(() => _sharingLoading = true);
+
+    try {
+      final repo = ref.read(attendanceRepositoryProvider);
+      final records = await repo.getSessionRecordsOnce(widget.session.id);
+      final service = ref.read(sessionSharingServiceProvider);
+
+      final code = await service.shareSession(
+        session: widget.session,
+        groupName: widget.group.navn,
+        records: records
+            .map((r) => (
+                  postId: r.post.id,
+                  studentName: r.elev.navn,
+                  status: r.post.status,
+                  forsinkelsesMinutter: r.post.forsinkelsesMinutter,
+                  merknad: r.post.merknad,
+                ))
+            .toList(),
+      );
+
+      service.startListening(shareId: widget.session.id);
+
+      if (mounted) {
+        setState(() {
+          _shareId = widget.session.id;
+          _inviteCode = code;
+          _sharingLoading = false;
+        });
+        // ignore: use_build_context_synchronously
+        _showShareDialog(context, l10n);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _sharingLoading = false);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.sharingError)));
+    }
+  }
+
+  void _showShareDialog(BuildContext context, AppLocalizations l10n) {
+    if (_inviteCode == null) return;
+    showDialog(
+      context: context,
+      builder: (_) => ShareSessionDialog(
+        inviteCode: _inviteCode!,
+        onStopSharing: () => _stopSharing(context, l10n),
+      ),
+    );
+  }
+
+  Future<void> _stopSharing(BuildContext context, AppLocalizations l10n) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.stopSharingTitle),
+        content: Text(l10n.stopSharingConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l10n.stopSharing),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+
+    try {
+      await ref.read(sessionSharingServiceProvider).deleteSharedSession(_shareId!);
+      if (mounted) setState(() { _shareId = null; _inviteCode = null; });
+      messenger.showSnackBar(SnackBar(content: Text(l10n.stopSharingDone)));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.sharingError)));
     }
   }
 
@@ -361,6 +512,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     );
 
     if (confirm == true) {
+      // Slett skydata om deling er aktiv
+      if (_shareId != null) {
+        try {
+          await ref
+              .read(sessionSharingServiceProvider)
+              .deleteSharedSession(_shareId!);
+        } catch (_) {}
+      }
       await ref
           .read(attendanceRepositoryProvider)
           .endSession(widget.session.id);
@@ -370,6 +529,36 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       ref.read(activeSessionIdProvider.notifier).state = null;
       if (context.mounted) Navigator.pop(context);
     }
+  }
+}
+
+/// Banner som vises øverst når sanntidsdeling er aktiv.
+class _SharingBanner extends StatelessWidget {
+  final AppLocalizations l10n;
+  const _SharingBanner({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      color: Colors.teal.shade700,
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.cloud_done, size: 14, color: Colors.white),
+          const SizedBox(width: 6),
+          Text(
+            l10n.activeSharingBanner,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

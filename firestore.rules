@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Invitasjonskoder ────────────────────────────────────────────
+    // Kun autentiserte brukere kan lese/skrive koder.
+    // Koden peker på en økt og kan leses av alle påloggede (for oppslag).
+    match /invite_codes/{code} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerId;
+    }
+
+    // ─── Delte økter ─────────────────────────────────────────────────
+    match /shared_sessions/{sessionId} {
+      // Hvem som helst som er autentisert kan lese en økt for å bli med.
+      allow read: if request.auth != null;
+
+      // Kun eieren kan opprette en ny økt.
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.ownerId;
+
+      // Kun eieren kan slette sin egen økt.
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerId;
+
+      // Ingen oppdateringer på selve økt-dokumentet (statuser er i records).
+      allow update: if false;
+
+      // ─── Fraværsposter (records) ────────────────────────────────────
+      match /records/{recordId} {
+        // Alle autentiserte brukere kan lese poster.
+        allow read: if request.auth != null;
+
+        // Kun eieren av sesjonen kan opprette poster.
+        allow create: if request.auth != null
+          && get(/databases/$(database)/documents/shared_sessions/$(sessionId)).data.ownerId
+             == request.auth.uid;
+
+        // Alle autentiserte brukere kan oppdatere status (medlærer registrerer fravær).
+        allow update: if request.auth != null;
+
+        // Kun eieren kan slette poster.
+        allow delete: if request.auth != null
+          && get(/databases/$(database)/documents/shared_sessions/$(sessionId)).data.ownerId
+             == request.auth.uid;
+      }
+    }
+  }
+}

@@ -1235,6 +1235,168 @@ abstract class AppLocalizations {
   /// In nb, this message translates to:
   /// **'Systemstandard'**
   String get languageSystem;
+
+  /// No description provided for @shareSession.
+  ///
+  /// In nb, this message translates to:
+  /// **'Del økt'**
+  String get shareSession;
+
+  /// No description provided for @joinSession.
+  ///
+  /// In nb, this message translates to:
+  /// **'Bli med i økt'**
+  String get joinSession;
+
+  /// No description provided for @sharingConsentTitle.
+  ///
+  /// In nb, this message translates to:
+  /// **'Deling av fraværsdata'**
+  String get sharingConsentTitle;
+
+  /// No description provided for @sharingConsentBody.
+  ///
+  /// In nb, this message translates to:
+  /// **'Elevnavn og oppmøtestatus vil midlertidig lagres i skyen (Google Firebase) under delingen. Dataene slettes automatisk når du avslutter deling.'**
+  String get sharingConsentBody;
+
+  /// No description provided for @sharingFirstNamesHint.
+  ///
+  /// In nb, this message translates to:
+  /// **'Anbefaling: bruk kun fornavn i elevlisten for å minimere personopplysningene som deles.'**
+  String get sharingFirstNamesHint;
+
+  /// No description provided for @sharingResponsibility.
+  ///
+  /// In nb, this message translates to:
+  /// **'Du er selv ansvarlig for at delingen er i tråd med skolens retningslinjer og GDPR.'**
+  String get sharingResponsibility;
+
+  /// No description provided for @sharingConsentAccept.
+  ///
+  /// In nb, this message translates to:
+  /// **'Jeg forstår, del økt'**
+  String get sharingConsentAccept;
+
+  /// No description provided for @shareSessionTitle.
+  ///
+  /// In nb, this message translates to:
+  /// **'Del denne økten'**
+  String get shareSessionTitle;
+
+  /// No description provided for @shareSessionInstructions.
+  ///
+  /// In nb, this message translates to:
+  /// **'Del denne koden med kolleger som skal registrere fravær i samme økt:'**
+  String get shareSessionInstructions;
+
+  /// No description provided for @tapToCopy.
+  ///
+  /// In nb, this message translates to:
+  /// **'Trykk på koden for å kopiere'**
+  String get tapToCopy;
+
+  /// No description provided for @codeCopied.
+  ///
+  /// In nb, this message translates to:
+  /// **'Kode kopiert'**
+  String get codeCopied;
+
+  /// No description provided for @stopSharing.
+  ///
+  /// In nb, this message translates to:
+  /// **'Stopp deling og slett skydata'**
+  String get stopSharing;
+
+  /// No description provided for @stopSharingTitle.
+  ///
+  /// In nb, this message translates to:
+  /// **'Stopp deling?'**
+  String get stopSharingTitle;
+
+  /// No description provided for @stopSharingConfirm.
+  ///
+  /// In nb, this message translates to:
+  /// **'All skydata for denne økten slettes umiddelbart. Din lokale kopi beholdes.'**
+  String get stopSharingConfirm;
+
+  /// No description provided for @stopSharingDone.
+  ///
+  /// In nb, this message translates to:
+  /// **'Deling stoppet og skydata slettet'**
+  String get stopSharingDone;
+
+  /// No description provided for @close.
+  ///
+  /// In nb, this message translates to:
+  /// **'Lukk'**
+  String get close;
+
+  /// No description provided for @joinSessionTitle.
+  ///
+  /// In nb, this message translates to:
+  /// **'Bli med i økt'**
+  String get joinSessionTitle;
+
+  /// No description provided for @joinSessionCodeHint.
+  ///
+  /// In nb, this message translates to:
+  /// **'Skriv inn invitasjonskoden du har mottatt:'**
+  String get joinSessionCodeHint;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In nb, this message translates to:
+  /// **'Koden må være 6 tegn'**
+  String get invalidCode;
+
+  /// No description provided for @codeNotFound.
+  ///
+  /// In nb, this message translates to:
+  /// **'Koden ble ikke funnet. Sjekk at den er riktig og at økten fortsatt er aktiv.'**
+  String get codeNotFound;
+
+  /// No description provided for @sharingError.
+  ///
+  /// In nb, this message translates to:
+  /// **'Noe gikk galt. Sjekk internettforbindelsen og prøv igjen.'**
+  String get sharingError;
+
+  /// No description provided for @joinSessionConfirmGroup.
+  ///
+  /// In nb, this message translates to:
+  /// **'Gruppe: {name}'**
+  String joinSessionConfirmGroup(String name);
+
+  /// No description provided for @joinSessionStudentCount.
+  ///
+  /// In nb, this message translates to:
+  /// **'{count} elever'**
+  String joinSessionStudentCount(int count);
+
+  /// No description provided for @joinSessionGroupKept.
+  ///
+  /// In nb, this message translates to:
+  /// **'Gruppen lagres lokalt på din enhet og kan brukes til fremtidige egne økter.'**
+  String get joinSessionGroupKept;
+
+  /// No description provided for @joinSessionAccept.
+  ///
+  /// In nb, this message translates to:
+  /// **'Bli med'**
+  String get joinSessionAccept;
+
+  /// No description provided for @activeSharingBanner.
+  ///
+  /// In nb, this message translates to:
+  /// **'Aktiv deling — data er i skyen'**
+  String get activeSharingBanner;
+
+  /// No description provided for @sharingMemberCount.
+  ///
+  /// In nb, this message translates to:
+  /// **'Deler med {count} kollega(er)'**
+  String sharingMemberCount(int count);
 }
 
 class _AppLocalizationsDelegate

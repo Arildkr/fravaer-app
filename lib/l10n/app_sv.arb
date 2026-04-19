@@ -652,5 +652,92 @@
   "@language": {},
 
   "languageSystem": "Systemstandard",
-  "@languageSystem": {}
+  "@languageSystem": {},
+
+  "shareSession": "Dela session",
+  "@shareSession": {},
+
+  "joinSession": "Gå med i session",
+  "@joinSession": {},
+
+  "sharingConsentTitle": "Delning av frånvarodata",
+  "@sharingConsentTitle": {},
+
+  "sharingConsentBody": "Elevnamn och närvaro lagras tillfälligt i molnet (Google Firebase) under delningen. Data raderas automatiskt när du avslutar delningen.",
+  "@sharingConsentBody": {},
+
+  "sharingFirstNamesHint": "Rekommendation: använd bara förnamn för att minimera personuppgifter som delas.",
+  "@sharingFirstNamesHint": {},
+
+  "sharingResponsibility": "Du ansvarar själv för att delningen följer skolans riktlinjer och GDPR.",
+  "@sharingResponsibility": {},
+
+  "sharingConsentAccept": "Jag förstår, dela session",
+  "@sharingConsentAccept": {},
+
+  "shareSessionTitle": "Dela denna session",
+  "@shareSessionTitle": {},
+
+  "shareSessionInstructions": "Dela den här koden med kollegor som ska registrera närvaro i samma session:",
+  "@shareSessionInstructions": {},
+
+  "tapToCopy": "Tryck på koden för att kopiera",
+  "@tapToCopy": {},
+
+  "codeCopied": "Kod kopierad",
+  "@codeCopied": {},
+
+  "stopSharing": "Stoppa delning och radera molndata",
+  "@stopSharing": {},
+
+  "stopSharingTitle": "Stoppa delning?",
+  "@stopSharingTitle": {},
+
+  "stopSharingConfirm": "All molndata för denna session raderas omedelbart. Din lokala kopia behålls.",
+  "@stopSharingConfirm": {},
+
+  "stopSharingDone": "Delning stoppad och molndata raderad",
+  "@stopSharingDone": {},
+
+  "close": "Stäng",
+  "@close": {},
+
+  "joinSessionTitle": "Gå med i session",
+  "@joinSessionTitle": {},
+
+  "joinSessionCodeHint": "Skriv in inbjudningskoden du fått:",
+  "@joinSessionCodeHint": {},
+
+  "invalidCode": "Koden måste vara 6 tecken",
+  "@invalidCode": {},
+
+  "codeNotFound": "Koden hittades inte. Kontrollera att den är korrekt och att sessionen fortfarande är aktiv.",
+  "@codeNotFound": {},
+
+  "sharingError": "Något gick fel. Kontrollera internetanslutningen och försök igen.",
+  "@sharingError": {},
+
+  "joinSessionConfirmGroup": "Grupp: {name}",
+  "@joinSessionConfirmGroup": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+
+  "joinSessionStudentCount": "{count} elever",
+  "@joinSessionStudentCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "joinSessionGroupKept": "Gruppen sparas lokalt och kan användas för dina egna framtida sessioner.",
+  "@joinSessionGroupKept": {},
+
+  "joinSessionAccept": "Gå med",
+  "@joinSessionAccept": {},
+
+  "activeSharingBanner": "Aktiv delning — data finns i molnet",
+  "@activeSharingBanner": {},
+
+  "sharingMemberCount": "Delar med {count} kollega(or)",
+  "@sharingMemberCount": {
+    "placeholders": { "count": { "type": "int" } }
+  }
 }

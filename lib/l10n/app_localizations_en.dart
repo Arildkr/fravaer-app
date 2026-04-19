@@ -634,4 +634,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageSystem => 'System default';
+
+  @override
+  String get shareSession => 'Share session';
+
+  @override
+  String get joinSession => 'Join session';
+
+  @override
+  String get sharingConsentTitle => 'Sharing attendance data';
+
+  @override
+  String get sharingConsentBody =>
+      'Student names and attendance status will be temporarily stored in the cloud (Google Firebase) during sharing. Data is automatically deleted when you stop sharing.';
+
+  @override
+  String get sharingFirstNamesHint =>
+      'Recommendation: use first names only to minimise personal data shared.';
+
+  @override
+  String get sharingResponsibility =>
+      'You are responsible for ensuring this sharing complies with your school\'s guidelines and GDPR.';
+
+  @override
+  String get sharingConsentAccept => 'I understand, share session';
+
+  @override
+  String get shareSessionTitle => 'Share this session';
+
+  @override
+  String get shareSessionInstructions =>
+      'Share this code with colleagues who will register attendance in the same session:';
+
+  @override
+  String get tapToCopy => 'Tap code to copy';
+
+  @override
+  String get codeCopied => 'Code copied';
+
+  @override
+  String get stopSharing => 'Stop sharing and delete cloud data';
+
+  @override
+  String get stopSharingTitle => 'Stop sharing?';
+
+  @override
+  String get stopSharingConfirm =>
+      'All cloud data for this session will be deleted immediately. Your local copy is kept.';
+
+  @override
+  String get stopSharingDone => 'Sharing stopped and cloud data deleted';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get joinSessionTitle => 'Join session';
+
+  @override
+  String get joinSessionCodeHint => 'Enter the invite code you received:';
+
+  @override
+  String get invalidCode => 'Code must be 6 characters';
+
+  @override
+  String get codeNotFound =>
+      'Code not found. Check it is correct and the session is still active.';
+
+  @override
+  String get sharingError =>
+      'Something went wrong. Check your internet connection and try again.';
+
+  @override
+  String joinSessionConfirmGroup(String name) {
+    return 'Group: $name';
+  }
+
+  @override
+  String joinSessionStudentCount(int count) {
+    return '$count students';
+  }
+
+  @override
+  String get joinSessionGroupKept =>
+      'The group will be saved locally and can be used for your own future sessions.';
+
+  @override
+  String get joinSessionAccept => 'Join';
+
+  @override
+  String get activeSharingBanner => 'Active sharing — data is in the cloud';
+
+  @override
+  String sharingMemberCount(int count) {
+    return 'Sharing with $count colleague(s)';
+  }
 }

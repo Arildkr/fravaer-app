@@ -24,7 +24,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -36,6 +36,10 @@ class AppDatabase extends _$AppDatabase {
         if (from < 2) {
           // v2: legg til valgfritt navn på økt
           await m.addColumn(fravaersOkter, fravaersOkter.navn);
+        }
+        if (from < 3) {
+          // v3: deling — shareId på økt
+          await m.addColumn(fravaersOkter, fravaersOkter.shareId);
         }
       },
       beforeOpen: (details) async {

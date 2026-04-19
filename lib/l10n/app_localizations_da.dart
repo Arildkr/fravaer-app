@@ -636,4 +636,99 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get languageSystem => 'Systemstandard';
+
+  @override
+  String get shareSession => 'Del session';
+
+  @override
+  String get joinSession => 'Deltag i session';
+
+  @override
+  String get sharingConsentTitle => 'Deling af fraværsdata';
+
+  @override
+  String get sharingConsentBody =>
+      'Elevnavne og mødestatus lagres midlertidigt i skyen (Google Firebase) under delingen. Data slettes automatisk, når du stopper delingen.';
+
+  @override
+  String get sharingFirstNamesHint =>
+      'Anbefaling: brug kun fornavne for at minimere personoplysninger der deles.';
+
+  @override
+  String get sharingResponsibility =>
+      'Du er selv ansvarlig for, at delingen overholder skolens retningslinjer og GDPR.';
+
+  @override
+  String get sharingConsentAccept => 'Jeg forstår, del session';
+
+  @override
+  String get shareSessionTitle => 'Del denne session';
+
+  @override
+  String get shareSessionInstructions =>
+      'Del denne kode med kolleger, der skal registrere fravær i samme session:';
+
+  @override
+  String get tapToCopy => 'Tryk på koden for at kopiere';
+
+  @override
+  String get codeCopied => 'Kode kopieret';
+
+  @override
+  String get stopSharing => 'Stop deling og slet skydata';
+
+  @override
+  String get stopSharingTitle => 'Stop deling?';
+
+  @override
+  String get stopSharingConfirm =>
+      'Alle skydata for denne session slettes øjeblikkeligt. Din lokale kopi bevares.';
+
+  @override
+  String get stopSharingDone => 'Deling stoppet og skydata slettet';
+
+  @override
+  String get close => 'Luk';
+
+  @override
+  String get joinSessionTitle => 'Deltag i session';
+
+  @override
+  String get joinSessionCodeHint => 'Indtast invitationskoden du har modtaget:';
+
+  @override
+  String get invalidCode => 'Koden skal være 6 tegn';
+
+  @override
+  String get codeNotFound =>
+      'Koden blev ikke fundet. Tjek at den er korrekt og at sessionen stadig er aktiv.';
+
+  @override
+  String get sharingError =>
+      'Noget gik galt. Tjek din internetforbindelse og prøv igen.';
+
+  @override
+  String joinSessionConfirmGroup(String name) {
+    return 'Gruppe: $name';
+  }
+
+  @override
+  String joinSessionStudentCount(int count) {
+    return '$count elever';
+  }
+
+  @override
+  String get joinSessionGroupKept =>
+      'Gruppen gemmes lokalt og kan bruges til dine egne fremtidige sessioner.';
+
+  @override
+  String get joinSessionAccept => 'Deltag';
+
+  @override
+  String get activeSharingBanner => 'Aktiv deling — data er i skyen';
+
+  @override
+  String sharingMemberCount(int count) {
+    return 'Deler med $count kollega(er)';
+  }
 }
